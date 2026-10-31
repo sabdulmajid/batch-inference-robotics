@@ -38,17 +38,67 @@ class Engine:
         self.max_transient_retries = max_transient_retries
         self._prepared = OrderedDict()
         self._prepared_lock = threading.RLock()
+        self._telemetry_lock = threading.RLock()
+        self._reset_telemetry()
+
+    def _reset_telemetry(self):
+        with self._telemetry_lock:
+            self._cpu_work = dict(preparation_requests=0, metadata_cache_hits=0,
+                source_verification_calls=0, source_verification_failures=0, source_verification_work_seconds=0.,
+                backend_preparation_calls=0, backend_preparation_failures=0, backend_preparation_work_seconds=0.)
+            self._backend_telemetry = []
+
+    def _measure_preparation(self, category, callback):
+        started, failed = time.monotonic(), False
+        try:
+            return callback()
+        except BaseException:
+            failed = True
+            raise
+        finally:
+            seconds = time.monotonic() - started
+            with self._telemetry_lock:
+                self._cpu_work[category + '_calls'] += 1
+                self._cpu_work[category + '_failures'] += int(failed)
+                self._cpu_work[category + '_work_seconds'] += seconds
+
+    def _close_backend(self, backend, *, episode_id=None):
+        """Save each cache's lifetime counters before backend cleanup."""
+        snapshot = dict(episode_id=episode_id, decoded_frame_cache=None)
+        try:
+            cache = getattr(backend, 'frame_cache', None)
+            if cache is not None:
+                snapshot['decoded_frame_cache'] = cache.stats()
+        except Exception as error:
+            snapshot['cache_measurement_error_type'] = type(error).__name__
+        finally:
+            with self._telemetry_lock:
+                snapshot['backend_ordinal'] = len(self._backend_telemetry)
+                self._backend_telemetry.append(snapshot)
+            backend.close()
+
+    def _telemetry(self):
+        with self._telemetry_lock:
+            return dict(schema_version='bir_engine_work_telemetry_v1',
+                cpu_preparation=dict(self._cpu_work), backends=list(self._backend_telemetry),
+                prefetch=self.prefetch, prepared_metadata_cache_capacity=self.prepared_cache_size,
+                cpu_timing_scope='Summed engine worker time includes failed calls. Preparation can overlap inference; these sums are not end-to-end wall time. Initial CLI manifest hashing is outside these counters.',
+                decoded_cache_scope='Cumulative counters per backend cache lifetime, captured before close. Byte counts cover retained RGB payloads only; null means no decoded-frame cache.')
 
     def _prepare(self, backend, job):
         # Run once per stage unless bounded metadata reuse is enabled. Source
         # hashing protects against files changed after identity was established.
-        job.verify_sources()
+        with self._telemetry_lock:
+            self._cpu_work['preparation_requests'] += 1
+        self._measure_preparation('source_verification', job.verify_sources)
         with self._prepared_lock:
             if job.request_id in self._prepared:
                 result = self._prepared.pop(job.request_id)
                 self._prepared[job.request_id] = result
+                with self._telemetry_lock:
+                    self._cpu_work['metadata_cache_hits'] += 1
                 return result
-        result = backend.prepare(job.as_native_dict())
+        result = self._measure_preparation('backend_preparation', lambda: backend.prepare(job.as_native_dict()))
         metadata = getattr(result, "metadata", {})
         if "input_sha256" in metadata and metadata["input_sha256"] != dict(job.source_sha256):
             raise ValueError("Native input checksums differ from the request identity")
@@ -152,6 +202,7 @@ class Engine:
             raise ValueError("Episode identities must be unique")
         selected_stages = ("segment", "caption") if stages == "all" else (stages,)
         started, records = time.monotonic(), []
+        self._reset_telemetry()
         self._prepared.clear()
         with self.store.exclusive():
             before_attempts = {(a["request_id"], a["stage"], a["number"]) for a in self.store.attempts()}
@@ -164,7 +215,7 @@ class Engine:
                         for stage in selected_stages:
                             self._stage(backend, [job], stage, records)
                     finally:
-                        backend.close()
+                        self._close_backend(backend, episode_id=job.id)
                         self._prepared.clear()
             else:
                 backend = self.backend_factory()
@@ -172,7 +223,7 @@ class Engine:
                     for stage in selected_stages:
                         self._stage(backend, jobs, stage, records)
                 finally:
-                    backend.close()
+                    self._close_backend(backend)
             exported = []
             if output_dir is not None:
                 for job in jobs:
@@ -185,7 +236,7 @@ class Engine:
                             if (a["request_id"], a["stage"], a["number"]) not in before_attempts]
         self._prepared.clear()
         return dict(schema_version="bir_run_v1", mode=self.mode, elapsed_s=time.monotonic() - started,
-                    records=records, exports=exported,
+                    records=records, exports=exported, telemetry=self._telemetry(),
                     attempts=new_attempts,
                     complete=all(row["status"] in {"complete", "resumed"} for row in records),
                     execution_complete=all(row["status"] in {"complete", "resumed", "partial"} for row in records),

@@ -57,6 +57,13 @@ include asset and parameter verification. Generation events exclude input
 preparation, hashing, and device transfer. These rounded event times explain the
 workflow; they are already included in wall time.
 
+Each fresh run also retains engine telemetry. CPU counters separate source
+verification, native input preparation, and prepared-metadata reuse. Their times
+sum worker work, which can overlap inference. They are not elapsed wall time.
+Frame-cache records contain hits, misses, evictions, current and peak retained
+RGB bytes, and configured limits. The engine saves them before cache cleanup.
+Cache byte counts exclude Python objects and other process memory.
+
 The benchmark timer includes all three conditions, resume checks, and comparison
 work. Allocated GPU-hours remain unset until the coordinator reconciles the
 complete scheduler allocation. Do not charge the whole shared allocation to

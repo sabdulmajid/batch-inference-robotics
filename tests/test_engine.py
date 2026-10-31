@@ -1,7 +1,9 @@
 import json
+import importlib.util
 from pathlib import Path
 import tempfile
 import threading
+from types import SimpleNamespace
 import unittest
 
 from bir.engine import Engine, TransientError
@@ -120,6 +122,56 @@ class EngineTests(unittest.TestCase):
         second = engine.run(self.jobs[:1])
         self.assertFalse(second["complete"])
         self.assertEqual(second["fresh_stage_attempts"], 0)
+
+    @unittest.skipUnless(importlib.util.find_spec('PIL'), 'requires optional Pillow CPU dependency')
+    def test_preparation_and_real_cache_telemetry_survive_cleanup_and_reset_on_resume(self):
+        from PIL import Image
+        from bir.frame_cache import DecodedFrameCache
+        instances = []
+        video = SimpleNamespace(sha256='shared-test-source', pts_us=(0, 1, 2))
+        class Backend:
+            def __init__(self):
+                self.frame_cache = DecodedFrameCache(24, max_entries=2)
+                instances.append(self)
+            def prepare(self, job):
+                return job
+            def decode(self, indices):
+                def original(source, wanted, canonical=False):
+                    return {index: Image.new('RGB', (2, 2), (index, 1, 2)) for index in wanted}
+                return self.frame_cache.decode(video, indices, decoder=original)
+            def segment(self, job):
+                self.decode({0, 1})
+                return {'segments': []}
+            def caption(self, job, segmentation):
+                self.decode({1, 2})
+                return {'segments': []}
+            def close(self):
+                self.frame_cache.clear()
+        engine = Engine(Backend, self.store, prefetch=1)
+        fresh = engine.run(self.jobs)
+        self.assertTrue(fresh['complete'])
+        work = fresh['telemetry']['cpu_preparation']
+        self.assertEqual(work['preparation_requests'], 6)
+        self.assertEqual(work['source_verification_calls'], 6)
+        self.assertEqual(work['backend_preparation_calls'], 3)
+        self.assertEqual(work['metadata_cache_hits'], 3)
+        self.assertEqual(work['source_verification_failures'] + work['backend_preparation_failures'], 0)
+        self.assertGreaterEqual(work['source_verification_work_seconds'], 0)
+        self.assertGreaterEqual(work['backend_preparation_work_seconds'], 0)
+        saved = fresh['telemetry']['backends'][0]['decoded_frame_cache']
+        self.assertEqual({key: saved[key] for key in ('hits', 'misses', 'evictions')},
+                         dict(hits=9, misses=3, evictions=1))
+        self.assertEqual(saved['retained_bytes'], 24)
+        self.assertEqual(saved['peak_retained_bytes'], 24)
+        self.assertEqual((saved['max_bytes'], saved['max_entries']), (24, 2))
+        self.assertEqual(instances[0].frame_cache.stats()['retained_bytes'], 0)
+        self.assertEqual(instances[0].frame_cache.stats()['peak_retained_bytes'], 24)
+        self.assertIn('not end-to-end wall time', fresh['telemetry']['cpu_timing_scope'])
+        resumed = engine.run(self.jobs)
+        self.assertEqual(resumed['telemetry']['cpu_preparation']['preparation_requests'], 0)
+        self.assertEqual(resumed['telemetry']['backends'][0]['decoded_frame_cache']['hits'], 0)
+        self.assertEqual(fresh['telemetry']['cpu_preparation']['preparation_requests'], 6)
+        json.dumps(fresh['telemetry'], allow_nan=False)
 
 
 if __name__ == "__main__":

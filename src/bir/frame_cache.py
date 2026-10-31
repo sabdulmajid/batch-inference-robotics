@@ -20,6 +20,7 @@ class DecodedFrameCache:
         self._items = OrderedDict()
         self._lock = threading.RLock()
         self._bytes = 0
+        self._peak_bytes = 0
         self._hits = self._misses = self._evictions = 0
 
     def decode(self, video, wanted, canonical=False, *, decoder):
@@ -62,6 +63,7 @@ class DecodedFrameCache:
                             raise ValueError("Native RGB payload size changed")
                         self._items[key] = (payload, (image.width, image.height))
                         self._bytes += size
+                        self._peak_bytes = max(self._peak_bytes, self._bytes)
                     result[index] = image
         return result
 
@@ -71,7 +73,8 @@ class DecodedFrameCache:
             self._bytes = 0
 
     def stats(self):
+        """Return cumulative cache-lifetime counters, including after clear()."""
         with self._lock:
-            return dict(retained_bytes=self._bytes, max_bytes=self.max_bytes,
+            return dict(retained_bytes=self._bytes, peak_retained_bytes=self._peak_bytes, max_bytes=self.max_bytes,
                         entries=len(self._items), max_entries=self.max_entries, hits=self._hits,
                         misses=self._misses, evictions=self._evictions)
