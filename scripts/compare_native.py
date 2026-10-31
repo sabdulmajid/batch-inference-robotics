@@ -255,6 +255,11 @@ def compare(left_dir, right_dir, *, stage='all', left_logs=(), right_logs=(), ac
     if bool(left_logs) != bool(right_logs):
         raise ValueError('Provide runtime logs for both conditions or neither')
     if left_logs:
+        def log_identity(path):
+            info = Path(path).stat()
+            return info.st_dev, info.st_ino
+        if {log_identity(p) for p in left_logs} & {log_identity(p) for p in right_logs}:
+            raise ValueError('The same runtime log cannot represent both conditions')
         a, b = generation_digests(left_logs, stage), generation_digests(right_logs, stage)
         tensor = {'status': 'compared', 'agreement': a == b,
                   'left_generation_calls': sum(a.values()), 'right_generation_calls': sum(b.values()),

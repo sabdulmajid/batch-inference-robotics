@@ -103,6 +103,8 @@ class NativeComparisonTests(unittest.TestCase):
         b = log('right.log', event('captioner', 'b') + event('tempseg', 'a'))
         result = COMPARE.compare(self.make_run('reference'), self.make_run('optimized'), left_logs=[a], right_logs=[b])
         self.assertTrue(result['tensor_input_agreement_verified'])
+        with self.assertRaisesRegex(ValueError, 'same runtime log'):
+            COMPARE.compare(self.root / 'reference', self.root / 'optimized', left_logs=[a], right_logs=[a])
         b.write_text(b.read_text().replace('b' * 64, 'c' * 64))
         result = COMPARE.compare(self.root / 'reference', self.root / 'optimized', left_logs=[a], right_logs=[b])
         self.assertFalse(result['compatible'])

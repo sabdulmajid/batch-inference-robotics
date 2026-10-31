@@ -1,0 +1,35 @@
+{
+  "cuda_runtime": "12.8",
+  "devices": [
+    {
+      "compute_capability": [
+        8,
+        6
+      ],
+      "logical_device": 0,
+      "name": "NVIDIA GeForce RTX 3090",
+      "numerical_result_correct": true,
+      "operation_elapsed_s": 0.87033077981323,
+      "peak_allocated_bytes": 8978944,
+      "peak_reserved_bytes": 23068672,
+      "result_dtype": "torch.bfloat16",
+      "result_is_cuda": true,
+      "total_memory_bytes": 25296044032
+    }
+  ],
+  "elapsed_s": 33.9439210370183,
+  "schema_version": "bir_framework_smoke_v1",
+  "started_utc": "2026-10-31T11:02:30.625445+00:00",
+  "status": "complete",
+  "torch_version": "2.11.0+cu128",
+  "visible_device_count": 1,
+  "code_commit": "c5a8017",
+  "allocation": {
+    "gpu_count": 1,
+    "elapsed_seconds": 41,
+    "allocated_gpu_hours": 0.01138888888888889,
+    "state": "COMPLETED",
+    "exit_code": "0:0"
+  },
+  "scope": "Framework numerical GPU check only; no FLORA model inference"
+}

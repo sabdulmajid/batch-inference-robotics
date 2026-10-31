@@ -32,6 +32,7 @@ UV="$BIR_PROJECT_ROOT/tools/uv"
 "$UV" venv --python 3.12.12 "$BIR_PROJECT_ROOT/venv"
 "$UV" pip install --python "$BIR_PROJECT_ROOT/venv/bin/python" torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
 "$UV" pip install --python "$BIR_PROJECT_ROOT/venv/bin/python" -r "$BIR_PROJECT_ROOT/code/configs/requirements-native.txt" pyarrow==21.0.0 pytest==8.4.2
+"$UV" pip install --python "$BIR_PROJECT_ROOT/venv/bin/python" --no-deps -e "$BIR_PROJECT_ROOT/code"
 if [[ ! -d "$BIR_PROJECT_ROOT/Flora/.git" ]]; then
   git clone --no-checkout https://github.com/NVIDIA/Flora.git "$BIR_PROJECT_ROOT/Flora"
 fi
