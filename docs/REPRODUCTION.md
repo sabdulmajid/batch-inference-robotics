@@ -64,6 +64,24 @@ from a prior invocation. Do not use that field as current end-to-end wall time.
 Allocated GPU-hours come from scheduler allocation records, once per attempt;
 include failures, idle allocation time, and restarts.
 
+After a successful native probe, verify its resume path in a small reserved CPU
+allocation. This command makes an isolated database backup and copies the saved
+stage artifacts. It runs the exact engine code that produced the original state.
+It checks every cached stage, zero new attempts, unchanged output hashes, and
+absence of model loading or generation. It preserves the original evidence.
+
+```bash
+python scripts/verify_native_resume.py \
+  --python "$NATIVE_PYTHON" --code-root "$PROBE_CODE" \
+  --source-root "$FLORA_SOURCE" --manifest "$MANIFEST" \
+  --state-dir "$PROBE_STATE" --gate-c-marker "$GATE_C_RECEIPT" \
+  --output-dir "$RESUME_EVIDENCE"
+```
+
+The output directory must be new. The tool hides GPUs from its subprocess and
+never submits jobs. Keep its raw receipts and logs private. A local test of the
+tool uses synthetic stored results; the real probe state still needs this check.
+
 ## 4. What to retain
 
 Keep input hashes, request identities, model verification receipts, processor
