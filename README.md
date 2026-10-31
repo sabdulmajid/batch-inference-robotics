@@ -9,7 +9,8 @@ resume after a worker stops without repeating completed segments.
 **Status:** the complete native pipeline passed on three single-view human
 videos. TempSeg used one RTX 3090; Captioner used three on one node. It exported
 45 captions and resumed all six completed stages without new inference. The
-matched performance benchmark is running; adaptive quality is not yet measured.
+matched benchmark exposed a model reload failure; its correction is in progress.
+Adaptive quality is not yet measured.
 See [current status](docs/STATUS.md) and
 [native end-to-end evidence](reports/native-end-to-end.json).
 

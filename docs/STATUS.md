@@ -36,21 +36,24 @@ project policy choice, not a cluster quota change.
   See [the end-to-end evidence](../reports/native-end-to-end.json).
 - The adaptive protocol and task-separated split are frozen. All three exact
   development/final videos passed preparation with original bytes and clocks.
-- Native temporal and joint AI reference review is frozen for the three initial
-  development episodes and their 40 independent references.
+- Native development AI reference review is complete. Temporal micro F1 is
+  0.6118; joint temporal/AI reference-event micro F1 is 0.0941. This three-episode
+  development result does not measure held-out or visual accuracy.
+  See [the reference review](../reports/native-reference-review.json).
 - The CPU-only resume check passed on an isolated state backup. It resumed all
   six stages with zero fresh attempts and no model-load or generation events.
   Request identities, stage artifact hashes, and original evidence were unchanged.
 - CPU caption-pair preparation and ordered replay passed. This does not admit
   GPU batching. See [the CPU preparation report](../reports/caption-batch-cpu-preparation.json).
-- Controlled native performance, independent caption quality, and adaptive
-  quality results are still pending.
-- The bounded native benchmark is running on three GPUs with a two-hour limit.
+- Controlled native performance and adaptive quality results are still pending.
+- The first native benchmark was stopped after the reference path failed a later
+  Captioner placement check. Its successful and failed work is preserved.
+  A reload correction and independent review are in progress.
 
 ## Resource state
 
 - GPU-hours used/reserved: 1.330556 / 6 of 24, including the failed allocation.
-  The current reservation covers the bounded native benchmark.
+  The benchmark reservation is retained until final scheduler reconciliation.
 - GPU submissions and reservations: 5 of 16.
 - CPU-only core-hours used/reserved: 3.007778 / 0 of 32.
 - Final reproduction allowance: 2.25 GPU-hours and one submission slot, based
@@ -61,9 +64,8 @@ project policy choice, not a cluster quota change.
 ## Next actions
 
 Verify the running native reference, persistent, and optimized comparison on
-matching inputs and placement. Complete the frozen independent AI reference
-review. GPU batching requires its own measured admission and native batch-one
-agreement. Then run the bounded adaptive development/final experiment if its
+matching inputs and placement. GPU batching requires its own measured admission
+and native batch-one agreement. Then run the bounded adaptive development/final experiment if its
 measured projection fits the remaining budget and reproduction allowance.
 
 Private records retain exact job IDs, connection settings, output paths, skill

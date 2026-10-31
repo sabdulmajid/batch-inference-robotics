@@ -5,6 +5,17 @@ on the three initial development episodes. It uses 40 independent WGO reference
 intervals. It is not a held-out test, human evaluation, visual factual accuracy,
 or a reproduction of the official WGO scoring method.
 
+The completed development review found temporal micro F1 of **0.6118** and joint
+temporal/AI reference-event micro F1 of **0.0941**. The joint rule produced four
+one-to-one matches from 45 predictions and 40 references. The two reviewers
+agreed on acceptance for all 27 review cards; five accepted cards produced those
+four matches. They flagged added details on all cards that the reference text
+could not verify. These flags do not prove visual errors. Exact reviewer model
+identifiers were unavailable. The low observed joint agreement applies to this
+small development sample and fixed rubric. See the
+[sanitized result](../reports/native-reference-review.json) for counts, timing,
+provenance, and limits. The rubric and metrics were not changed after scoring.
+
 The [reference contract](../manifests/native-development-review.json) was saved
 before Captioner execution. It fixes the selected source videos, dataset revision,
 instructions, reference intervals and caption hashes, rubric, and temporal IoU

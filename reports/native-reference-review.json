@@ -1,0 +1,349 @@
+{
+  "aggregate": {
+    "joint_ai_reference_event": {
+      "false_negative": 36,
+      "false_positive": 41,
+      "macro_f1": 0.08897485493230174,
+      "micro_f1": 0.09411764705882353,
+      "true_positive": 4
+    },
+    "temporal": {
+      "false_negative": 14,
+      "false_positive": 19,
+      "macro_f1": 0.6029174725983236,
+      "micro_f1": 0.611764705882353,
+      "true_positive": 26
+    }
+  },
+  "coverage": {
+    "all_predictions_and_references_in_denominators": true,
+    "card_presentations": 54,
+    "complete_captions": 45,
+    "completed_episodes": 3,
+    "expected_episodes": 3,
+    "independent_reference_intervals": 40,
+    "predictions": 45,
+    "review_cards": 27,
+    "reviewer_count": 2
+  },
+  "date": "2026-10-31",
+  "episodes": [
+    {
+      "complete_captions": 10,
+      "episode_id": "homer_52",
+      "independent_references": 6,
+      "joint_ai_reference_event": {
+        "f1": 0.0,
+        "false_negative": 6,
+        "false_positive": 10,
+        "iou_threshold": 0.5,
+        "matches": [],
+        "matching": "maximum_cardinality_one_to_one",
+        "precision": 0.0,
+        "recall": 0.0,
+        "true_positive": 0
+      },
+      "predictions": 10,
+      "source_sha256": "998f86d8a6443d44a8367f2a10377ebdd84404ff80810b99a5fa792de74f8f6e",
+      "temporal": {
+        "f1": 0.625,
+        "false_negative": 1,
+        "false_positive": 5,
+        "iou_threshold": 0.5,
+        "matches": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            5
+          ]
+        ],
+        "matching": "maximum_cardinality_one_to_one",
+        "precision": 0.5,
+        "recall": 0.8333333333333334,
+        "true_positive": 5
+      }
+    },
+    {
+      "complete_captions": 20,
+      "episode_id": "homer_50",
+      "independent_references": 27,
+      "joint_ai_reference_event": {
+        "f1": 0.0851063829787234,
+        "false_negative": 25,
+        "false_positive": 18,
+        "iou_threshold": 0.5,
+        "matches": [
+          [
+            0,
+            0
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "matching": "maximum_cardinality_one_to_one",
+        "precision": 0.1,
+        "recall": 0.07407407407407407,
+        "true_positive": 2
+      },
+      "predictions": 20,
+      "source_sha256": "aa65a465999a9d3198839e71bfc8569b78a51cb0ee63e5661b829d3a44f7e359",
+      "temporal": {
+        "f1": 0.6382978723404256,
+        "false_negative": 12,
+        "false_positive": 5,
+        "iou_threshold": 0.5,
+        "matches": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            6,
+            8
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            8,
+            10
+          ],
+          [
+            10,
+            12
+          ],
+          [
+            12,
+            15
+          ],
+          [
+            13,
+            17
+          ],
+          [
+            14,
+            19
+          ],
+          [
+            17,
+            22
+          ],
+          [
+            18,
+            24
+          ],
+          [
+            19,
+            26
+          ]
+        ],
+        "matching": "maximum_cardinality_one_to_one",
+        "precision": 0.75,
+        "recall": 0.5555555555555556,
+        "true_positive": 15
+      }
+    },
+    {
+      "complete_captions": 15,
+      "episode_id": "homer_41",
+      "independent_references": 7,
+      "joint_ai_reference_event": {
+        "f1": 0.18181818181818182,
+        "false_negative": 5,
+        "false_positive": 13,
+        "iou_threshold": 0.5,
+        "matches": [
+          [
+            2,
+            1
+          ],
+          [
+            4,
+            3
+          ]
+        ],
+        "matching": "maximum_cardinality_one_to_one",
+        "precision": 0.13333333333333333,
+        "recall": 0.2857142857142857,
+        "true_positive": 2
+      },
+      "predictions": 15,
+      "source_sha256": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12",
+      "temporal": {
+        "f1": 0.5454545454545454,
+        "false_negative": 1,
+        "false_positive": 9,
+        "iou_threshold": 0.5,
+        "matches": [
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            7,
+            5
+          ],
+          [
+            11,
+            6
+          ]
+        ],
+        "matching": "maximum_cardinality_one_to_one",
+        "precision": 0.4,
+        "recall": 0.8571428571428571,
+        "true_positive": 6
+      }
+    }
+  ],
+  "held_out_evaluation": false,
+  "independent_verification": {
+    "both_review_packets_match_fixed_cards_and_rubric": true,
+    "cards_rebuilt_from_bound_native_annotations_and_references": true,
+    "frozen_contract_matched": true,
+    "host_review_times_match_dispatch_record": true,
+    "maximum_match_counts_confirmed_by_independent_graph_enumeration": true,
+    "saved_scores_recomputed_exactly_except_runtime_scoring_timer": true
+  },
+  "interpretation": "The sample shows low joint temporal and AI reference-event agreement under the frozen rule. Successful native execution alone does not establish annotation quality.",
+  "iou_threshold": 0.5,
+  "is_human_evaluation": false,
+  "limitations": [
+    "Only three selected development episodes were reviewed. No population or held-out accuracy claim is supported.",
+    "Reviewers evaluated text against independent references; they did not inspect the videos.",
+    "Exact reviewer model identifiers are unavailable, which limits exact reproduction of AI judgments.",
+    "No adaptive policy was evaluated in this record. The frozen adaptive experiment remains separate."
+  ],
+  "matching": "maximum_cardinality_one_to_one",
+  "method": {
+    "card_rule": "Review every prediction/reference pair with temporal IoU at least 0.5.",
+    "macro_f1": "Mean of the three episode F1 scores.",
+    "micro_f1": "F1 from summed true positives, false positives, and false negatives across all episodes.",
+    "post_result_metric_or_rubric_changes": false,
+    "rubric": "bir_reference_event_rubric_v1",
+    "rubric_sha256": "4cc162fdae0f4c44ff9d9492d7544f4eaca7a9c1219aac8aebc631b76254a810",
+    "semantic_acceptance": "Both separate AI reviewers accept the reference event under the fixed rubric. Uncertainty scores zero."
+  },
+  "official_wgo_replication": false,
+  "offline_audit": {
+    "card_presentations": 54,
+    "included_in_deployment_inference_cost": false,
+    "new_paid_api_calls": 0,
+    "preparation_and_scoring_timing_boundary": "Application timers excluding file I/O.",
+    "preparation_seconds": 0.013802744913846254,
+    "review_timing_boundary": "Host time from dispatch to completion notification, including orchestration overhead. These two reviews ran sequentially.",
+    "reviewer_host_wall_seconds": [
+      121.99608707427979,
+      152.4301118850708
+    ],
+    "reviewer_host_wall_seconds_sum": 274.4261989593506,
+    "reviewers": 2,
+    "scoring_seconds": 0.0010880419868044555,
+    "unique_cards": 27
+  },
+  "provenance": {
+    "annotation_artifacts": [
+      {
+        "episode_id": "homer_52",
+        "sha256": "f016d025d533d714d753edbafd3a5a0edd3f55e5bdd07abd165f5abf2b030f26"
+      },
+      {
+        "episode_id": "homer_50",
+        "sha256": "c4187fa424eab156b9fdf299dffeca52ac1a7e70599969e2fa3e174a98165c86"
+      },
+      {
+        "episode_id": "homer_41",
+        "sha256": "17fff994f7cea509168e82d92bba1a5fd2d46a6087b38c19319f5ebc4d5c9f2a"
+      }
+    ],
+    "cards_sha256": "efcfddc0f94eceb260c9b887190dba8f643584978ef07ec4ecf54f3536a7a578",
+    "content_contract_sha256": "f7a1e3339194b3f64342b0c04aa2a664bed66cad2b6d5f55fef09d3418f07d25",
+    "dataset": {
+      "parquet_sha256": "24c6c23447753385b9cea0d17f17d7a8aa74131d800d9bc9ab74d7669d7404ab",
+      "repository": "macrodata/WGO-Bench",
+      "revision": "9cfb7bb98d60a58319f4b3d7b41374eedfb7980c"
+    },
+    "evaluation_script_sha256": "86a99843244e61e00fc64fbf7f2834ee2c2384ec1201394ba495d0da0e9697f0",
+    "gate_c_marker_sha256": "7562267ca991b0aacd928b9553af3b2b1faa6b2d410c0aa4f4416dc3545399f8",
+    "mapping_file_sha256": "fa99ddb290f6386877563502475b2e5b1ae2012447e82a7b4f86e69ed759480f",
+    "mapping_sha256": "63aa35442dbced6f9b9f9a63dd55fa0ac0d899e1e2b53f94edfc586a183a1d13",
+    "reference_contract_file": "manifests/native-development-review.json",
+    "reference_contract_sha256": "db58739c694841444ffdccf6a8857d0e0f145c44ba28a2a3af1f1439ba30ae9e",
+    "saved_score_file_sha256": "469ee9fed265e3b10ababf9f4065b7150ddc537481b4221c9f2e7702fabf8f17"
+  },
+  "review_disagreements": 0,
+  "reviewers": [
+    {
+      "evaluator_model": "unavailable",
+      "evaluator_type": "AI",
+      "model_identifier_limit": "Exact model identifier was not exposed.",
+      "review_content_sha256": "116c173a1e9b81737d10811df3ee55545d4be7e141970d7c49650e47f278bab5",
+      "review_file_sha256": "7b4e84c1771161a99a75aa536eb55b85452ce7d36f94fc729070dca803d6ed5a",
+      "review_id": "native-development-review-1"
+    },
+    {
+      "evaluator_model": "unavailable",
+      "evaluator_type": "AI",
+      "model_identifier_limit": "Exact model identifier was not exposed.",
+      "review_content_sha256": "f3342d1b66f8de6bc5f1b7d5ca9c5099552c1de21c58be39e896769dafb4360f",
+      "review_file_sha256": "47788998a40399eaa29a0dae911d9c6b5cf7436e0fef40e52114593b938bd9f8",
+      "review_id": "native-development-review-2"
+    }
+  ],
+  "schema_version": "bir_native_reference_review_report_v1",
+  "scope": "initial development inspection",
+  "semantic_review": {
+    "binary_acceptance_disagreements": 0,
+    "cards_accepted_by_both": 5,
+    "extra_claim_interpretation": "Both reviewers flagged added details on all 27 cards that reference text could not verify. These flags do not prove visual errors.",
+    "one_to_one_joint_matches": 4
+  },
+  "status": "completed_and_independently_recomputed",
+  "unsupported_extra_claim_cards": 27,
+  "visual_factual_correctness_assessed": false
+}
