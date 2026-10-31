@@ -1,0 +1,53 @@
+# Conservative project defaults, not claims about WATcloud policy.
+# Existing stricter user/account limits take precedence.
+# Do not silently increase these ceilings.
+version: 1
+policy_date: "2026-10-31"
+coordination:
+  gpu_job_submitters: 1
+  max_pending_or_running_gpu_jobs: 1
+  max_pending_or_running_cpu_only_jobs: 1
+  scheduler_poll_interval_seconds: 120
+gpu:
+  total_allocated_gpu_hours: 24
+  max_gpu_submissions: 16
+  max_gpus_per_job: 4
+  max_nodes_per_gpu_job: 1
+  multi_gpu_allowed_for: "documented native model placement or measured batching need"
+  preferred_native_types: ["rtx_3090", "rtx_4090"]
+  framework_smoke_minutes: 15
+  initial_native_probe_minutes: 60
+  max_job_minutes: 120
+  count_failed_and_idle_allocations: true
+  charge_shard_as_full_device_for_budget: true
+  reserve_requested_time_before_submission: true
+  automatic_requeue_allowed: false
+  restarted_execution_requires_budget_reconciliation: true
+  reserve_final_reproduction_from_measured_pilot: true
+  minimum_release_submission_slots: 1
+cpu:
+  initial_cpus_per_task: 4
+  max_cpus_per_task: 8
+  initial_ram_gib: 32
+  max_ram_gib: 128
+  max_cpu_only_job_minutes: 120
+  max_cpu_only_core_hours: 32
+  reserve_requested_core_hours_before_submission: true
+  count_failed_and_idle_allocations: true
+storage:
+  max_new_persistent_project_gib: 250
+  minimum_free_headroom_fraction: 0.20
+  default_tmpdisk_mib: 20480
+  max_tmpdisk_mib: 204800
+  home_large_caches_allowed: false
+experiments:
+  max_initial_end_to_end_episodes: 3
+  max_performance_pilot_episodes: 12
+  max_final_public_benchmark_episodes: 100
+  max_adaptive_development_revisions: 1
+  max_transient_retries_per_work_item: 1
+  transient_retry_scope: "transport, worker, or I/O failures; native boundary-repair policy is unchanged"
+  paid_api_or_external_compute_budget_usd: 0
+  final_evaluation_requires_projected_budget_fit: true
+  stop_new_submissions_at_budget_limit: true
+

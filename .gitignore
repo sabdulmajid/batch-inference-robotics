@@ -1,0 +1,56 @@
+# Private operational settings and raw runtime artifacts
+.local/
+.private/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+known_hosts*
+ssh_config*
+slurm-*.out
+logs/
+runs/
+artifacts/
+checkpoints/
+weights/
+datasets/
+data/
+cache/
+.cache/
+third_party/
+vendor_downloads/
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.parquet
+*.h5
+*.hdf5
+
+# Environments and generated files
+.venv/
+.venv-*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+node_modules/
+.DS_Store
+
+# Public summaries and synthetic fixtures belong in explicitly reviewed paths
+# such as reports/ and tests/fixtures/, not the ignored raw directories.
+
