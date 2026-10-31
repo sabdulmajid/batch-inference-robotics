@@ -14,13 +14,14 @@ class PlacementTests(unittest.TestCase):
         auto_model = types.SimpleNamespace(from_pretrained=original)
         modules = {'torch': types.SimpleNamespace(bfloat16='bf16', cuda=types.SimpleNamespace(
             device_count=lambda: 3, mem_get_info=lambda i: (20 * GIB, 24 * GIB),
+            memory=types.SimpleNamespace(get_allocator_backend=lambda: 'native'),
             memory_allocated=lambda i: (i + 1) * GIB, memory_reserved=lambda i: (i + 2) * GIB)),
             'transformers': types.SimpleNamespace(AutoModelForImageTextToText=auto_model),
             'transformers.models.qwen3_5.modeling_qwen3_5': types.SimpleNamespace(
                 Qwen3_5PreTrainedModel=types.SimpleNamespace(_keep_in_fp32_modules_strict=['A_log', 'dt_bias']))}
         audit = {}
         with patch.dict('sys.modules', modules), patch('bir.placement.inspect_checkpoint',
-                return_value={'native_weight_bytes_estimate': 51 * GIB}):
+                return_value={'native_weight_bytes_estimate': 55 * GIB}):
             with captioner_placement(4, audit):
                 with self.assertRaisesRegex(RuntimeError, 'weights exceed'):
                     auto_model.from_pretrained('private-snapshot', device_map='balanced', dtype='bf16',
@@ -30,7 +31,57 @@ class PlacementTests(unittest.TestCase):
         self.assertEqual(audit['headroom_gib'], 4)
         self.assertEqual([r['logical_device'] for r in audit['device_memory']], [0, 1, 2])
         self.assertEqual(audit['device_memory'][2], dict(logical_device=2, total_bytes=24 * GIB,
-                         free_bytes=20 * GIB, allocated_bytes=3 * GIB, reserved_bytes=4 * GIB))
+                         free_bytes=20 * GIB, allocated_bytes=3 * GIB, reserved_bytes=4 * GIB,
+                         unused_allocator_bytes=GIB, credited_allocator_cache_bytes=GIB,
+                         effective_available_bytes=21 * GIB))
+
+    def test_observed_reload_cache_is_capacity_without_counting_live_tensors(self):
+        # Exact failed-floor receipt from the two-episode diagnostic. This
+        # checks accounting only; successful GPU reload remains a separate gate.
+        total = 25_296_044_032
+        free = [24_834_408_448, 5_926_486_016, 5_683_216_384]
+        allocated = [19_136_512, 8_519_680, 8_519_680]
+        reserved = [109_051_904, 19_031_654_400, 19_274_924_032]
+        devices = [(total, n) for n in free]
+        with self.assertRaisesRegex(RuntimeError, 'weights exceed'):
+            memory_budgets(devices, 4, weight_bytes=54_713_466_336)
+        budget = memory_budgets(devices, 4, weight_bytes=54_713_466_336,
+                                allocator_bytes=list(zip(allocated, reserved)))
+        self.assertEqual(budget, {0: 20_629_356_544, 1: 20_654_653_440, 2: 20_654_653_440})
+        self.assertTrue(all(budget[i] + 4 * GIB <= total - allocated[i] for i in range(3)))
+        # A large reserve that is occupied by tensors is not reusable cache.
+        with self.assertRaisesRegex(RuntimeError, 'weights exceed'):
+            memory_budgets(devices, 4, weight_bytes=54_713_466_336,
+                           allocator_bytes=list(zip(reserved, reserved)))
+
+    def test_allocator_credit_is_validated_capped_and_optional(self):
+        self.assertEqual(memory_budgets([(24 * GIB, 22 * GIB)], 4,
+                         allocator_bytes=[(3 * GIB, 8 * GIB)]), {0: 17 * GIB})
+        self.assertEqual(memory_budgets([(24 * GIB, 0)], 4,
+                         allocator_bytes=[(2 * GIB, 20 * GIB)]), {0: 14 * GIB})
+        for values in ([(4, 3)], [(-1, 3)], [(0, 25 * GIB)], []):
+            with self.assertRaises(ValueError):
+                memory_budgets([(24 * GIB, 20 * GIB)], allocator_bytes=values)
+
+    def test_unknown_allocator_gets_no_cache_credit(self):
+        original = Mock(return_value=object())
+        auto_model = types.SimpleNamespace(from_pretrained=original)
+        modules = {'torch': types.SimpleNamespace(bfloat16='bf16', cuda=types.SimpleNamespace(
+            device_count=lambda: 1, mem_get_info=lambda i: (6 * GIB, 24 * GIB),
+            memory=types.SimpleNamespace(get_allocator_backend=lambda: 'cudaMallocAsync'),
+            memory_allocated=lambda i: GIB, memory_reserved=lambda i: 18 * GIB)),
+            'transformers': types.SimpleNamespace(AutoModelForImageTextToText=auto_model),
+            'transformers.models.qwen3_5.modeling_qwen3_5': types.SimpleNamespace(
+                Qwen3_5PreTrainedModel=types.SimpleNamespace(_keep_in_fp32_modules_strict=['A_log', 'dt_bias']))}
+        audit = {}
+        with patch.dict('sys.modules', modules), patch('bir.placement.inspect_checkpoint',
+                return_value={'native_weight_bytes_estimate': GIB}):
+            with captioner_placement(4, audit):
+                auto_model.from_pretrained('private-snapshot', device_map='balanced', dtype='bf16',
+                    local_files_only=True, attn_implementation={'text_config': 'sdpa', 'vision_config': 'sdpa'})
+        self.assertEqual(original.call_args.kwargs['max_memory'], {0: 2 * GIB})
+        self.assertEqual(audit['device_memory'][0]['credited_allocator_cache_bytes'], 0)
+        self.assertEqual(audit['capacity_basis'], 'driver_free_only_unsupported_allocator')
 
     def test_27b_cannot_fit_two_24gib_devices(self):
         with self.assertRaisesRegex(RuntimeError, 'weights exceed'):

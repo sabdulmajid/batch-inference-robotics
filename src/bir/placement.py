@@ -14,21 +14,34 @@ from unittest.mock import patch
 GIB = 1024 ** 3
 
 
-def memory_budgets(devices, headroom_gib=4.0, *, weight_bytes=None):
+def _available_memory_bytes(total, free, allocated, reserved):
+    if any(type(value) is not int for value in (total, free, allocated, reserved)):
+        raise ValueError('CUDA memory measurements must use integer bytes')
+    if not (total > 0 and 0 <= free <= total and 0 <= allocated <= reserved <= total):
+        raise ValueError('Invalid CUDA driver/allocator memory measurement')
+    # Driver-free bytes exclude our allocator's cache. Add only unused owned
+    # reserve; live tensors and other processes' allocations remain excluded.
+    return min(total - allocated, free + reserved - allocated)
+
+
+def memory_budgets(devices, headroom_gib=4.0, *, weight_bytes=None, allocator_bytes=None):
     """Return byte limits for logical CUDA devices from (total, free) pairs.
 
     The caller supplies only devices visible to its scheduler allocation.
+    Optional (allocated, reserved) pairs credit unused native-allocator cache.
     Headroom is reserved on every device. This is a feasibility floor, not
     proof that a model, its largest layer, and its activations will fit.
     """
     if not math.isfinite(headroom_gib) or headroom_gib <= 0:
         raise ValueError('Placement headroom must be finite and positive')
     headroom = math.ceil(headroom_gib * GIB)
+    devices = list(devices)
+    allocator_bytes = [(0, 0)] * len(devices) if allocator_bytes is None else list(allocator_bytes)
+    if len(allocator_bytes) != len(devices):
+        raise ValueError('Every visible GPU needs matching allocator measurements')
     budgets = {}
-    for index, (total, free) in enumerate(devices):
-        if not (0 < free <= total):
-            raise ValueError('Invalid CUDA total/free memory measurement')
-        available = min(total, free) - headroom
+    for index, ((total, free), (allocated, reserved)) in enumerate(zip(devices, allocator_bytes, strict=True)):
+        available = _available_memory_bytes(total, free, allocated, reserved) - headroom
         if available <= 0:
             raise RuntimeError('A visible GPU has no memory after placement headroom')
         budgets[index] = available
@@ -169,12 +182,20 @@ def captioner_placement(headroom_gib, audit):
             raise RuntimeError('The pinned Captioner loader contract changed')
         if kwargs.get('attn_implementation') != {'text_config': 'sdpa', 'vision_config': 'sdpa'}:
             raise RuntimeError('The pinned Captioner attention contract changed')
-        devices, measurements = [], []
+        allocator_backend = torch.cuda.memory.get_allocator_backend()
+        credit_cache = allocator_backend == 'native'
+        devices, measurements, allocator_bytes = [], [], []
         for i in range(torch.cuda.device_count()):
             free, total = torch.cuda.mem_get_info(i)
+            allocated, reserved = int(torch.cuda.memory_allocated(i)), int(torch.cuda.memory_reserved(i))
             devices.append((int(total), int(free)))
+            credited = (allocated, reserved) if credit_cache else (0, 0)
+            allocator_bytes.append(credited)
             measurements.append(dict(logical_device=i, total_bytes=int(total), free_bytes=int(free),
-                allocated_bytes=int(torch.cuda.memory_allocated(i)), reserved_bytes=int(torch.cuda.memory_reserved(i))))
+                allocated_bytes=allocated, reserved_bytes=reserved,
+                unused_allocator_bytes=reserved - allocated,
+                credited_allocator_cache_bytes=credited[1] - credited[0],
+                effective_available_bytes=_available_memory_bytes(int(total), int(free), *credited)))
         from transformers.models.qwen3_5.modeling_qwen3_5 import Qwen3_5PreTrainedModel
         keep_fp32 = tuple(getattr(Qwen3_5PreTrainedModel, '_keep_in_fp32_modules_strict', ()))
         if not {'A_log', 'dt_bias'} <= set(keep_fp32):
@@ -183,9 +204,11 @@ def captioner_placement(headroom_gib, audit):
         size = checkpoint['native_weight_bytes_estimate']
         audit.update(policy='placement_only', headroom_gib=headroom_gib,
                      native_weight_bytes_estimate=size, checkpoint_header_inspection=checkpoint,
-                     device_memory=measurements, feasibility='checking')
+                     device_memory=measurements, allocator_backend=allocator_backend,
+                     capacity_basis='driver_free_plus_unused_owned_native_cache' if credit_cache else 'driver_free_only_unsupported_allocator',
+                     feasibility='checking', capacity_is_aggregate_estimate_not_fragmentation_guarantee=True)
         try:
-            budgets = memory_budgets(devices, headroom_gib, weight_bytes=size)
+            budgets = memory_budgets(devices, headroom_gib, weight_bytes=size, allocator_bytes=allocator_bytes)
         except Exception as error:
             audit.update(feasibility='failed', error_type=type(error).__name__, error=str(error))
             raise

@@ -49,14 +49,17 @@ project policy choice, not a cluster quota change.
 - The first native benchmark was stopped after the reference path failed a later
   Captioner placement check. Its successful and failed work is preserved.
   The first placement succeeded, but a later pre-load capacity check failed.
-  The saved trace does not identify the memory cause. Fatal-load stopping and
-  all-device lifecycle measurements are being added before a bounded diagnosis.
+  A bounded two-episode diagnosis reproduced the rejection and verified fatal-load
+  stopping. The model object was released, but unused allocator reserve remained
+  on two GPUs. The capacity check omitted that owned cache. A reviewed estimate
+  correction will retain the 4 GiB headroom and still require a real reload test.
 
 ## Resource state
 
-- GPU-hours used/reserved: 1.969722 / 0 of 24, including the failed allocation.
-  The stopped benchmark used 0.639167 GPU-hours; its final cancellation is reconciled.
-- GPU submissions and reservations: 5 of 16.
+- GPU-hours used/reserved: 2.523889 / 0 of 24, including the failed allocation.
+  The stopped benchmark used 0.639167 GPU-hours. The diagnosis used another
+  0.554167 GPU-hours. Both final outcomes are reconciled.
+- GPU submissions and reservations: 6 of 16.
 - CPU-only core-hours used/reserved: 3.007778 / 0 of 32.
 - Final reproduction allowance: 2.25 GPU-hours and one submission slot, based
   on the completed native pilot.
