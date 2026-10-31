@@ -1,0 +1,139 @@
+{
+  "configuration": {
+    "all_inference_parameters_and_nonempty_buffers_on_cuda": true,
+    "cameras_per_episode": 1,
+    "condition": "optimized",
+    "cpu_count": 4,
+    "cuda_runtime": "12.8",
+    "episode_ids": [
+      "homer_52",
+      "homer_50",
+      "homer_41"
+    ],
+    "execution": "staged TempSeg then Captioner, one persistent session per model",
+    "gpu_count": 3,
+    "gpu_model": "NVIDIA GeForce RTX 3090",
+    "native_model_parameters_unchanged": true,
+    "native_profile": "human",
+    "placement_headroom_gib": 4,
+    "python": "3.12.12 (main, Oct 14 2025, 21:25:31) [Clang 20.1.4 ]",
+    "quantization_or_cpu_disk_weight_offload": false,
+    "request_batch_size": 1,
+    "requested_minutes": 45,
+    "requested_ram_gib": 128,
+    "same_node": true,
+    "source_seconds": 138.767089,
+    "stages": "all",
+    "torch": "2.11.0+cu128",
+    "transformers": "5.8.1"
+  },
+  "date": "2026-10-31",
+  "evidence": {
+    "engine_independent_review_sha256": "d087e5e8138bf0542cc79e9a7bfa29756cd44fda5ec9e6294fb21d2e764cdb29",
+    "execution_contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+    "fresh_engine_summary_sha256": "1e53549fee710ecb99adafb2248fbf5dd33b32d85c6b18f912d5e3565843ce3e",
+    "full_private_archive_sha256": "2c6a8e0b99ebb24f81860c2acabd138767e4bc7769f2b879400d0b64bfe87ec8",
+    "native_independent_review_sha256": "d6fb43a9b2f2d5b0903204356c793ed7c33c88a12f0aca871380f0d7fd3a0f82",
+    "probe_receipt_sha256": "c28a0276dffa5526ea5f7afc5a1877c71bc35f5495b296658936f9128a50a2c1",
+    "resume_receipt_sha256": "d025421f3d033fffa9427ff9b9f38cf3e61ec56eb33766a406377dbe38a98a58"
+  },
+  "fidelity": {
+    "baseline": "controlled optimized native benchmark and original Gate C",
+    "frame_source_clock_prompt_and_projection_agreement": true,
+    "inference_code_unchanged_from_measured_runtime": true,
+    "matched_captions": 45,
+    "matched_native_generation_input_records": 65,
+    "model_values_dtypes_gdn_adapter_and_residency_checks_passed": true,
+    "quality_claim": false
+  },
+  "fresh_execution": {
+    "allocated_gpu_hours": 1.1316666666666666,
+    "captioner_generation_calls": 45,
+    "captioner_loads": 1,
+    "cli_workflow_seconds": 1331.4570713420399,
+    "complete_captions": 45,
+    "complete_episodes": 3,
+    "cpu_preparation": {
+      "backend_preparation_calls": 3,
+      "backend_preparation_failures": 0,
+      "backend_preparation_work_seconds": 22.700541596859694,
+      "metadata_cache_hits": 3,
+      "preparation_requests": 6,
+      "source_verification_calls": 6,
+      "source_verification_failures": 0,
+      "source_verification_work_seconds": 0.15586415212601423
+    },
+    "cpu_work_is_not_additive_wall_time": true,
+    "decoded_frame_cache": {
+      "entries": 43,
+      "evictions": 2548,
+      "hits": 241,
+      "max_bytes": 268435456,
+      "max_entries": 4096,
+      "misses": 2591,
+      "peak_retained_bytes": 268429152,
+      "retained_bytes": 267494400
+    },
+    "engine_wall_seconds": 1331.2334612291306,
+    "failed_stages": 0,
+    "fresh_stage_attempts": 6,
+    "generation_calls": 65,
+    "gpu_memory": [
+      {
+        "allocated_at_end_bytes": 9568256,
+        "logical_device": 0,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 22448999424,
+        "peak_reserved_bytes": 24928845824,
+        "total_memory_bytes": 25296044032
+      },
+      {
+        "allocated_at_end_bytes": 8519680,
+        "logical_device": 1,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 23959430144,
+        "peak_reserved_bytes": 24905777152,
+        "total_memory_bytes": 25296044032
+      },
+      {
+        "allocated_at_end_bytes": 8519680,
+        "logical_device": 2,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 24360223744,
+        "peak_reserved_bytes": 24800919552,
+        "total_memory_bytes": 25296044032
+      }
+    ],
+    "probe_workflow_seconds": 1354.7096476457082,
+    "resumed_stages": 0,
+    "retried_stages": 0,
+    "scheduler_elapsed_seconds": 1358,
+    "scheduler_exit_code": "0:0",
+    "scheduler_status": "COMPLETED",
+    "tempseg_generation_calls": 20,
+    "tempseg_loads": 1,
+    "timing_limits": "Engine includes preparation, inference, exports and cleanup. CLI also includes setup but ends before final summary writing/SQLite close. Probe includes its own validation and instrumentation. Allocation includes probe, CPU-only resume and idle/cleanup time. These are nested, not additive, and not a new controlled speedup comparison."
+  },
+  "limits": [
+    "Validation covers these three short human single-view videos, with staged execution and batch size one.",
+    "Multi-camera profiles, longer or larger inputs, and simultaneous model residency are not validated.",
+    "Native output agreement establishes compatibility; independent visual or human annotation quality is not established.",
+    "The bounded two-request batch matched native captions but failed its required memory reserve; production batching stays disabled.",
+    "Adaptive final evaluation was not admitted under the frozen runtime projection; no held-out quality claim is made."
+  ],
+  "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+  "resume": {
+    "allocation_cost_already_included_in_parent": true,
+    "cloned_attempts_unchanged": true,
+    "counts_as_fresh_inference": false,
+    "fresh_stage_attempts": 0,
+    "method": "Isolated SQLite backup and copied exports; exact native engine invoked with GPUs hidden",
+    "new_model_load_or_generation_events": 0,
+    "original_evidence_unchanged": true,
+    "receipt_elapsed_seconds": 0.9850037600845098,
+    "resumed_stages": 6
+  },
+  "resume_verifier_commit": "aad9dcfa7ee0ec398e007ad3766a2441d6337602",
+  "schema_version": "bir_final_reproduction_report_v1",
+  "status": "fresh_native_reproduction_and_resume_verified"
+}

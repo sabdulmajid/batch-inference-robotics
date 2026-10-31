@@ -4,7 +4,9 @@ Updated: 2026-10-31
 
 ## Current state
 
-Implementation is in progress from planning commit `459f49d`.
+The native batch-one research release is implemented and independently verified.
+It follows planning commit `459f49d`. See the [final report](FINAL_REPORT.md) for
+the delivered scope, measured results, reproduction commands, and limits.
 The installed WATcloud skill and account reference were read. Current SSH,
 account association, scheduler, and storage access were checked. No old expiry
 notice was treated as a current failure.
@@ -81,32 +83,39 @@ project policy choice, not a cluster quota change.
   0.37–0.46 GiB per GPU, below the predeclared 2 GiB reserve. Stress and collector
   tests were skipped; no batch admission was written. Native batch size one
   remains the default. See [the calibration result](BATCH_CALIBRATION.md#gpu-calibration-result).
-- The protected final reproduction is running. It uses fresh state for all
-  three original native episodes, followed by an isolated cache-only resume.
+- The protected final reproduction passed. All three original episodes completed
+  in fresh state, with 45 captions and all 65 model inputs matching the optimized
+  benchmark and Gate C. The isolated CPU resume reused six stages with zero
+  new attempts, preparation, model loads, or generation. Original evidence
+  remained unchanged. Independent engine and native reviews passed.
+  See [the reproduction evidence](../reports/final-reproduction.json).
 
 ## Resource state
 
-- GPU-hours used/reserved: 7.641389 / 2.25 of 24, including failed allocations.
+- GPU-hours used/reserved: 8.773056 / 0 of 24, including failed allocations.
   The stopped benchmark used 0.639167 GPU-hours. The diagnosis used another
   0.554167 GPU-hours, and the successful reload used 0.763333 GPU-hours.
   The successful full benchmark used another 3.5 GPU-hours.
   Adaptive development used 0.715833 GPU-hours.
   Batch calibration used 0.138333 GPU-hours.
+  Final reproduction, including its CPU-only resume, used 1.131667 GPU-hours.
   All completed allocation outcomes are reconciled.
 - GPU submissions and reservations: 11 of 16.
 - CPU-only core-hours used/reserved: 3.007778 / 0 of 32.
-- The final reproduction uses its protected 2.25 GPU-hour allowance and one
-  submission slot. These are included in the reserved total and 11 slots above,
-  not additional costs. The bound is based on the completed native pilot.
-- Measured remote persistent footprint: 128.933 GiB. Task-owned local caches
-  and environments add about 1.179 GiB. Both fit the 250 GiB project cap.
+- All 15 parent allocations are reconciled: 12 completed, two failed, and one
+  was cancelled during diagnosis. No project jobs or reservations remain.
+- The final reproduction fulfilled its protected allowance. Unused reserved
+  time is released and is not counted as allocated use.
+- Combined measured remote and local project storage is about 130.13 GiB,
+  below the 250 GiB cap. See [the resource closure report](../reports/resources.json)
+  for exact totals, measurement times, and CPU accounting boundaries.
 - A durable coordinator marker and private operational ledger are established.
 
 ## Next actions
 
-Verify the protected fresh native reproduction and resume check. Then reconcile
-all resources, independently review the delivery, and publish the final report.
-No further optional experiment is planned.
+The verified native path is ready for continued research within its documented
+configuration. No further experiment is scheduled. Larger batches, additional
+profiles, and held-out adaptive quality require a separately planned extension.
 
 Private records retain exact job IDs, connection settings, output paths, skill
 hashes, and scheduler output. Public reports contain sanitized measurements.

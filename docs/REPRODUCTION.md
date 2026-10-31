@@ -123,3 +123,85 @@ operational records privately. Publish only reviewed, sanitized measurements.
 
 A final adaptive experiment requires frozen splits, evaluator, spatial presets,
 routing rule, and quality margin. The planned protocol is not a measured result.
+
+## 5. Verified release reproduction
+
+The final reproduction completed with three same-node RTX 3090 GPUs, four CPUs,
+128 GiB requested RAM, 20 GiB temporary disk, and a 45-minute limit. Its parent
+allocation completed in 1,358 seconds with exit code zero. It produced 45 native
+captions and then resumed six stages without new inference. See
+[the reproduction receipt](../reports/final-reproduction.json) and
+[the complete release report](FINAL_REPORT.md).
+
+The commands below express the executed path with portable project variables.
+They require the existing prepared environment, pinned upstream source, models,
+and initial manifest from sections 1–2. The coordinator must reserve the full
+allocation cost before submission, disable requeue, and preserve scheduler GPU
+visibility. These commands do not submit a job.
+
+Create immutable source trees from the repository history. Use new directories;
+do not overwrite an existing experiment:
+
+```bash
+export BIR_NATIVE_CODE="$BIR_PROJECT_ROOT/native-release"
+export BIR_RESUME_CODE="$BIR_PROJECT_ROOT/resume-release"
+mkdir "$BIR_NATIVE_CODE" "$BIR_RESUME_CODE"
+git -C "$BIR_PROJECT_ROOT/code" archive \
+  d2701b08a08b88d18887abed81f71c8373478d7b | tar -x -C "$BIR_NATIVE_CODE"
+git -C "$BIR_PROJECT_ROOT/code" archive \
+  aad9dcfa7ee0ec398e007ad3766a2441d6337602 | tar -x -C "$BIR_RESUME_CODE"
+```
+
+The second tree supplies the corrected resume verification helper. Its native
+inference modules are byte-identical to the first tree. Inside the authorized
+GPU allocation, run:
+
+```bash
+set -euo pipefail
+test "${SLURM_RESTART_COUNT:-0}" = 0
+export PATH="$BIR_PROJECT_ROOT/venv/bin:$PATH"
+export PYTHONPATH="$BIR_NATIVE_CODE/src"
+export PYTHONUNBUFFERED=1
+export HF_HOME="$BIR_PROJECT_ROOT/cache/huggingface"
+export FLORA_MODEL_CACHE="$BIR_PROJECT_ROOT/models"
+export HF_HUB_OFFLINE=1
+export HF_HUB_DISABLE_TELEMETRY=1
+export HF_HUB_DISABLE_XET=1
+export XDG_CACHE_HOME="$BIR_PROJECT_ROOT/cache"
+export OMP_NUM_THREADS=4
+export TOKENIZERS_PARALLELISM=false
+export BIR_REPRO_STATE="$BIR_PROJECT_ROOT/runs/reproduce"
+export BIR_REPRO_PROBE="$BIR_PROJECT_ROOT/ops/reproduce"
+export BIR_REPRO_RESUME="$BIR_PROJECT_ROOT/ops/reproduce-resume"
+test ! -e "$BIR_REPRO_STATE"
+test ! -e "$BIR_REPRO_PROBE"
+test ! -e "$BIR_REPRO_RESUME"
+cd "$BIR_NATIVE_CODE"
+
+python "$BIR_NATIVE_CODE/scripts/native_probe.py" \
+  --source-root "$BIR_PROJECT_ROOT/Flora" \
+  --manifest "$BIR_PROJECT_ROOT/datasets/initial/jobs.jsonl" \
+  --state-dir "$BIR_REPRO_STATE" --output-dir "$BIR_REPRO_PROBE" \
+  --stages all --condition optimized
+
+python "$BIR_RESUME_CODE/scripts/verify_native_resume.py" \
+  --python "$BIR_PROJECT_ROOT/venv/bin/python" --code-root "$BIR_NATIVE_CODE" \
+  --source-root "$BIR_PROJECT_ROOT/Flora" \
+  --manifest "$BIR_PROJECT_ROOT/datasets/initial/jobs.jsonl" \
+  --state-dir "$BIR_REPRO_STATE" \
+  --gate-c-marker "$BIR_REPRO_PROBE/probe-summary.json" \
+  --output-dir "$BIR_REPRO_RESUME"
+```
+
+Expected evidence is `probe-summary.json` with `native_caption_gate=true`,
+`fresh_inference=true`, and `complete_caption_count=45`; six complete first
+stage attempts in the engine summary; and `receipt.json` in the resume directory
+with `resumed_stages=6`, `fresh_stage_attempts=0`, and
+`original_evidence_unchanged=true`. Verify the final scheduler state separately.
+The resume subprocess hides GPUs, but its time remains inside the parent GPU
+allocation and is counted there once.
+
+The controlled performance command is in [NATIVE_BENCHMARK.md](NATIVE_BENCHMARK.md).
+The frozen adaptive result and rejected final projection are in
+[ADAPTIVE_RESULTS.md](ADAPTIVE_RESULTS.md). Do not treat a cache-only resume,
+an unadmitted batch, or an estimated final runtime as fresh inference evidence.

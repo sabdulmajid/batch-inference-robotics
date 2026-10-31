@@ -6,20 +6,18 @@ work items, saves segmentation before captioning, and resumes completed work.
 For example, a researcher can annotate several short manipulation videos and
 resume after a worker stops without repeating completed segments.
 
-**Status:** the complete native pipeline passed on three single-view human
-videos. TempSeg used one RTX 3090; Captioner used three on one node. It exported
-45 captions and resumed all six completed stages without new inference. The
-model reload correction also passed on two videos, with 30 captions that exactly
-matched the prior native outputs. In one three-video benchmark, optimized
-execution used 10.7% less subprocess wall time than reference, with all 45 captions
-unchanged. Adaptive development also completed. Its compact policy produced the
-same seven captions in 7.94% less interval-policy time. Final evaluation was not
-admitted because its estimated runtime exceeded the frozen limit. Held-out
-quality remains unvalidated. See [the adaptive result and limits](docs/ADAPTIVE_RESULTS.md).
-See [current status](docs/STATUS.md) and
-[native end-to-end evidence](reports/native-end-to-end.json), plus
-[reload verification](reports/native-reload-verification.json).
-See the [measured benchmark and its limits](docs/NATIVE_BENCHMARK.md).
+**Verified research release:** the complete native pipeline was reproduced on
+three single-view human videos using three same-node RTX 3090 GPUs. All 45
+captions and model inputs matched the reference. Resume reused all six stages
+without new inference. Optimized execution used 10.7% less wall time in one
+controlled trial.
+
+The supported path remains batch one. A two-request probe matched native
+captions but failed the required memory reserve. Adaptive development completed;
+held-out evaluation was not admitted under its frozen runtime limit. Annotation
+quality remains limited to the reported AI text-reference evaluations.
+See the [final report, evidence, and limits](docs/FINAL_REPORT.md),
+[reproduction commands](docs/REPRODUCTION.md), and [current status](docs/STATUS.md).
 
 ## Local checks
 
@@ -60,8 +58,8 @@ Repeat the same run command to resume. Use a different run directory for each
 benchmark condition: `reference`, `persistent`, or `optimized`. `reference`
 loads a new session per episode. `persistent` retains each model for its stage.
 `optimized` also enables bounded decoded-frame reuse and CPU input preparation.
-Only batch size one is enabled until real GPU measurements establish a safe
-larger batch.
+Only batch size one is enabled. The bounded two-request GPU probe did not
+establish the required memory reserve.
 
 The native environment requires the separate pinned dependencies in
 [configs/requirements-native.txt](configs/requirements-native.txt). Set

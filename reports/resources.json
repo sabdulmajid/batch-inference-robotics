@@ -1,0 +1,632 @@
+{
+  "accounting_rule": "Count each owned parent allocation attempt once. Multiply full elapsed seconds by granted GPUs or CPU-only cores. Do not add batch, extern or srun steps. Failed, cancelled, startup and idle allocations remain charged.",
+  "aggregate": {
+    "active_cpu_only_reservations_or_submissions": 0,
+    "active_gpu_reservations_or_submissions": 0,
+    "completed_cpu_only_allocations": 4,
+    "completed_gpu_allocations": 11,
+    "completed_parent_attempts": 15,
+    "completed_parent_outcomes": {
+      "CANCELLED": 1,
+      "COMPLETED": 12,
+      "FAILED": 2
+    },
+    "cpu_only_core_hour_cap": 32,
+    "failed_or_cancelled_and_other_noncompleted_gpu_hours": 1.3394444444444444,
+    "final_reproduction_recorded_gpu_hour_allowance": 2.25,
+    "final_reproduction_recorded_slot_allowance": 1,
+    "gpu_coallocated_cpu_core_hours_completed_informational": 12.387222222222222,
+    "gpu_coallocated_cpu_core_hours_reserved_informational": 0.0,
+    "gpu_hour_cap": 24,
+    "gpu_submission_cap": 16,
+    "gpu_submissions_and_reservations": 11,
+    "release_completed_gpu_hours": 1.1316666666666666,
+    "release_original_reservations_gpu_hours": 2.25,
+    "release_submission_slots_already_assigned": 1,
+    "release_unused_reserved_gpu_hours_released": 1.1183333333333334,
+    "remaining_gpu_hours_after_actual_reservations_and_unassigned_reproduction_hold": 15.226944444444444,
+    "remaining_gpu_submission_slots_after_actual_reservations_and_unassigned_reproduction_hold": 5,
+    "reserved_cpu_only_core_hours": 0.0,
+    "reserved_gpu_hours": 0.0,
+    "unassigned_protected_reproduction_gpu_hours": 0.0,
+    "unassigned_protected_reproduction_slots": 0,
+    "used_cpu_only_core_hours": 3.007777777777777,
+    "used_gpu_hours": 8.773055555555556
+  },
+  "artifact_acceptance": {
+    "release_allocation_completed": true,
+    "reviews": {
+      "engine": {
+        "sha256": "d087e5e8138bf0542cc79e9a7bfa29756cd44fda5ec9e6294fb21d2e764cdb29",
+        "status": "passed"
+      },
+      "native": {
+        "sha256": "d6fb43a9b2f2d5b0903204356c793ed7c33c88a12f0aca871380f0d7fd3a0f82",
+        "status": "passed"
+      }
+    },
+    "scheduler_accounting_complete": true,
+    "status": "both_independent_reproduction_reviews_passed"
+  },
+  "cpu_interpretation": "The 32-core-hour cap applies to CPU-only allocations. CPU cores granted inside GPU allocations are reported separately as informational allocated core-hours. They are not omitted from observation or added to the CPU-only budget.",
+  "findings": [],
+  "generated_utc": "2026-10-31T21:34:17.285197+00:00",
+  "incomplete_phases": [],
+  "ledger_snapshot_content_sha256": "7ed2d0d7bfa0a4ddf31cc9c19887d48354b8a93751dfb62699ae26c79dd02c78",
+  "pending": [],
+  "phases": [
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 2.752222222222222,
+      "completed_gpu_hours": 0.0,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.0,
+          "allocated_gpus": 0,
+          "cpu_only_core_hours": 2.752222222222222,
+          "elapsed_seconds": 2477,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.0,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "model_dataset_environment_preparation",
+      "phase_ordinal": 1,
+      "requested_cpus": 4,
+      "requested_gpus": 0,
+      "requested_host_ram_gib": 32,
+      "requested_minutes": 120,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "cpu"
+    },
+    {
+      "budget_phase": "framework_smoke",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 0.01138888888888889,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 2,
+          "allocated_gpu_hours": 0.01138888888888889,
+          "allocated_gpus": 1,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 41,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.02277777777777778,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "framework_gpu_smoke",
+      "phase_ordinal": 2,
+      "requested_cpus": 2,
+      "requested_gpus": 1,
+      "requested_host_ram_gib": 8,
+      "requested_minutes": 15,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "native_probe",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 0.1461111111111111,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.1461111111111111,
+          "allocated_gpus": 1,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 526,
+          "exit_code": "1:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.5844444444444444,
+          "parent_state": "FAILED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "initial_tempseg_diagnostic",
+      "phase_ordinal": 3,
+      "requested_cpus": 4,
+      "requested_gpus": 1,
+      "requested_host_ram_gib": 32,
+      "requested_minutes": 60,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 0.23777777777777778,
+      "completed_gpu_hours": 0.0,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.0,
+          "allocated_gpus": 0,
+          "cpu_only_core_hours": 0.23777777777777778,
+          "elapsed_seconds": 214,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.0,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "initial_evaluation_input_preparation",
+      "phase_ordinal": 4,
+      "requested_cpus": 4,
+      "requested_gpus": 0,
+      "requested_host_ram_gib": 16,
+      "requested_minutes": 30,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "cpu"
+    },
+    {
+      "budget_phase": "native_probe",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 0.10972222222222222,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.10972222222222222,
+          "allocated_gpus": 1,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 395,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.4388888888888889,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "native_tempseg_verification",
+      "phase_ordinal": 5,
+      "requested_cpus": 4,
+      "requested_gpus": 1,
+      "requested_host_ram_gib": 32,
+      "requested_minutes": 60,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "native_probe",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 1.0633333333333332,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 1.0633333333333332,
+          "allocated_gpus": 3,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 1276,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 1.4177777777777778,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "native_captioner_end_to_end_gate",
+      "phase_ordinal": 6,
+      "requested_cpus": 4,
+      "requested_gpus": 3,
+      "requested_host_ram_gib": 128,
+      "requested_minutes": 60,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 0.01611111111111111,
+      "completed_gpu_hours": 0.0,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 2,
+          "allocated_gpu_hours": 0.0,
+          "allocated_gpus": 0,
+          "cpu_only_core_hours": 0.01611111111111111,
+          "elapsed_seconds": 29,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.0,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "frozen_adaptive_input_preparation",
+      "phase_ordinal": 7,
+      "requested_cpus": 2,
+      "requested_gpus": 0,
+      "requested_host_ram_gib": 8,
+      "requested_minutes": 15,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "cpu"
+    },
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 0.0016666666666666668,
+      "completed_gpu_hours": 0.0,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 2,
+          "allocated_gpu_hours": 0.0,
+          "allocated_gpus": 0,
+          "cpu_only_core_hours": 0.0016666666666666668,
+          "elapsed_seconds": 3,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.0,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "native_cache_only_resume_verification",
+      "phase_ordinal": 8,
+      "requested_cpus": 2,
+      "requested_gpus": 0,
+      "requested_host_ram_gib": 8,
+      "requested_minutes": 5,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "cpu"
+    },
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 0.6391666666666667,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.6391666666666667,
+          "allocated_gpus": 3,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 767,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.8522222222222222,
+          "parent_state": "CANCELLED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "initial_native_benchmark",
+      "phase_ordinal": 9,
+      "requested_cpus": 4,
+      "requested_gpus": 3,
+      "requested_host_ram_gib": 128,
+      "requested_minutes": 120,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 0.5541666666666667,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.5541666666666667,
+          "allocated_gpus": 3,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 665,
+          "exit_code": "1:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.7388888888888889,
+          "parent_state": "FAILED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "native_lifecycle_diagnostic",
+      "phase_ordinal": 10,
+      "requested_cpus": 4,
+      "requested_gpus": 3,
+      "requested_host_ram_gib": 128,
+      "requested_minutes": 30,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 0.7633333333333333,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.7633333333333333,
+          "allocated_gpus": 3,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 916,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 1.0177777777777777,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "native_reload_verification",
+      "phase_ordinal": 11,
+      "requested_cpus": 4,
+      "requested_gpus": 3,
+      "requested_host_ram_gib": 128,
+      "requested_minutes": 30,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 3.5,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 3.5,
+          "allocated_gpus": 3,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 4200,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 4.666666666666667,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "completed_native_benchmark",
+      "phase_ordinal": 12,
+      "requested_cpus": 4,
+      "requested_gpus": 3,
+      "requested_host_ram_gib": 128,
+      "requested_minutes": 120,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "required",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 0.7158333333333333,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.7158333333333333,
+          "allocated_gpus": 3,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 859,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.9544444444444444,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "adaptive_development",
+      "phase_ordinal": 13,
+      "requested_cpus": 4,
+      "requested_gpus": 3,
+      "requested_host_ram_gib": 128,
+      "requested_minutes": 30,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "optional",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 0.13833333333333334,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 0.13833333333333334,
+          "allocated_gpus": 3,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 166,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 0.18444444444444444,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "caption_microbatch_calibration",
+      "phase_ordinal": 14,
+      "requested_cpus": 4,
+      "requested_gpus": 3,
+      "requested_host_ram_gib": 128,
+      "requested_minutes": 40,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    },
+    {
+      "budget_phase": "release",
+      "completed_cpu_only_core_hours": 0.0,
+      "completed_gpu_hours": 1.1316666666666666,
+      "final_scheduler_reconciliation_pending": false,
+      "ledger_state": "reconciled",
+      "outstanding_cpu_only_core_hour_reservation": 0.0,
+      "outstanding_gpu_hour_reservation": 0.0,
+      "parent_attempts": [
+        {
+          "allocated_cpus": 4,
+          "allocated_gpu_hours": 1.1316666666666666,
+          "allocated_gpus": 3,
+          "cpu_only_core_hours": 0.0,
+          "elapsed_seconds": 1358,
+          "exit_code": "0:0",
+          "gpu_coallocated_cpu_core_hours_informational": 1.508888888888889,
+          "parent_state": "COMPLETED",
+          "restart_index": 0,
+          "saved_parent_record_matches": true
+        }
+      ],
+      "phase": "final_reproduction",
+      "phase_ordinal": 15,
+      "requested_cpus": 4,
+      "requested_gpus": 3,
+      "requested_host_ram_gib": 128,
+      "requested_minutes": 45,
+      "requested_tmpdisk_mib": 20480,
+      "resource_kind": "gpu"
+    }
+  ],
+  "policy_sha256": "de7cd8a5383dcc54557d5df6b526accd685e5a3faf6b8679836a46b996078e03",
+  "queue_observation": {
+    "coordinator_reports_no_user_queue_jobs": true,
+    "limit": "The coordinator reports an empty user queue at this observation. This is separate from the exact project ledger, which has no active reservations. Saved combined output has no queue rows; it does not provide a separate command receipt.",
+    "observed_utc": "2026-10-31T21:28:05+00:00"
+  },
+  "read_method": "One read-only SQLite transaction with query_only enabled. No ledger mutation or scheduler action.",
+  "reservation_interpretation": "The reproduction allowance is an earmark, not an allocation. A real release reservation consumes that earmark and slot. After terminal reconciliation, count actual elapsed allocation time and release unused requested time. The ledger retains its historical allowance metadata; do not count it again as an active reservation. Completion of the allocation fulfills the resource reservation, while artifact acceptance remains a separate gate. This report does not authorize further optional work.",
+  "scheduler_outcome_limit": "Scheduler COMPLETED is an allocation outcome, not proof of an application gate. In particular, the calibration completed but did not produce a batch admission; final reproduction also needs artifact verification.",
+  "schema_version": "bir_resource_delivery_draft_v1",
+  "source_receipts": [
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "472dbd81441e88965ca3f9f7d18271b99f6a45ddc1b5b22c16394be6bcd82a21"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "45c03590420824986d3b0c80272a08c794f9f4cb4866cbf06782e78efb38ab6c"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "527f04dc4d57388e433d27980f1ab9cb9e57362527b1ef2e7c84e5ba21611393"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "a3f0245b7130d597f4761dd2c3ce1bccfa6a3a5735a3f538ad884987d6d6a1a7"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "3ce817bbfef45a37d57e52b6b3ad604aa14eb4efcf53900d805bd22d1940a265"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "905c787210a8e5658a8f0bfd0fcab5d784d93d489817d97e6b6937bf577eb60b"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "ae6f8daf5f1154900ebf75cab84491833c00e50babc8abd20d3c1bb806f754f3"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "e0548f57e514ee5be6bef1d8d5c2607edacd4c3ca84ab60c6f55dd29926cfcca"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "e69ad203ce2f27f8734ff4ce400b0d801a0fc512442cceaeeed8e2b8ee66a04b"
+    },
+    {
+      "kind": "saved_scheduler_parent_records",
+      "sha256": "b6448d1950d883183f5e11a7676fea9636943793c5d7f2a26a973acdf78396e3"
+    },
+    {
+      "kind": "saved_storage_admission",
+      "sha256": "a9f3a2816eda1d5d1a5fe4ebdf409ff913ed509fec41445dc0f0d93a8689fc37"
+    },
+    {
+      "kind": "saved_storage_preflight",
+      "sha256": "9402da7dfb49c2f30913736ef5710d1b851a22879aee5c742acea3093e4a9516"
+    },
+    {
+      "kind": "final_remote_storage_and_queue_observation",
+      "sha256": "f96c4474e815ccc4fe0a108bf5b6542903e54bc771d010fa1fab08b7da421793"
+    },
+    {
+      "kind": "coordinator_local_storage_measurement",
+      "sha256": "465af8b7fde10715f8c8cc2b5b4d397bea7444c31f894c7e9a7571bb01fdd9d4"
+    },
+    {
+      "kind": "native_reproduction_review",
+      "sha256": "d6fb43a9b2f2d5b0903204356c793ed7c33c88a12f0aca871380f0d7fd3a0f82"
+    },
+    {
+      "kind": "engine_reproduction_review",
+      "sha256": "d087e5e8138bf0542cc79e9a7bfa29756cd44fda5ec9e6294fb21d2e764cdb29"
+    }
+  ],
+  "status": "final_resource_accounting_verified",
+  "storage": {
+    "combined_recorded_footprint_bytes": 139723902497,
+    "combined_recorded_footprint_gib": 130.12802460882813,
+    "coordinator_recorded_original_checkout_bytes": 3256320,
+    "coordinator_recorded_whole_local_task_directory_bytes": 1276506112,
+    "current_check_allowed": true,
+    "filesystem_available_bytes": 9038643331072,
+    "filesystem_total_bytes": 47936572489728,
+    "headroom_scope": "remaining_planned_new_project_bytes",
+    "limit": "Remote size and filesystem availability are saved observations. Local sizes were measured by the coordinator and include all task environments, caches and evidence plus the original checkout, including pre-existing Git data conservatively. The coordinator refreshed these local sizes after final evidence extraction. Later writes are not part of this point-in-time measurement. Filesystem availability is not a personal quota or reserved allocation. The replaced whole-filesystem 20-percent rule is not used.",
+    "local_measurement_utc": "2026-10-31T21:34:17.208528+00:00",
+    "minimum_available_to_planned_new_bytes_ratio": 1.2,
+    "new_project_cap_bytes": 268435456000,
+    "planned_combined_project_bytes": 193273528320,
+    "remaining_planned_new_bytes": 53549625823,
+    "remaining_project_storage_cap_bytes": 128711553503,
+    "remote_measurement_utc": "2026-10-31T21:28:05+00:00",
+    "remote_project_bytes": 138444140065,
+    "required_available_bytes_for_remaining_writes": 64259550988,
+    "saved_calibration_storage_check_recomputed": true
+  },
+  "submission_audit": {
+    "all_completed_parent_records_match_saved_scheduler_evidence": true,
+    "all_current_ledger_restart_indices_zero": true,
+    "attached_allocation_events": 15,
+    "begin_submission_events": 15,
+    "parent_attempt_keys_unique": true,
+    "reconciled_allocation_events": 15,
+    "reserve_events": 15,
+    "restart_limit": "Saved duplicate-history records for early allocations and later final parent records show no extra attempt. Installed scheduler fields lack RestartCnt. This audit cannot prove absence of an unsaved restart or unrelated shared-account job."
+  }
+}
