@@ -6,10 +6,12 @@ work items, saves segmentation before captioning, and resumes completed work.
 For example, a researcher can annotate several short manipulation videos and
 resume after a worker stops without repeating completed segments.
 
-**Status:** native TempSeg passed on three single-view human videos using one
-RTX 3090. Captioner is queued for a faithful three-GPU test. Full annotation,
-performance, and adaptive quality remain unvalidated. See
-[current status](docs/STATUS.md) and [TempSeg evidence](reports/native-tempseg.json).
+**Status:** the complete native pipeline passed on three single-view human
+videos. TempSeg used one RTX 3090; Captioner used three on one node. It exported
+45 captions and resumed all six completed stages without new inference. The
+matched performance benchmark is running; adaptive quality is not yet measured.
+See [current status](docs/STATUS.md) and
+[native end-to-end evidence](reports/native-end-to-end.json).
 
 ## Local checks
 

@@ -1,0 +1,230 @@
+{
+  "complete_caption_count": 45,
+  "complete_episode_count": 3,
+  "date": "2026-10-31",
+  "episodes": [
+    {
+      "caption_artifact_sha256": "f016d025d533d714d753edbafd3a5a0edd3f55e5bdd07abd165f5abf2b030f26",
+      "complete_captions": 10,
+      "duration_s": 37.985378,
+      "episode_id": "homer_52",
+      "request_id": "ab39c44ac1d9c08f2827982de7b3ffa7b516b5b5e08a3564ebe3e2d23e360855",
+      "segment_artifact_sha256": "76ba3b5e44d8d5278c7f8f4b08e5a861a8db32fc433a713492ea1928ddd4eae9",
+      "segments": 10,
+      "source_sha256": "998f86d8a6443d44a8367f2a10377ebdd84404ff80810b99a5fa792de74f8f6e"
+    },
+    {
+      "caption_artifact_sha256": "c4187fa424eab156b9fdf299dffeca52ac1a7e70599969e2fa3e174a98165c86",
+      "complete_captions": 20,
+      "duration_s": 46.481711,
+      "episode_id": "homer_50",
+      "request_id": "46d0c426c84402ed3482007ba0187951fbd28697936b0b9cdacd2ae16bdf123d",
+      "segment_artifact_sha256": "9482195148c69f8c7b55623027d10fec1d0ed75fe9df55ac8214939149d24e3a",
+      "segments": 20,
+      "source_sha256": "aa65a465999a9d3198839e71bfc8569b78a51cb0ee63e5661b829d3a44f7e359"
+    },
+    {
+      "caption_artifact_sha256": "17fff994f7cea509168e82d92bba1a5fd2d46a6087b38c19319f5ebc4d5c9f2a",
+      "complete_captions": 15,
+      "duration_s": 54.3,
+      "episode_id": "homer_41",
+      "request_id": "512e098a952f9052a21d501a2a2fdfaa933cdc38906f229085928ca6da41b71f",
+      "segment_artifact_sha256": "1fdd2d4e7faaf8f6a6c9aecae71cb09257cacdf25748810de3111f3815cea2c3",
+      "segments": 15,
+      "source_sha256": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+    }
+  ],
+  "evidence_sha256": {
+    "captioner_probe": "7562267ca991b0aacd928b9553af3b2b1faa6b2d410c0aa4f4416dc3545399f8",
+    "captioner_runtime_log": "65f3b5ce1d13dcb1e609416b0b12b444865a1aebfa1fa3cd5dfd3a1d1ccd9b5b",
+    "resume_receipt": "f8f9fa0dad00348f4a7db879e85450ab28ffd0bbc92c9e64705c76ed41339ac4",
+    "scheduler_final_records": "e0548f57e514ee5be6bef1d8d5c2607edacd4c3ca84ab60c6f55dd29926cfcca"
+  },
+  "hardware": {
+    "captioner": {
+      "batch_step_max_rss_gib": 110.6621322631836,
+      "batch_step_max_rss_kib": 116037656,
+      "gpu_count": 3,
+      "gpu_memory": [
+        {
+          "allocated_at_end_bytes": 9568256,
+          "logical_device": 0,
+          "name": "NVIDIA GeForce RTX 3090",
+          "peak_allocated_bytes": 22447195648,
+          "peak_allocated_gib": 20.905580043792725,
+          "peak_reserved_bytes": 24939331584,
+          "peak_reserved_gib": 23.2265625,
+          "total_memory_bytes": 25296044032
+        },
+        {
+          "allocated_at_end_bytes": 8519680,
+          "logical_device": 1,
+          "name": "NVIDIA GeForce RTX 3090",
+          "peak_allocated_bytes": 23959430144,
+          "peak_allocated_gib": 22.313958168029785,
+          "peak_reserved_bytes": 24905777152,
+          "peak_reserved_gib": 23.1953125,
+          "total_memory_bytes": 25296044032
+        },
+        {
+          "allocated_at_end_bytes": 8519680,
+          "logical_device": 2,
+          "name": "NVIDIA GeForce RTX 3090",
+          "peak_allocated_bytes": 24360223744,
+          "peak_allocated_gib": 22.68722629547119,
+          "peak_reserved_bytes": 24792530944,
+          "peak_reserved_gib": 23.08984375,
+          "total_memory_bytes": 25296044032
+        }
+      ],
+      "gpu_model": "NVIDIA GeForce RTX 3090",
+      "host_memory_note": "Scheduler MaxRSS measures host RAM, not GPU memory.",
+      "requested_host_ram_gib": 128,
+      "same_node": true
+    },
+    "tempseg": {
+      "gpu_count": 1,
+      "gpu_model": "NVIDIA GeForce RTX 3090"
+    }
+  },
+  "native_verification": {
+    "all_parameters_and_nonempty_buffers_on_cuda": true,
+    "both_stage_audits_passed": true,
+    "caption_interval_order_matches_segmentation": true,
+    "captioner_device_map_sha256": "ee56a2d4ae64fe6ba39775246657c0b2ca55daf35e084b9bfb82610a8b28030d",
+    "captioner_gated_deltanet_fp32_tensors": 96,
+    "captioner_generation_calls": 45,
+    "captioner_loading_errors": 0,
+    "captioner_loading_mismatched_keys": 0,
+    "captioner_loading_missing_keys": 0,
+    "captioner_loading_unexpected_keys": {
+      "count": 256,
+      "scope": "Only upstream _extra_state entries; no unexpected parameter keys"
+    },
+    "captioner_model_loads_for_three_episodes": 1,
+    "captioner_parameter_bytes_by_device": {
+      "cuda:0": 16407404128,
+      "cuda:1": 19031447424,
+      "cuda:2": 19274614784
+    },
+    "captioner_parameter_dtype_tensor_counts": {
+      "torch.bfloat16": 1088,
+      "torch.float32": 96
+    },
+    "gated_deltanet_checkpoint_values_exact": true,
+    "reference_vs_optimized_output_agreement": "not yet measured",
+    "segmentation_artifacts_unchanged": true,
+    "tempseg_adapter_merged": false,
+    "tempseg_adapter_persistent_dtype": "torch.float32",
+    "tempseg_saved_adapter_values_exact_before_and_after_placement": true
+  },
+  "project_accounting_after_this_gate": {
+    "gpu_hours_include_prior_failed_allocation": true,
+    "later_reservations": "Tracked separately in the coordinator ledger",
+    "maximum_cpu_only_core_hours": 32,
+    "maximum_gpu_hours": 24,
+    "used_cpu_only_core_hours": 3.0077777777777777,
+    "used_gpu_hours": 1.3305555555555555
+  },
+  "remaining_validation": [
+    "Controlled native reference/persistent/optimized performance comparison.",
+    "GPU microbatch admission and native batch-one agreement. CPU pair preparation alone is insufficient.",
+    "Independent AI reference-event review; no caption-quality result is claimed here.",
+    "Frozen adaptive development and final evaluation. No adaptive benefit is established.",
+    "Other GPU configurations, longer videos, and other input profiles remain unvalidated."
+  ],
+  "resume": {
+    "all_six_stage_artifact_hashes_unchanged": true,
+    "allocated_cpu_core_hours": 0.0016666666666666668,
+    "allocated_cpu_count": 2,
+    "allocation_elapsed_seconds": 3,
+    "allocation_exit_code": "0:0",
+    "allocation_final_state": "COMPLETED",
+    "application_workflow_seconds": 2.0862008878029883,
+    "checkpoint_attempts_unchanged": true,
+    "cli_workflow_seconds": 0.6354283709079027,
+    "fresh_stage_attempts": 0,
+    "generation_events": 0,
+    "hardware": "CPU only",
+    "isolated_state_backup": true,
+    "model_load_events": 0,
+    "original_evidence_unchanged": true,
+    "performance_scope": "Cached checkpoint recovery; not fresh inference throughput",
+    "resumed_stages": 6,
+    "status": "passed"
+  },
+  "schema_version": "bir_native_end_to_end_report_v1",
+  "scope": "Three initial development episodes through native decoding, TempSeg, stitching, Captioner, and serialized annotations; followed by CPU-only exact-state resume",
+  "status": "gate_c_passed",
+  "timing_and_allocation": {
+    "boundary": "Stage timings are separate measured allocation/application boundaries. They are not a controlled throughput comparison and exclude the scheduling gap. Parent allocations are charged once; batch/extern steps are not added again.",
+    "captioner": {
+      "allocated_gpu_hours": 1.0633333333333332,
+      "allocated_gpus": 3,
+      "allocation_elapsed_seconds": 1276,
+      "cli_workflow_seconds": 1247.2372093861923,
+      "engine_wall_seconds": 1247.1112873959355,
+      "exit_code": "0:0",
+      "final_state": "COMPLETED",
+      "probe_wall_seconds": 1269.4645406068303
+    },
+    "successful_native_stage_allocated_gpu_hours": 1.1730555555555555,
+    "tempseg": {
+      "allocated_gpu_hours": 0.10972222222222222,
+      "allocated_gpus": 1,
+      "allocation_elapsed_seconds": 395,
+      "cli_workflow_seconds": 367.3520413003862,
+      "exit_code": "0:0",
+      "final_state": "COMPLETED"
+    }
+  },
+  "total_source_seconds": 138.767089,
+  "validated_configuration": {
+    "camera_roles": [
+      "main"
+    ],
+    "captioner_placement": "placement_only",
+    "captioner_placement_headroom_gib": 4.0,
+    "condition": "optimized",
+    "cuda_runtime": "12.8",
+    "engine_commit": "496e15a6083ff950e4de6f54f9229dcf2543e678",
+    "environment": {
+      "accelerate": "1.12.0",
+      "av": "16.0.1",
+      "huggingface-hub": "1.33.0",
+      "peft": "0.18.1",
+      "safetensors": "0.7.0",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.8.1"
+    },
+    "execution_contract_sha256": "07848abe73f32e5531b18f5f4640f0351624d2f7ae0d37bd568fa9d3f6f8c15f",
+    "mode": "staged TempSeg then Captioner in separate allocations",
+    "native_model_lock": {
+      "captioner": {
+        "repo": "nvidia/Flora-Captioner",
+        "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6"
+      },
+      "captioner_headroom_gib": 4,
+      "microbatch_size": 1,
+      "microbatch_status": "larger batches require measured GPU verification",
+      "native_contract": "flora-native-placement-v1",
+      "source": {
+        "repo": "https://github.com/NVIDIA/Flora.git",
+        "revision": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "tempseg": {
+        "adapter_sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3",
+        "repo": "nvidia/Flora-TempSeg",
+        "revision": "114a1076f70eb53f4a58ac045505db3087e79347"
+      },
+      "tempseg_base": {
+        "repo": "Qwen/Qwen3.5-9B",
+        "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+      }
+    },
+    "profile": "Human",
+    "python_version": "3.12.12",
+    "request_batch_size": 1
+  }
+}

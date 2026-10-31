@@ -29,31 +29,42 @@ project policy choice, not a cluster quota change.
 - The earlier failed allocation is retained and counted. See
   [the successful measurement](../reports/native-tempseg.json) and
   [the earlier failure](../reports/tempseg-initial-failure.json).
-- Captioner is submitted for three same-node RTX 3090 GPUs. Complete native
-  annotation remains unvalidated until that job and its artifacts pass.
+- Gate C passed. Captioner completed all three initial development episodes and
+  serialized 45 nonempty captions on three same-node RTX 3090 GPUs. The 1,276
+  second allocation completed with exit code zero. One model instance served
+  all three episodes. Native parameter checks and GPU residency passed.
+  See [the end-to-end evidence](../reports/native-end-to-end.json).
 - The adaptive protocol and task-separated split are frozen. All three exact
   development/final videos passed preparation with original bytes and clocks.
 - Native temporal and joint AI reference review is frozen for the three initial
   development episodes and their 40 independent references.
-- A small CPU-only resume check is queued after successful Captioner completion.
-  It will verify an isolated copy of the exact inference state.
-- No performance or adaptive quality result exists.
+- The CPU-only resume check passed on an isolated state backup. It resumed all
+  six stages with zero fresh attempts and no model-load or generation events.
+  Request identities, stage artifact hashes, and original evidence were unchanged.
+- CPU caption-pair preparation and ordered replay passed. This does not admit
+  GPU batching. See [the CPU preparation report](../reports/caption-batch-cpu-preparation.json).
+- Controlled native performance, independent caption quality, and adaptive
+  quality results are still pending.
+- The bounded native benchmark is running on three GPUs with a two-hour limit.
 
 ## Resource state
 
-- GPU-hours used/reserved: 0.267222 / 3 of 24, including the failed allocation.
-- GPU submissions: 4 of 16.
-- CPU-only core-hours used/reserved: 3.006111 / 0.166667 of 32.
+- GPU-hours used/reserved: 1.330556 / 6 of 24, including the failed allocation.
+  The current reservation covers the bounded native benchmark.
+- GPU submissions and reservations: 5 of 16.
+- CPU-only core-hours used/reserved: 3.007778 / 0 of 32.
+- Final reproduction allowance: 2.25 GPU-hours and one submission slot, based
+  on the completed native pilot.
 - Measured persistent footprint: 128.775 GiB of the 250 GiB cap.
 - A durable coordinator marker and private operational ledger are established.
 
 ## Next actions
 
-Verify Captioner placement, residency, complete outputs, and final scheduler
-status. Captioner will continue the signed TempSeg checkpoints from the same
-code revision and input manifest. Checkpoint headers estimate 50.956 GiB of
-native weights before activations and caches. Runtime fit remains unproved.
-Complete at most three full episodes before any larger benchmark.
+Verify the running native reference, persistent, and optimized comparison on
+matching inputs and placement. Complete the frozen independent AI reference
+review. GPU batching requires its own measured admission and native batch-one
+agreement. Then run the bounded adaptive development/final experiment if its
+measured projection fits the remaining budget and reproduction allowance.
 
 Private records retain exact job IDs, connection settings, output paths, skill
-hashes, and scheduler output. Public results will be added after verification.
+hashes, and scheduler output. Public reports contain sanitized measurements.
