@@ -61,7 +61,8 @@ project policy choice, not a cluster quota change.
   This validates repeated loading for this configuration. It does not establish
   benchmark speedup or adaptive quality.
   See [the reload verification](../reports/native-reload-verification.json).
-- The second full native benchmark is queued for shared cluster capacity.
+- The second full native benchmark started on three same-node GPUs after the
+  shared capacity became available.
   No complete performance comparison is available yet.
 
 ## Resource state
@@ -79,7 +80,7 @@ project policy choice, not a cluster quota change.
 
 ## Next actions
 
-Verify the queued native reference, persistent, and optimized comparison on
+Verify the running native reference, persistent, and optimized comparison on
 matching inputs and placement when it completes. GPU batching requires its own
 measured admission and native batch-one agreement. Then run the bounded adaptive
 development/final experiment if its measured projection fits the remaining

@@ -10,9 +10,8 @@ resume after a worker stops without repeating completed segments.
 videos. TempSeg used one RTX 3090; Captioner used three on one node. It exported
 45 captions and resumed all six completed stages without new inference. The
 model reload correction also passed on two videos, with 30 captions that exactly
-matched the prior native outputs. The full benchmark is queued for shared
-capacity. No complete performance comparison or adaptive quality result is
-available yet.
+matched the prior native outputs. The full benchmark has started on three GPUs.
+No complete performance comparison or adaptive quality result is available yet.
 See [current status](docs/STATUS.md) and
 [native end-to-end evidence](reports/native-end-to-end.json), plus
 [reload verification](reports/native-reload-verification.json).
