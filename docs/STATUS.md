@@ -31,13 +31,15 @@ project policy choice, not a cluster quota change.
   [the earlier failure](../reports/tempseg-initial-failure.json).
 - Captioner is submitted for three same-node RTX 3090 GPUs. Complete native
   annotation remains unvalidated until that job and its artifacts pass.
+- The adaptive protocol and task-separated split are frozen. All three exact
+  development/final videos passed preparation with original bytes and clocks.
 - No performance or adaptive quality result exists.
 
 ## Resource state
 
 - GPU-hours used/reserved: 0.267222 / 3 of 24, including the failed allocation.
 - GPU submissions: 4 of 16.
-- CPU-only core-hours used/reserved: 2.990000 / 0 of 32.
+- CPU-only core-hours used/reserved: 3.006111 / 0 of 32.
 - Measured persistent footprint: 128.775 GiB of the 250 GiB cap.
 - A durable coordinator marker and private operational ledger are established.
 

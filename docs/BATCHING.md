@@ -55,12 +55,22 @@ PYTHONPATH=src python -m unittest discover -s tests -p 'test_batching.py' -v
 
 Tests skip optional torch/processor cases when their dependencies or pinned local processor assets are absent. They download nothing.
 
-## Integration hook after native validation
+## Opt-in native collector
 
-Keep the upstream frame planner and caption-input construction intact. The narrow hook is the Captioner-only generation call after native processor inputs exist. A bounded collector can retain those exact tensors and a request handle. It can flush when it finds an admitted compatible group, reaches its byte/request bound, or reaches the episode boundary.
+`caption_with_microbatch` in `bir.caption_batching` is an explicit alternative to `NativeBackend.caption`. The normal engine and CLI do not call it. The caller must supply at least one measured admission, a pinned execution-contract identity, a topology fingerprint, and byte/request limits. No admission is provided by the project.
 
-The collector must hold the existing native execution lock. It must not intercept TempSeg generation, whose response is parsed immediately by the native temporal algorithm. An incompatible request or a final single-request group must use the existing native batch-one helper.
+This collector pilot accepts only prepared human single-view episodes. It rejects other profiles before model work. Native robot single-view planners can use custom or six-digit event IDs; the current collector deliberately does not interpret those conventions. The regular batch-one native path remains available for those profiles.
 
-If collection uses deferred output handles, use non-JSON objects so unresolved handles cannot become serialized captions. Resolve every handle to the correct native row before returning an annotation. Bind the handles to the returned native event IDs and audit records. Preserve unsupported-interval dispositions. Any unresolved or failed handle must fail the corresponding work item instead of producing a complete annotation.
+The wrapper holds the native execution lock and temporarily intercepts only the Captioner generation helper. The unchanged upstream planner, frame preparation, prompt, and processor still produce each request. The collector retains exact CPU tensors and non-JSON request handles. Half its byte limit bounds retained source tensors; the other half reserves space for the combined tensor copy. Native frame/image preparation, metadata, and hash temporaries are additional memory. Inputs are hashed when collected and checked again before execution.
 
-This collector is a proposed integration boundary, not implemented engine behavior. It still needs a small end-to-end test that checks event identities, failure propagation, final incomplete groups, and cross-episode routing. GPU admission must follow measured memory and batch-one comparisons on the same placement and inputs. Equal tensor inputs do not guarantee identical generated text under a different numerical batching order.
+Only exact groups with an explicit measured admission use batched generation. Requests with no matching admission and final incomplete groups use the original native batch-one helper. Reaching a collection bound flushes pending work. Admission or batch failures stop the stage; they are not automatically retried as singles. TempSeg interception is rejected because its algorithm needs each response immediately.
+
+After upstream caption planning returns, the wrapper flushes pending work and binds each handle to the actual native event ID in its caption-input audit. It verifies order and cardinality, preserves unsupported intervals, and replaces every handle with its completed string. An unresolved or misrouted handle fails the stage. The temporary generation hook is always restored. Collection ends at the episode boundary; cross-episode batching is not implemented.
+
+The result records batch and single-request work, original input digests, native event routes, bounds, and the complete stage time including the final flush. It also captures GPU peaks before each batch utility resets its peak counters. A caller must use those snapshots and batch records to report the whole stage peak. Any failure has an attached `collector_record`; preserve it with the failed attempt.
+
+Seven CPU collector tests passed. They check exact grouping, single-request fallback, bounds, mutation rejection, deferred output routing with an unsupported interval, early unsupported-profile rejection, TempSeg rejection, and hook restoration. They use a stub generator and synthetic test admissions. They establish software routing only. GPU admission still requires measured memory and native batch-one comparisons on the same placement and inputs. Equal tensor inputs do not guarantee identical generated text under a different numerical batching order.
+
+```sh
+PYTHONPATH=src python -m unittest discover -s tests -p 'test_caption_batching.py' -v
+```

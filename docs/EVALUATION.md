@@ -138,6 +138,17 @@ python scripts/evaluate_adaptive.py prepare-review \
 Give each reviewer only `rubric.txt`, `cards.jsonl`, and `review-template.json`.
 Keep `mapping.json` hidden. Save two actual review responses, then score them:
 
+Record each review's elapsed wall time in `review_wall_seconds`. Measure this
+with the host clock from review dispatch to completion. Do not estimate a time
+from token counts. If the time is unavailable, keep it null. The report then
+marks the missing measurement. Use separate fresh reviewer contexts. The report
+counts unique cards, both reviewers' card presentations, and all frozen policy
+items. It reports card preparation, review, and scoring time as offline audit
+work. These times do not enter the deployment policy cost. Parallel reviews can
+overlap, so the sum of their elapsed times is not total project elapsed time.
+The format-only runtime gate makes zero AI audit calls. The new paid API budget
+and observed new paid API call count must both stay zero.
+
 ```sh
 python scripts/evaluate_adaptive.py score \
   --freeze manifests/adaptive-freeze.json \
@@ -151,6 +162,13 @@ Development uses the same commands with `--split development`. Omit
 `--development-selection` when scoring it. The development report records the
 fixed comparator choice. The scorer rejects missing, duplicate, or extra cards
 and changed fixed-interval identities.
+Each supplied outcome must have a valid content checksum and the same execution
+contract. The mapping and score report bind the ordered checkpoint identity and
+checksum set. The final runner must match this set to the actual development
+checkpoints before it uses the selected comparator.
+Final signed outcomes also carry the canonical digest of the development
+selection. Final scoring rejects a different selection, even when its freeze
+and policy costs match. This prevents a comparator change after final outputs.
 
 ## Metrics and uncertainty
 

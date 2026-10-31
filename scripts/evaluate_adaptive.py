@@ -14,6 +14,7 @@ import json
 import math
 from pathlib import Path
 import sys
+import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from bir.cli import atomic_json
@@ -167,7 +168,39 @@ def read_outcomes(paths):
     return rows
 
 
+def outcome_evidence(rows):
+    """Verify checkpoint checksums and bind a deterministic set of identities."""
+    receipts, contracts, selections, identities = [], set(), set(), set()
+    for row in rows:
+        if row.get('result_sha256') != digest({k: v for k, v in row.items() if k != 'result_sha256'}):
+            raise ValueError('Experimental output checksum changed or is missing')
+        contract = row.get('execution_contract_sha256')
+        if not isinstance(contract, str) or len(contract) != 64 or any(c not in '0123456789abcdef' for c in contract):
+            raise ValueError('Experimental output lacks a valid execution contract digest')
+        contracts.add(contract)
+        selection = row.get('development_selection_digest')
+        if selection is not None and (not isinstance(selection, str) or len(selection) != 64 or
+                                      any(c not in '0123456789abcdef' for c in selection)):
+            raise ValueError('Experimental output has an invalid development selection digest')
+        selections.add(selection)
+        identity = (row['episode_id'], row['reference_index'], row['policy'])
+        if identity in identities:
+            raise ValueError('Duplicate experimental output identity')
+        identities.add(identity)
+        receipts.append({key: row[key] for key in ('episode_id', 'reference_index', 'policy', 'result_sha256')})
+    if len(contracts) > 1:
+        raise ValueError('Experimental outputs use different execution contracts')
+    if len(selections) > 1:
+        raise ValueError('Experimental outputs use different development selections')
+    receipts.sort(key=lambda row: (row['episode_id'], row['reference_index'], row['policy']))
+    return {'execution_contract_sha256': next(iter(contracts)) if contracts else None,
+            'development_selection_digest': next(iter(selections)) if selections else None,
+            'outcome_receipts': receipts, 'outcome_set_sha256': digest(receipts)}
+
+
 def prepare_review(freeze, references, outcomes, split):
+    started = time.perf_counter()
+    evidence = outcome_evidence(outcomes)
     refs, targets = validate_references(freeze, references, split), targets_for(freeze, split)
     indexed = {}
     for row in outcomes:
@@ -177,8 +210,8 @@ def prepare_review(freeze, references, outcomes, split):
         target = targets[key[:2]]
         if row.get('freeze_sha256') != freeze['freeze_sha256'] or row['start_s'] != target['start_s'] or row['end_s'] != target['end_s']:
             raise ValueError('Experimental output changed the frozen interval or contract')
-        source = row.get('input_sha256', {})
-        if source and source.get('main') != target['episode']['source_sha256']:
+        source = row.get('input_sha256')
+        if source != {'main': target['episode']['source_sha256']}:
             raise ValueError('Experimental output has a different source video')
         indexed[key] = row
     cards, mapping = {}, []
@@ -203,7 +236,8 @@ def prepare_review(freeze, references, outcomes, split):
     shuffled = sorted(cards.values(), key=lambda c: hashlib.sha256(('bir-blind-v1:' + c['card_id']).encode()).hexdigest())
     binding = {'schema_version': 'bir_blinded_review_mapping_v1', 'freeze_sha256': freeze['freeze_sha256'],
                'rubric_sha256': RUBRIC_SHA256, 'split': split, 'mapping': mapping,
-               'card_ids': [c['card_id'] for c in shuffled], 'cards_sha256': digest(shuffled)}
+               'card_ids': [c['card_id'] for c in shuffled], 'cards_sha256': digest(shuffled), **evidence}
+    binding['card_preparation_wall_seconds'] = time.perf_counter() - started
     binding['mapping_sha256'] = digest(binding)
     return shuffled, binding
 
@@ -221,10 +255,13 @@ def positive_rating(row):
 
 
 def score_reviews(freeze, mapping, reviews, development_selection=None):
+    started = time.perf_counter()
     if mapping.get('mapping_sha256') != digest({k: v for k, v in mapping.items() if k != 'mapping_sha256'}):
         raise ValueError('Private review mapping changed')
     if mapping['freeze_sha256'] != freeze['freeze_sha256'] or mapping['rubric_sha256'] != RUBRIC_SHA256:
         raise ValueError('Review mapping has a different frozen protocol')
+    if mapping.get('outcome_set_sha256') != digest(mapping.get('outcome_receipts')):
+        raise ValueError('Review outcome receipt digest changed')
     expected = {(episode, index, policy) for episode, index in targets_for(freeze, mapping['split']) for policy in POLICIES}
     actual = {(r['episode_id'], r['reference_index'], r['policy']) for r in mapping['mapping']}
     if actual != expected or len(actual) != len(mapping['mapping']):
@@ -234,9 +271,15 @@ def score_reviews(freeze, mapping, reviews, development_selection=None):
     if len(reviews) != 2 or len({r['review_id'] for r in reviews}) != 2:
         raise ValueError('Exactly two separate blinded AI reviews are required')
     ratings = []
+    review_times = []
     for review in reviews:
         if review.get('evaluator_type') != 'AI' or not review.get('evaluator_model') or review.get('rubric_sha256') != RUBRIC_SHA256:
             raise ValueError('Review must disclose AI identity and match the frozen rubric')
+        if review.get('new_paid_api_calls', 0) != 0:
+            raise ValueError('This protocol permits zero new paid judge API calls')
+        elapsed = review.get('review_wall_seconds')
+        if elapsed is not None:
+            review_times.append(finite(elapsed, 'Offline AI review wall time'))
         by_id = {r['card_id']: r for r in review['ratings']}
         if len(by_id) != len(review['ratings']) or set(by_id) != set(mapping['card_ids']):
             raise ValueError('Review has missing, duplicate, or unexpected cards')
@@ -267,7 +310,21 @@ def score_reviews(freeze, mapping, reviews, development_selection=None):
               'visual_factual_correctness_assessed': False, 'rubric_sha256': RUBRIC_SHA256,
               'reviewers': [{'review_id': r['review_id'], 'evaluator_model': r['evaluator_model']} for r in reviews],
               'blind_review_cards': len(mapping['card_ids']), 'policy_metrics': policy_metrics,
+              **{key: mapping[key] for key in ('execution_contract_sha256', 'development_selection_digest',
+                                              'outcome_receipts', 'outcome_set_sha256')},
               'per_interval': [{k: v for k, v in r.items() if k not in {'card_id', 'automatic_failure_score'}} for r in per_interval]}
+    result['offline_audit'] = {
+        'unique_review_cards': len(mapping['card_ids']), 'reviewer_count': 2,
+        'card_presentations': 2 * len(mapping['card_ids']),
+        'all_policy_interval_items': len(mapping['mapping']),
+        'automatic_failure_items_in_denominator': sum(r['card_id'] is None for r in mapping['mapping']),
+        'card_preparation_wall_seconds_excluding_file_io': mapping.get('card_preparation_wall_seconds'),
+        'reviewer_wall_seconds_sum': sum(review_times) if len(review_times) == 2 else None,
+        'reviewers_with_unmeasured_wall_time': 2 - len(review_times),
+        'timing_scope': 'sum of separate offline reviewer elapsed times; concurrent reviews can overlap',
+        'included_in_deployment_policy_cost': False,
+        'runtime_ai_audit_calls': 0, 'new_paid_api_calls': 0, 'new_external_api_spend_usd': 0,
+    }
     if mapping['split'] == 'development':
         native_score = policy_metrics['native']['mean_episode_score']
         viable = [p for p in ('native', 'compact') if policy_metrics[p]['mean_episode_score'] >= native_score - .01]
@@ -279,6 +336,8 @@ def score_reviews(freeze, mapping, reviews, development_selection=None):
     else:
         if not development_selection or development_selection.get('freeze_sha256') != freeze['freeze_sha256'] or development_selection.get('split') != 'development':
             raise ValueError('Final scoring requires the frozen development comparator record')
+        if mapping.get('development_selection_digest') != digest(development_selection):
+            raise ValueError('Final review does not match the development selection bound before inference')
         chosen = development_selection['best_fixed_policy']
         if chosen not in {'native', 'compact'}:
             raise ValueError('Unknown frozen fixed comparator')
@@ -287,6 +346,7 @@ def score_reviews(freeze, mapping, reviews, development_selection=None):
         quality['reason'] = 'Predeclared two-group final pilot cannot establish a one-percentage-point population margin'
         result.update(best_fixed_policy=chosen, quality_margin=quality, adaptive_conclusion='inconclusive',
                       cost_comparison_scope='observed interval-policy costs only; no full-engine speedup claim')
+    result['offline_audit']['scoring_wall_seconds_excluding_file_io'] = time.perf_counter() - started
     return result
 
 
@@ -328,6 +388,8 @@ def main(argv=None):
         atomic_json(args.output_dir / 'mapping.json', mapping)
         atomic_json(args.output_dir / 'review-template.json', {'review_id': '', 'evaluator_type': 'AI',
             'evaluator_model': 'record actual identifier or explicitly unavailable',
+            'review_wall_seconds': None, 'timing_basis': 'host-measured card-review elapsed time; do not invent a duration',
+            'new_paid_api_calls': 0,
             'rubric_sha256': RUBRIC_SHA256, 'ratings': []})
         result = {'status': 'private_blind_review_prepared', 'cards': len(cards), 'split': args.split}
     else:

@@ -30,13 +30,19 @@ def fixture():
     return evaluator.create_freeze(candidate_manifest, references, protocol), references, candidate_manifest, protocol
 
 
-def outcomes(freeze, split):
-    return [{'episode_id': episode, 'reference_index': index, 'policy': policy,
+def outcomes(freeze, split, selection=None):
+    rows = [{'episode_id': episode, 'reference_index': index, 'policy': policy,
              'freeze_sha256': freeze['freeze_sha256'], 'start_s': target['start_s'], 'end_s': target['end_s'],
+             'execution_contract_sha256': 'c' * 64,
              'status': 'complete', 'caption': 'Put the cup onto the table.',
              'policy_wall_seconds': 2 if policy == 'native' else 1,
              'input_sha256': {'main': target['episode']['source_sha256']}}
             for (episode, index), target in evaluator.targets_for(freeze, split).items() for policy in evaluator.POLICIES]
+    for row in rows:
+        if selection is not None:
+            row['development_selection_digest'] = evaluator.digest(selection)
+        row['result_sha256'] = evaluator.digest(row)
+    return rows
 
 
 def reviews(mapping):
@@ -71,7 +77,13 @@ class AdaptiveEvaluationTests(unittest.TestCase):
         freeze, references, _, _ = fixture()
         rows = outcomes(freeze, 'final')
         rows[0]['end_s'] = 9.9
+        rows[0]['result_sha256'] = evaluator.digest({k: v for k, v in rows[0].items() if k != 'result_sha256'})
         with self.assertRaisesRegex(ValueError, 'changed the frozen interval'):
+            evaluator.prepare_review(freeze, references, rows, 'final')
+        rows = outcomes(freeze, 'final')
+        rows[0].pop('input_sha256')
+        rows[0]['result_sha256'] = evaluator.digest({k: v for k, v in rows[0].items() if k != 'result_sha256'})
+        with self.assertRaisesRegex(ValueError, 'different source'):
             evaluator.prepare_review(freeze, references, rows, 'final')
 
     def test_final_two_group_margin_remains_inconclusive_with_perfect_reviews(self):
@@ -79,12 +91,17 @@ class AdaptiveEvaluationTests(unittest.TestCase):
         _, development = evaluator.prepare_review(freeze, references, outcomes(freeze, 'development'), 'development')
         selection = evaluator.score_reviews(freeze, development, reviews(development))
         self.assertEqual(selection['best_fixed_policy'], 'compact')
-        _, final = evaluator.prepare_review(freeze, references, outcomes(freeze, 'final'), 'final')
+        _, final = evaluator.prepare_review(freeze, references, outcomes(freeze, 'final', selection), 'final')
         scored = evaluator.score_reviews(freeze, final, reviews(final), selection)
         self.assertEqual(scored['adaptive_conclusion'], 'inconclusive')
         self.assertEqual(scored['quality_margin']['episodes'], 2)
         self.assertFalse(scored['is_human_evaluation'])
         self.assertNotIn('candidate_caption', json.dumps(scored))
+        self.assertEqual(scored['outcome_set_sha256'], final['outcome_set_sha256'])
+        self.assertEqual(scored['execution_contract_sha256'], 'c' * 64)
+        changed = dict(selection, best_fixed_policy='native')
+        with self.assertRaisesRegex(ValueError, 'bound before inference'):
+            evaluator.score_reviews(freeze, final, reviews(final), changed)
 
     def test_missing_outputs_score_zero_and_review_disagreement_is_visible(self):
         freeze, references, _, _ = fixture()
@@ -97,6 +114,26 @@ class AdaptiveEvaluationTests(unittest.TestCase):
         self.assertEqual(result['policy_metrics']['adaptive']['mean_episode_score'], 0)
         self.assertIsNone(result['policy_metrics']['adaptive']['policy_application_seconds'])
         self.assertEqual(result['policy_metrics']['native']['review_disagreements'], 1)
+        self.assertEqual(result['offline_audit']['all_policy_interval_items'], 3)
+        self.assertEqual(result['offline_audit']['automatic_failure_items_in_denominator'], 1)
+        self.assertIsNone(result['offline_audit']['reviewer_wall_seconds_sum'])
+        self.assertEqual(result['offline_audit']['reviewers_with_unmeasured_wall_time'], 2)
+
+    def test_offline_review_time_is_separate_and_paid_api_calls_are_rejected(self):
+        freeze, references, _, _ = fixture()
+        _, mapping = evaluator.prepare_review(freeze, references, outcomes(freeze, 'development'), 'development')
+        ratings = reviews(mapping)
+        for review, seconds in zip(ratings, [7.5, 9.]):
+            review['review_wall_seconds'] = seconds
+        result = evaluator.score_reviews(freeze, mapping, ratings)
+        self.assertEqual(result['offline_audit']['reviewer_wall_seconds_sum'], 16.5)
+        self.assertEqual(result['offline_audit']['card_presentations'], 2)
+        self.assertEqual(result['offline_audit']['new_paid_api_calls'], 0)
+        self.assertFalse(result['offline_audit']['included_in_deployment_policy_cost'])
+        self.assertEqual(result['policy_metrics']['native']['policy_application_seconds'], 2)
+        ratings[0]['new_paid_api_calls'] = 1
+        with self.assertRaisesRegex(ValueError, 'zero new paid'):
+            evaluator.score_reviews(freeze, mapping, ratings)
 
     def test_mapping_tampering_and_missing_reviews_fail(self):
         freeze, references, _, _ = fixture()

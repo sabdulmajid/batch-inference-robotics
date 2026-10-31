@@ -72,3 +72,33 @@ The caller must map the native generation helper's incomplete-output exception t
 Every attempted compact pass, gate decision, and native fallback has a measured application duration and an explicit status. Failed work remains in the record. For CUDA use, supply a synchronization callback for every visible device so timed work finishes at the measurement boundary. Scheduler allocation GPU-hours remain a separate measurement and include idle time. Do not add a job total again after allocating it across passes.
 
 Independent references are still required for quality evaluation. Audit accepted compact outputs as well as fallback cases. Charge that audit work separately. If captions remain structurally valid, this baseline gate can have zero fallback even when captions are wrong. A negative or inconclusive quality result is valid.
+
+## Bounded runner
+
+`scripts/adaptive_benchmark.py` runs the frozen split inside a coordinator-owned allocation. It never submits a job. It requires a complete fresh Gate C receipt and the saved annotations with verified TempSeg and Captioner audits. GPU names, memory sizes, and placement headroom must match that receipt. The runner checks the pinned Python, framework, processor, and CUDA environment. Model downloads are disabled.
+
+Prepare a manifest with exactly the frozen split's full source videos and original instructions. The runner checks their hashes against the freeze. It loads Captioner once, disables decoded-frame caching for equal per-policy preparation work, and rotates native/compact/adaptive order by reference index. It records setup, validation, model load, cleanup, and GPU memory separately from interval-policy timers.
+
+```sh
+PYTHONPATH=src python scripts/adaptive_benchmark.py \
+  --source-root "$FLORA_SOURCE" --manifest "$DEV_MANIFEST" \
+  --split development --gate-evidence "$GATE_C_RECEIPT" \
+  --output-dir "$DEV_RUN"
+```
+
+After the two blinded AI reviews select the development comparator, the final command also requires its score record and development run receipt:
+
+```sh
+PYTHONPATH=src python scripts/adaptive_benchmark.py \
+  --source-root "$FLORA_SOURCE" --manifest "$FINAL_MANIFEST" \
+  --split final --gate-evidence "$GATE_C_RECEIPT" \
+  --development-selection "$DEV_SELECTION" \
+  --development-run "$DEV_RUN/run-summary.json" \
+  --output-dir "$FINAL_RUN"
+```
+
+Before allocating final GPUs, the coordinator must check the same projection and the project ledger. The projection uses the largest measured development interval time for each policy, every final interval, scaled source preparation, shared setup/load/cleanup, and a factor of 1.5. A stricter adaptive allowance uses the larger of the observed adaptive maximum and compact maximum plus native maximum plus gate overhead. Thus zero fallback during development does not imply zero fallback work during final evaluation. This remains a planning estimate, not a guaranteed runtime bound. The runner rejects a projection above the frozen 90-minute ceiling. It does not reduce the target set. The coordinator must set SLURM wall limits of at most 30 minutes for development and 90 minutes for final evaluation. The runner also stops before starting another interval after that phase deadline. The scheduler limit bounds an interval already in progress. The coordinator must preserve the final reproduction reserve and the two-submission/eight-GPU-hour experiment cap.
+
+Each interval-policy result is saved atomically under `outcomes/` with a content checksum and execution-contract hash. `run-summary.json` lists these files. Private `invocation-*.json` receipts preserve each invocation, including failures. Explicit `--resume` accepts only the same code, freeze, model configuration, and Gate C evidence. Final contracts and outcomes also bind the selected development comparator. The scorer checks that same comparator. Actual Captioner device placement must match Gate C and development. Resume reuses completed outcomes without changing their measured times. A cache-only invocation is not fresh inference. A rejected invocation preserves the earlier published outcome index and summary. A recorded runtime failure requires diagnosis; it does not trigger more GPU work on resume. Active work that fails before a confirmed durable checkpoint remains in its invocation receipt. Missing or uncommitted work blocks the final measured-cost gate.
+
+`outcomes.jsonl` is an atomic aggregate of the available verified checkpoints, including partial work. Pass it or the individual outcome JSON files to the review tool. CPU runner and independent regression tests cover the evaluator export boundary, frozen order, checkpoint identity, complete cost projection, changed placements, comparator binding, preserved evidence, and scheduler restart rejection. These tests do not establish GPU execution or adaptive quality.
