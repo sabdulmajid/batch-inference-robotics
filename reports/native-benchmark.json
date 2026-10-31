@@ -1,0 +1,971 @@
+{
+  "allocation": {
+    "allocated_gpu_count": 3,
+    "allocated_gpu_hours": 3.5,
+    "batch_step_max_rss_gib": 11.205299377441406,
+    "batch_step_max_rss_kib": 11749608,
+    "campaign_efficiency_scope": "The unique three-episode corpus is counted once against the entire comparison campaign. This is not optimized production throughput.",
+    "campaign_unique_source_hours_per_allocated_gpu_hour": 0.011013261031746031,
+    "counting_rule": "The 4200-second parent allocation is charged once at 3 GPUs. It includes all conditions, startup, resume checks, comparison work, failures if any, cleanup and allocated idle time. Batch and extern steps are not added.",
+    "fresh_condition_subprocess_seconds_sum": 4187.674040106591,
+    "full_benchmark_application_seconds": 4199.894382379949,
+    "host_memory_limit": "The scheduler batch-step sample is not a complete per-worker or process-tree peak measurement. Per-condition host peaks are unknown.",
+    "parent_elapsed_seconds": 4200,
+    "parent_exit_code": "0:0",
+    "parent_final_state": "COMPLETED",
+    "per_condition_gpu_hour_allocation": "Not separately measured; no fraction of this shared allocation is assigned as a condition measurement.",
+    "remaining_controller_workflow_seconds_by_subtraction": 0.7824829700402915,
+    "resume_subprocess_seconds_sum": 11.437859303317964,
+    "scheduler_seconds_are_rounded": true
+  },
+  "conditions": {
+    "optimized": {
+      "artifact_sha256": [
+        {
+          "episode_id": "homer_52",
+          "sha256": "c89548b7c1370e9c1b661e37d2dd11af7525add995e698733b3d725708e2dfa2"
+        },
+        {
+          "episode_id": "homer_50",
+          "sha256": "24206cff567bfc4d4e52791205f50d2ca43e849112791f243202d204d6bb23ce"
+        },
+        {
+          "episode_id": "homer_41",
+          "sha256": "c272f07d9186349ca190af5e513a8b602793b88a0643c2fb327d5747e65913cb"
+        }
+      ],
+      "attempt_work_seconds_excluding_preparation": 1313.2810985981487,
+      "complete_captions": 45,
+      "complete_episodes": 3,
+      "cpu_and_cache_telemetry": {
+        "backends": [
+          {
+            "backend_ordinal": 0,
+            "decoded_frame_cache": {
+              "entries": 43,
+              "evictions": 2548,
+              "hits": 241,
+              "max_bytes": 268435456,
+              "max_entries": 4096,
+              "misses": 2591,
+              "peak_retained_bytes": 268429152,
+              "retained_bytes": 267494400
+            },
+            "episode_id": null
+          }
+        ],
+        "cpu_preparation": {
+          "backend_preparation_calls": 3,
+          "backend_preparation_failures": 0,
+          "backend_preparation_work_seconds": 20.09195915609598,
+          "metadata_cache_hits": 3,
+          "preparation_requests": 6,
+          "source_verification_calls": 6,
+          "source_verification_failures": 0,
+          "source_verification_work_seconds": 0.1439462210983038
+        },
+        "cpu_timing_scope": "Summed engine worker time includes failed calls. Preparation can overlap inference; these sums are not end-to-end wall time. Initial CLI manifest hashing is outside these counters.",
+        "decoded_cache_scope": "Cumulative counters per backend cache lifetime, captured before close. Byte counts cover retained RGB payloads only; null means no decoded-frame cache.",
+        "prefetch": 1,
+        "prepared_metadata_cache_capacity": 8,
+        "schema_version": "bir_engine_work_telemetry_v1"
+      },
+      "cpu_worker_stage_interval_overlap": {
+        "formula": "max(0, summed engine source verification work + native preparation work + stage attempt work - engine elapsed wall time)",
+        "interpretation": "A lower bound on overlap of measured CPU-worker and stage wall intervals. This is not GPU utilization or an isolated prefetch speedup.",
+        "lower_bound_seconds": 8.9594269185327
+      },
+      "execution_contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+      "failed_attempts": 0,
+      "fresh_stage_attempts": 6,
+      "gpu_memory": [
+        {
+          "logical_device": 0,
+          "peak_allocated_bytes": 22448639488,
+          "peak_allocated_gib": 20.906924724578857,
+          "peak_reserved_bytes": 24928845824,
+          "peak_reserved_gib": 23.216796875
+        },
+        {
+          "logical_device": 1,
+          "peak_allocated_bytes": 23959430144,
+          "peak_allocated_gib": 22.313958168029785,
+          "peak_reserved_bytes": 24905777152,
+          "peak_reserved_gib": 23.1953125
+        },
+        {
+          "logical_device": 2,
+          "peak_allocated_bytes": 24360223744,
+          "peak_allocated_gib": 22.68722629547119,
+          "peak_reserved_bytes": 24800919552,
+          "peak_reserved_gib": 23.09765625
+        }
+      ],
+      "host_peak_memory_per_condition": null,
+      "per_episode_result_latency": {
+        "arrival": "all_jobs_at_engine_run_start",
+        "boundary": "serialized_export_completed",
+        "episodes": [
+          {
+            "episode_id": "homer_52",
+            "final_stage_commit_seconds": 701.1830004267395,
+            "result_available_seconds": 1324.4963592267595
+          },
+          {
+            "episode_id": "homer_50",
+            "final_stage_commit_seconds": 940.8187176021747,
+            "result_available_seconds": 1324.5249825958163
+          },
+          {
+            "episode_id": "homer_41",
+            "final_stage_commit_seconds": 1324.041834896896,
+            "result_available_seconds": 1324.5544661357999
+          }
+        ],
+        "limitation": "Exports occur after all inference and backend cleanup, in manifest order; export latencies can therefore be close.",
+        "median_seconds": 1324.5249825958163,
+        "p95_seconds": 1324.5515177818015,
+        "percentile_method": "linear interpolation of sorted values at (n-1)*p (type 7)",
+        "population": "all expected episodes from a wholly fresh complete run; partial, failed, cached, and mixed execution are excluded",
+        "status": "measured"
+      },
+      "per_stage_attempt_work_seconds": {
+        "caption": 1006.6690608621575,
+        "segment": 306.6120377359912
+      },
+      "per_stage_episode_attempt_seconds": {
+        "caption": [
+          {
+            "elapsed_s": 383.9720829972066,
+            "episode_id": "homer_52"
+          },
+          {
+            "elapsed_s": 239.55986647494137,
+            "episode_id": "homer_50"
+          },
+          {
+            "elapsed_s": 383.1371113900095,
+            "episode_id": "homer_41"
+          }
+        ],
+        "segment": [
+          {
+            "elapsed_s": 155.24107876373455,
+            "episode_id": "homer_52"
+          },
+          {
+            "elapsed_s": 43.91849588230252,
+            "episode_id": "homer_50"
+          },
+          {
+            "elapsed_s": 107.45246308995411,
+            "episode_id": "homer_41"
+          }
+        ]
+      },
+      "request_batch_size": 1,
+      "resume": {
+        "annotation_hashes_unchanged": true,
+        "cli_workflow_seconds": 0.4023841121234,
+        "fresh_stage_attempts": 0,
+        "generation_events": 0,
+        "model_load_events": 0,
+        "resumed_stages": 6,
+        "saved_attempt_count_unchanged": 6,
+        "status": "cache_only_verified",
+        "subprocess_wall_seconds": 3.7808345751836896,
+        "worker_workflow_seconds": 2.9418925289064646
+      },
+      "retries": 0,
+      "runtime_events": {
+        "stages": {
+          "captioner": {
+            "generation_call_count": 45,
+            "generation_event_seconds": 409.3639999999999,
+            "model_load_count": 1,
+            "model_parameter_load_verification_event_count": 1,
+            "model_parameter_load_verification_event_seconds": 85.897,
+            "model_ready_count": 1,
+            "session_load_event_count": 1,
+            "session_load_event_seconds": 87.00158294895664,
+            "session_load_failed_event_count": 0
+          },
+          "tempseg": {
+            "generation_call_count": 20,
+            "generation_event_seconds": 137.19799999999998,
+            "model_load_count": 1,
+            "model_parameter_load_verification_event_count": 1,
+            "model_parameter_load_verification_event_seconds": 46.735,
+            "model_ready_count": 1,
+            "session_load_event_count": 1,
+            "session_load_event_seconds": 47.89944512397051,
+            "session_load_failed_event_count": 0
+          }
+        },
+        "timing_boundary": "Upstream model_parameters_verified is cumulative from native load start through parameter verification and excludes processor finalization. model_ready is counted only. Adapter session-load events include the full cold load, processor, audit/residency checks, synchronization, and failed-call work. Generation excludes preparation, input hashing, and device transfer. These overlapping event boundaries must not be added to wall time."
+      },
+      "throughput": {
+        "allocated_gpu_hours": null,
+        "allocation_note": "The three conditions share one allocation. No separate per-condition GPU-hour measurement is available.",
+        "source_hours": 0.03854641361111111,
+        "source_hours_per_allocated_gpu_hour": null,
+        "source_hours_per_cli_hour": 0.10475053675684008,
+        "source_hours_per_subprocess_hour": 0.10446208290607269
+      },
+      "wall_seconds": {
+        "cli": 1324.7386915269308,
+        "engine": 1324.5575770568103,
+        "subprocess": 1328.3967267316766,
+        "worker": 1326.6462893579155
+      }
+    },
+    "persistent": {
+      "artifact_sha256": [
+        {
+          "episode_id": "homer_52",
+          "sha256": "d428bd5f5c0b2239c5e658a3d7c00649215856777f5b48d3ffbbf84ed28b0743"
+        },
+        {
+          "episode_id": "homer_50",
+          "sha256": "b63871c704aaaf51c122ef2bb363d3b283141745dfaa0ff0489313438a4b281e"
+        },
+        {
+          "episode_id": "homer_41",
+          "sha256": "d0e7f77c426bc136fd349f02e3592d17b3f90b2f6a68c07d6e048897dd30047a"
+        }
+      ],
+      "attempt_work_seconds_excluding_preparation": 1328.1425183028914,
+      "complete_captions": 45,
+      "complete_episodes": 3,
+      "cpu_and_cache_telemetry": {
+        "backends": [
+          {
+            "backend_ordinal": 0,
+            "decoded_frame_cache": null,
+            "episode_id": null
+          }
+        ],
+        "cpu_preparation": {
+          "backend_preparation_calls": 6,
+          "backend_preparation_failures": 0,
+          "backend_preparation_work_seconds": 38.56111882207915,
+          "metadata_cache_hits": 0,
+          "preparation_requests": 6,
+          "source_verification_calls": 6,
+          "source_verification_failures": 0,
+          "source_verification_work_seconds": 0.14650169480592012
+        },
+        "cpu_timing_scope": "Summed engine worker time includes failed calls. Preparation can overlap inference; these sums are not end-to-end wall time. Initial CLI manifest hashing is outside these counters.",
+        "decoded_cache_scope": "Cumulative counters per backend cache lifetime, captured before close. Byte counts cover retained RGB payloads only; null means no decoded-frame cache.",
+        "prefetch": 0,
+        "prepared_metadata_cache_capacity": 0,
+        "schema_version": "bir_engine_work_telemetry_v1"
+      },
+      "execution_contract_sha256": "557ccb09e90e10c9fbccd13eaa49e2e2109b12fcc82db6fc392ef9b03760c1fe",
+      "failed_attempts": 0,
+      "fresh_stage_attempts": 6,
+      "gpu_memory": [
+        {
+          "logical_device": 0,
+          "peak_allocated_bytes": 22449342976,
+          "peak_allocated_gib": 20.90757989883423,
+          "peak_reserved_bytes": 24928845824,
+          "peak_reserved_gib": 23.216796875
+        },
+        {
+          "logical_device": 1,
+          "peak_allocated_bytes": 23959430144,
+          "peak_allocated_gib": 22.313958168029785,
+          "peak_reserved_bytes": 24905777152,
+          "peak_reserved_gib": 23.1953125
+        },
+        {
+          "logical_device": 2,
+          "peak_allocated_bytes": 24360223744,
+          "peak_allocated_gib": 22.68722629547119,
+          "peak_reserved_bytes": 24800919552,
+          "peak_reserved_gib": 23.09765625
+        }
+      ],
+      "host_peak_memory_per_condition": null,
+      "per_episode_result_latency": {
+        "arrival": "all_jobs_at_engine_run_start",
+        "boundary": "serialized_export_completed",
+        "episodes": [
+          {
+            "episode_id": "homer_52",
+            "final_stage_commit_seconds": 733.5881361346692,
+            "result_available_seconds": 1368.0178624829277
+          },
+          {
+            "episode_id": "homer_50",
+            "final_stage_commit_seconds": 975.8364285868593,
+            "result_available_seconds": 1368.045751594007
+          },
+          {
+            "episode_id": "homer_41",
+            "final_stage_commit_seconds": 1367.551962042693,
+            "result_available_seconds": 1368.0728357937187
+          }
+        ],
+        "limitation": "Exports occur after all inference and backend cleanup, in manifest order; export latencies can therefore be close.",
+        "median_seconds": 1368.045751594007,
+        "p95_seconds": 1368.0701273737475,
+        "percentile_method": "linear interpolation of sorted values at (n-1)*p (type 7)",
+        "population": "all expected episodes from a wholly fresh complete run; partial, failed, cached, and mixed execution are excluded",
+        "status": "measured"
+      },
+      "per_stage_attempt_work_seconds": {
+        "caption": 1009.4386345855892,
+        "segment": 318.70388371730223
+      },
+      "per_stage_episode_attempt_seconds": {
+        "caption": [
+          {
+            "elapsed_s": 385.0052243289538,
+            "episode_id": "homer_52"
+          },
+          {
+            "elapsed_s": 240.63939832057804,
+            "episode_id": "homer_50"
+          },
+          {
+            "elapsed_s": 383.79401193605736,
+            "episode_id": "homer_41"
+          }
+        ],
+        "segment": [
+          {
+            "elapsed_s": 167.17246040375903,
+            "episode_id": "homer_52"
+          },
+          {
+            "elapsed_s": 44.44200246268883,
+            "episode_id": "homer_50"
+          },
+          {
+            "elapsed_s": 107.08942085085437,
+            "episode_id": "homer_41"
+          }
+        ]
+      },
+      "request_batch_size": 1,
+      "resume": {
+        "annotation_hashes_unchanged": true,
+        "cli_workflow_seconds": 0.3831737581640482,
+        "fresh_stage_attempts": 0,
+        "generation_events": 0,
+        "model_load_events": 0,
+        "resumed_stages": 6,
+        "saved_attempt_count_unchanged": 6,
+        "status": "cache_only_verified",
+        "subprocess_wall_seconds": 3.6977790547534823,
+        "worker_workflow_seconds": 2.848724529147148
+      },
+      "retries": 0,
+      "runtime_events": {
+        "stages": {
+          "captioner": {
+            "generation_call_count": 45,
+            "generation_event_seconds": 409.84900000000005,
+            "model_load_count": 1,
+            "model_parameter_load_verification_event_count": 1,
+            "model_parameter_load_verification_event_seconds": 85.933,
+            "model_ready_count": 1,
+            "session_load_event_count": 1,
+            "session_load_event_seconds": 87.0481426762417,
+            "session_load_failed_event_count": 0
+          },
+          "tempseg": {
+            "generation_call_count": 20,
+            "generation_event_seconds": 136.709,
+            "model_load_count": 1,
+            "model_parameter_load_verification_event_count": 1,
+            "model_parameter_load_verification_event_seconds": 45.632,
+            "model_ready_count": 1,
+            "session_load_event_count": 1,
+            "session_load_event_seconds": 46.79976365016773,
+            "session_load_failed_event_count": 0
+          }
+        },
+        "timing_boundary": "Upstream model_parameters_verified is cumulative from native load start through parameter verification and excludes processor finalization. model_ready is counted only. Adapter session-load events include the full cold load, processor, audit/residency checks, synchronization, and failed-call work. Generation excludes preparation, input hashing, and device transfer. These overlapping event boundaries must not be added to wall time."
+      },
+      "throughput": {
+        "allocated_gpu_hours": null,
+        "allocation_note": "The three conditions share one allocation. No separate per-condition GPU-hour measurement is available.",
+        "source_hours": 0.03854641361111111,
+        "source_hours_per_allocated_gpu_hour": null,
+        "source_hours_per_cli_hour": 0.10141893747201267,
+        "source_hours_per_subprocess_hour": 0.10115587947753531
+      },
+      "wall_seconds": {
+        "cli": 1368.2561902040616,
+        "engine": 1368.075050514657,
+        "subprocess": 1371.814369236119,
+        "worker": 1370.2392248511314
+      }
+    },
+    "reference": {
+      "artifact_sha256": [
+        {
+          "episode_id": "homer_41",
+          "sha256": "6e164cf263b3018fbf507718b11f855c88510934cd38f264e73377948445f323"
+        },
+        {
+          "episode_id": "homer_50",
+          "sha256": "04de343cc2b587f141b6d4380b3b963dc6d2a57e48d53df90d649ce56461ba21"
+        },
+        {
+          "episode_id": "homer_52",
+          "sha256": "94b17a80189832eb1845b2e17e0ec51f019c5118dd3929233ac691c516f2e056"
+        }
+      ],
+      "attempt_work_seconds_excluding_preparation": 1460.0691765290685,
+      "complete_captions": 45,
+      "complete_episodes": 3,
+      "cpu_and_cache_telemetry": {
+        "backends": [
+          {
+            "backend_ordinal": 0,
+            "decoded_frame_cache": null,
+            "episode_id": "homer_52"
+          },
+          {
+            "backend_ordinal": 1,
+            "decoded_frame_cache": null,
+            "episode_id": "homer_50"
+          },
+          {
+            "backend_ordinal": 2,
+            "decoded_frame_cache": null,
+            "episode_id": "homer_41"
+          }
+        ],
+        "cpu_preparation": {
+          "backend_preparation_calls": 3,
+          "backend_preparation_failures": 0,
+          "backend_preparation_work_seconds": 19.454746773466468,
+          "metadata_cache_hits": 3,
+          "preparation_requests": 6,
+          "source_verification_calls": 6,
+          "source_verification_failures": 0,
+          "source_verification_work_seconds": 0.1452275845222175
+        },
+        "cpu_timing_scope": "Summed engine worker time includes failed calls. Preparation can overlap inference; these sums are not end-to-end wall time. Initial CLI manifest hashing is outside these counters.",
+        "decoded_cache_scope": "Cumulative counters per backend cache lifetime, captured before close. Byte counts cover retained RGB payloads only; null means no decoded-frame cache.",
+        "prefetch": 0,
+        "prepared_metadata_cache_capacity": 1,
+        "schema_version": "bir_engine_work_telemetry_v1"
+      },
+      "execution_contract_sha256": "b082dde51224c3f8ebd077bf0c432a485a0af6483b10bb31ca6ce6981449270e",
+      "failed_attempts": 0,
+      "fresh_stage_attempts": 6,
+      "gpu_memory": [
+        {
+          "logical_device": 0,
+          "peak_allocated_bytes": 22470297600,
+          "peak_allocated_gib": 20.927095413208008,
+          "peak_reserved_bytes": 24928845824,
+          "peak_reserved_gib": 23.216796875
+        },
+        {
+          "logical_device": 1,
+          "peak_allocated_bytes": 23959430144,
+          "peak_allocated_gib": 22.313958168029785,
+          "peak_reserved_bytes": 24905777152,
+          "peak_reserved_gib": 23.1953125
+        },
+        {
+          "logical_device": 2,
+          "peak_allocated_bytes": 24368743424,
+          "peak_allocated_gib": 22.69516086578369,
+          "peak_reserved_bytes": 24800919552,
+          "peak_reserved_gib": 23.09765625
+        }
+      ],
+      "host_peak_memory_per_condition": null,
+      "per_episode_result_latency": {
+        "arrival": "all_jobs_at_engine_run_start",
+        "boundary": "serialized_export_completed",
+        "episodes": [
+          {
+            "episode_id": "homer_52",
+            "final_stage_commit_seconds": 564.0224168179557,
+            "result_available_seconds": 1481.9851553612389
+          },
+          {
+            "episode_id": "homer_50",
+            "final_stage_commit_seconds": 915.7207641410641,
+            "result_available_seconds": 1482.013215566054
+          },
+          {
+            "episode_id": "homer_41",
+            "final_stage_commit_seconds": 1481.511531603057,
+            "result_available_seconds": 1482.0417372910306
+          }
+        ],
+        "limitation": "Exports occur after all inference and backend cleanup, in manifest order; export latencies can therefore be close.",
+        "median_seconds": 1482.013215566054,
+        "p95_seconds": 1482.038885118533,
+        "percentile_method": "linear interpolation of sorted values at (n-1)*p (type 7)",
+        "population": "all expected episodes from a wholly fresh complete run; partial, failed, cached, and mixed execution are excluded",
+        "status": "measured"
+      },
+      "per_stage_attempt_work_seconds": {
+        "caption": 1060.5505655994639,
+        "segment": 399.5186109296046
+      },
+      "per_stage_episode_attempt_seconds": {
+        "caption": [
+          {
+            "elapsed_s": 385.70369730563834,
+            "episode_id": "homer_52"
+          },
+          {
+            "elapsed_s": 267.2727998769842,
+            "episode_id": "homer_50"
+          },
+          {
+            "elapsed_s": 407.5740684168413,
+            "episode_id": "homer_41"
+          }
+        ],
+        "segment": [
+          {
+            "elapsed_s": 167.75446709478274,
+            "episode_id": "homer_52"
+          },
+          {
+            "elapsed_s": 82.25204543489963,
+            "episode_id": "homer_50"
+          },
+          {
+            "elapsed_s": 149.51209839992225,
+            "episode_id": "homer_41"
+          }
+        ]
+      },
+      "request_batch_size": 1,
+      "resume": {
+        "annotation_hashes_unchanged": true,
+        "cli_workflow_seconds": 0.4401396932080388,
+        "fresh_stage_attempts": 0,
+        "generation_events": 0,
+        "model_load_events": 0,
+        "resumed_stages": 6,
+        "saved_attempt_count_unchanged": 6,
+        "status": "cache_only_verified",
+        "subprocess_wall_seconds": 3.959245673380792,
+        "worker_workflow_seconds": 3.1199765889905393
+      },
+      "retries": 0,
+      "runtime_events": {
+        "stages": {
+          "captioner": {
+            "generation_call_count": 45,
+            "generation_event_seconds": 413.531,
+            "model_load_count": 3,
+            "model_parameter_load_verification_event_count": 3,
+            "model_parameter_load_verification_event_seconds": 127.58600000000001,
+            "model_ready_count": 3,
+            "session_load_event_count": 3,
+            "session_load_event_seconds": 131.02598561532795,
+            "session_load_failed_event_count": 0
+          },
+          "tempseg": {
+            "generation_call_count": 20,
+            "generation_event_seconds": 138.603,
+            "model_load_count": 3,
+            "model_parameter_load_verification_event_count": 3,
+            "model_parameter_load_verification_event_seconds": 120.27799999999999,
+            "model_ready_count": 3,
+            "session_load_event_count": 3,
+            "session_load_event_seconds": 123.75329761579633,
+            "session_load_failed_event_count": 0
+          }
+        },
+        "timing_boundary": "Upstream model_parameters_verified is cumulative from native load start through parameter verification and excludes processor finalization. model_ready is counted only. Adapter session-load events include the full cold load, processor, audit/residency checks, synchronization, and failed-call work. Generation excludes preparation, input hashing, and device transfer. These overlapping event boundaries must not be added to wall time."
+      },
+      "throughput": {
+        "allocated_gpu_hours": null,
+        "allocation_note": "The three conditions share one allocation. No separate per-condition GPU-hour measurement is available.",
+        "source_hours": 0.03854641361111111,
+        "source_hours_per_allocated_gpu_hour": null,
+        "source_hours_per_cli_hour": 0.09362094216918454,
+        "source_hours_per_subprocess_hour": 0.09329112334986116
+      },
+      "wall_seconds": {
+        "cli": 1482.2227354776114,
+        "engine": 1482.0440621809103,
+        "subprocess": 1487.4629441387951,
+        "worker": 1485.8011920731515
+      }
+    }
+  },
+  "configuration": {
+    "actual_placement": {
+      "captioner": {
+        "buffer_devices": {
+          "cuda:0": 1,
+          "cuda:2": 2
+        },
+        "device_map": {
+          "lm_head": "2",
+          "model.language_model.embed_tokens": "0",
+          "model.language_model.layers.0": "0",
+          "model.language_model.layers.1": "0",
+          "model.language_model.layers.10": "0",
+          "model.language_model.layers.11": "0",
+          "model.language_model.layers.12": "0",
+          "model.language_model.layers.13": "0",
+          "model.language_model.layers.14": "0",
+          "model.language_model.layers.15": "0",
+          "model.language_model.layers.16": "0",
+          "model.language_model.layers.17": "1",
+          "model.language_model.layers.18": "1",
+          "model.language_model.layers.19": "1",
+          "model.language_model.layers.2": "0",
+          "model.language_model.layers.20": "1",
+          "model.language_model.layers.21": "1",
+          "model.language_model.layers.22": "1",
+          "model.language_model.layers.23": "1",
+          "model.language_model.layers.24": "1",
+          "model.language_model.layers.25": "1",
+          "model.language_model.layers.26": "1",
+          "model.language_model.layers.27": "1",
+          "model.language_model.layers.28": "1",
+          "model.language_model.layers.29": "1",
+          "model.language_model.layers.3": "0",
+          "model.language_model.layers.30": "1",
+          "model.language_model.layers.31": "1",
+          "model.language_model.layers.32": "1",
+          "model.language_model.layers.33": "1",
+          "model.language_model.layers.34": "1",
+          "model.language_model.layers.35": "1",
+          "model.language_model.layers.36": "1",
+          "model.language_model.layers.37": "1",
+          "model.language_model.layers.38": "1",
+          "model.language_model.layers.39": "1",
+          "model.language_model.layers.4": "0",
+          "model.language_model.layers.40": "1",
+          "model.language_model.layers.41": "1",
+          "model.language_model.layers.42": "2",
+          "model.language_model.layers.43": "2",
+          "model.language_model.layers.44": "2",
+          "model.language_model.layers.45": "2",
+          "model.language_model.layers.46": "2",
+          "model.language_model.layers.47": "2",
+          "model.language_model.layers.48": "2",
+          "model.language_model.layers.49": "2",
+          "model.language_model.layers.5": "0",
+          "model.language_model.layers.50": "2",
+          "model.language_model.layers.51": "2",
+          "model.language_model.layers.52": "2",
+          "model.language_model.layers.53": "2",
+          "model.language_model.layers.54": "2",
+          "model.language_model.layers.55": "2",
+          "model.language_model.layers.56": "2",
+          "model.language_model.layers.57": "2",
+          "model.language_model.layers.58": "2",
+          "model.language_model.layers.59": "2",
+          "model.language_model.layers.6": "0",
+          "model.language_model.layers.60": "2",
+          "model.language_model.layers.61": "2",
+          "model.language_model.layers.62": "2",
+          "model.language_model.layers.63": "2",
+          "model.language_model.layers.7": "0",
+          "model.language_model.layers.8": "0",
+          "model.language_model.layers.9": "0",
+          "model.language_model.norm": "2",
+          "model.language_model.rotary_emb": "2",
+          "model.visual": "0"
+        },
+        "parameter_bytes_by_device": {
+          "cuda:0": 16407404128,
+          "cuda:1": 19031447424,
+          "cuda:2": 19274614784
+        },
+        "parameter_dtypes": {
+          "torch.bfloat16": 1088,
+          "torch.float32": 96
+        }
+      },
+      "tempseg": {
+        "buffer_devices": {
+          "cuda:0": 3
+        },
+        "device_map": {},
+        "parameter_bytes_by_device": {
+          "cuda:0": 19165857248
+        },
+        "parameter_dtypes": {
+          "torch.bfloat16": 712,
+          "torch.float32": 544
+        }
+      }
+    },
+    "actual_placement_sha256": "344e6bdaaec665df39c4c534e2732aeb798c9a5e496b5a0f7a0429efee27f9f5",
+    "camera_roles": [
+      "main"
+    ],
+    "captioner_headroom_gib": 4.0,
+    "condition_order": [
+      "reference",
+      "persistent",
+      "optimized"
+    ],
+    "engine_source_sha256": {
+      "__init__.py": "9d91b31d9bf94bea129c09d09a568e7af0f762b5a6363fdef3ee46cc9b3e2454",
+      "adaptive.py": "b8fb13cd1cd615959b5bb0ed4de04bc50d93d9f1e850feabf7c8ec1f5f0082a3",
+      "batching.py": "6efb4e39cf52d52e485813a3658b6093e69ce9971e5dc3d56fca72a2ae4adb97",
+      "batching_contract.py": "fc8cb87b936f94b5d63e08021a733ae0a4c3c3bd58d1dbc4018548abd1867fe3",
+      "caption_batching.py": "5ffb7bbac6681e5ba41b21d4939335afebc48334962aab5fa24010b952e28ec5",
+      "cli.py": "88a8352107d2667e3097c3e4984d909c6f7e471cd32f584e798337e82153f957",
+      "engine.py": "b675b4bbfe87e3e49a8533f5f66df9f6f0639cf96de3a980a65aa1976efff13d",
+      "evaluation.py": "61593c9a763354d0717c5118148d73736d15315b20879e53b54824dae0656d7d",
+      "frame_cache.py": "ced64e426ee64c3609113da5d3f33802c9704a5d744fcb1733cc72ec1cefc635",
+      "manifest.py": "8116c0a56459a6ff25ed77948d0508739ba8dba493bdc28d516375273e45d275",
+      "native.py": "d5680c947252efb4304ffadec42a8496e4393cdc079c021eb97440734d040998",
+      "placement.py": "616b9f5d991ffe4e7d02be8a1fb09a9e1b2a55de5891628e9efb0caeb33c9b82",
+      "resource_ledger.py": "9ab2cb6e5793cac6e26f15e38c637a53bdd449c43e5c35f651e00135fd016753",
+      "store.py": "6bfd446d07b33be0f900360a4923f3739a711093388d1166bab953c0670b7222"
+    },
+    "environment": {
+      "accelerate": "1.12.0",
+      "av": "16.0.1",
+      "huggingface-hub": "1.33.0",
+      "peft": "0.18.1",
+      "safetensors": "0.7.0",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.8.1"
+    },
+    "episode_count": 3,
+    "episodes": [
+      {
+        "duration_seconds": 54.3,
+        "episode_id": "homer_41",
+        "source_sha256": {
+          "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+        }
+      },
+      {
+        "duration_seconds": 46.481711,
+        "episode_id": "homer_50",
+        "source_sha256": {
+          "main": "aa65a465999a9d3198839e71bfc8569b78a51cb0ee63e5661b829d3a44f7e359"
+        }
+      },
+      {
+        "duration_seconds": 37.985378,
+        "episode_id": "homer_52",
+        "source_sha256": {
+          "main": "998f86d8a6443d44a8367f2a10377ebdd84404ff80810b99a5fa792de74f8f6e"
+        }
+      }
+    ],
+    "hardware": {
+      "allocated_cpus": 4,
+      "cuda_runtime": "12.8",
+      "devices": [
+        {
+          "capability": [
+            8,
+            6
+          ],
+          "logical_device": 0,
+          "name": "NVIDIA GeForce RTX 3090",
+          "total_memory_bytes": 25296044032
+        },
+        {
+          "capability": [
+            8,
+            6
+          ],
+          "logical_device": 1,
+          "name": "NVIDIA GeForce RTX 3090",
+          "total_memory_bytes": 25296044032
+        },
+        {
+          "capability": [
+            8,
+            6
+          ],
+          "logical_device": 2,
+          "name": "NVIDIA GeForce RTX 3090",
+          "total_memory_bytes": 25296044032
+        }
+      ],
+      "gpu_count": 3,
+      "requested_host_ram_gib": 128,
+      "same_node": true
+    },
+    "manifest_sha256": "4486ba511379ae01a07dbe6eaee1c653eb742f2664fc7ceb22e71cc10fcdb25f",
+    "profile": "Human",
+    "repeated_trials": 1,
+    "request_batch_size": 1,
+    "runner_sources_sha256": {
+      "compare_native.py": "57d4c7d2ff685a5df0ae1e7cb8681b058850f5600fc586589ecd946ba16f7f0e",
+      "native_benchmark.py": "606cdd7097c5d777b186689f390cea5ca8fc521033955c1269fdf0a933afa5c5"
+    },
+    "source_and_model_lock": {
+      "captioner": {
+        "repo": "nvidia/Flora-Captioner",
+        "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6"
+      },
+      "captioner_headroom_gib": 4,
+      "microbatch_size": 1,
+      "microbatch_status": "larger batches require measured GPU verification",
+      "native_contract": "flora-native-placement-v1",
+      "source": {
+        "repo": "https://github.com/NVIDIA/Flora.git",
+        "revision": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "tempseg": {
+        "adapter_sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3",
+        "repo": "nvidia/Flora-TempSeg",
+        "revision": "114a1076f70eb53f4a58ac045505db3087e79347"
+      },
+      "tempseg_base": {
+        "repo": "Qwen/Qwen3.5-9B",
+        "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+      }
+    },
+    "source_counting": "Each distinct episode duration is counted once per condition. Three runs of the same corpus are not nine unique episodes.",
+    "source_duration_seconds": 138.767089,
+    "source_hours": 0.03854641361111111,
+    "workload_signature_sha256": "8acf2e821bf52e415c031ab43e49ee1bb25d8893b84d4d46666bf6abd15a20a8"
+  },
+  "date": "2026-10-31",
+  "engine_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+  "evidence_sha256": {
+    "benchmark_plan": "91e8efd8a8326f6b25abc1baad15184584c391c69af7b2eec4d7205c28aa4014",
+    "benchmark_summary": "ada6836916f44d590b06f718c7b6d7283c6153e4719a9573564df645ea419555",
+    "condition_fresh_summaries": {
+      "optimized": "15fde2374580db8965d22d67b0c13d26ba494c1206671d40ded768d8dc376f0c",
+      "persistent": "8871afa908873dc6ddcf9823b82d07bc3c52deeae775ddabe1f996c44dca5173",
+      "reference": "ff01a1d6cc30f8f4144127da428383f9734b5fa3dea6a9b45d74477953e9b88f"
+    },
+    "condition_runtime_logs": {
+      "optimized": "b2f3aef8191825eb1086b13add6ecd893cb222b53755ee073988dd56ea5c00a3",
+      "persistent": "657dab1bbeab1ab0c88bef714c88642d2f9e789814e9e5df35529113cb600d91",
+      "reference": "dca5ad0a5c4f316c49ec6108fae7af0d484d013fbfae00cf6f454203d221417b"
+    },
+    "final_scheduler_record": "527f04dc4d57388e433d27980f1ab9cb9e57362527b1ef2e7c84e5ba21611393",
+    "reference_vs_optimized": "8c92683c884cc67e771aab1004beee75b69e4bb193628450a7c61cbfb4d4384e",
+    "reference_vs_persistent": "edf1c59357b0c3fe09d5eec3284998556cd96be50a4c81cb7d92b005f4a08fd1"
+  },
+  "independent_review": {
+    "engine_review_sha256": "1e5af293b010cde9344f1cc4e300272eb168c4568a77f51f369d64f8dbef7781",
+    "measurement_and_resource_accounting": "passed",
+    "native_compatibility_and_placement": "passed",
+    "native_review_sha256": "5757dc7f771b1fc9ba419afc248e5c3fc6d78b3f6630d1dc55df5c663496f988",
+    "optimized_engine_and_measurements": "passed"
+  },
+  "interpretation_limits": [
+    "This is one ordered reference/persistent/optimized trial. Filesystem cache and machine state can affect times; there is no repeat-based uncertainty estimate.",
+    "The conditions compare complete workflows, not isolated changes. Reference performs 3 native preparation calls, persistent 6, and optimized 3. Their metadata cache capacities and traversal order differ. The whole timing difference cannot be attributed only to model persistence.",
+    "Optimized cache statistics show observed reuse within its 256 MiB retained-frame limit. This run does not isolate the speed contribution of frame reuse, metadata reuse or overlapping preparation.",
+    "All conditions use request batch size one. GPU microbatch admission and performance are not established by this benchmark.",
+    "Exact captions, temporal plans and input tensor agreement establish compatibility. They do not establish annotation accuracy.",
+    "The runtime tensor comparison matches the corpus multiset of stage-and-input digests; runtime lines do not supply episode IDs. Per-episode source/temporal/caption audits are compared separately.",
+    "All result exports occur after complete inference, so the three latency values are close. These are offline batch result latencies, not online request latency.",
+    "Per-condition allocated GPU-hour throughput and complete host-memory peaks are unmeasured.",
+    "Adaptive development and final evaluation are pending."
+  ],
+  "measurement_boundaries": {
+    "cache": "Counts cover retained RGB frame payloads only, measured before backend cleanup. They exclude other process memory.",
+    "cli": "Includes manifest hashing, setup, preparation, inference, model cleanup and annotation export. Ends before final summary writing and SQLite close.",
+    "cpu_work": "Counters sum engine preparation work and can overlap GPU work. They exclude earlier CLI/worker manifest hashing and are not allocated CPU core-hours.",
+    "latency": "All jobs arrive at engine start. Each result becomes available when its serialized export completes, after all inference and model cleanup. Latency excludes CLI setup and scheduler wait.",
+    "primary": "Subprocess wall includes process startup, worker checks, the full CLI invocation and process exit.",
+    "runtime_events": "Parameter verification is a prefix of full session load. Generation events exclude preparation, input hashing and transfer. These nested measurements must not be added to workflow wall time.",
+    "stage_attempt": "Excludes input preparation, attempt creation and final checkpoint commit. Includes model loading when triggered and native stage execution.",
+    "worker": "Starts inside the worker function; excludes earlier imports and process launch/exit."
+  },
+  "native_agreement": {
+    "optimized": {
+      "claim": "native_input_and_output_compatibility_not_annotation_quality",
+      "compared_episode_count": 3,
+      "comparison_stage": "all",
+      "compatible": true,
+      "difference_count": 0,
+      "differences_by_group": {},
+      "processor_tensors": {
+        "agreement": true,
+        "left_generation_calls": 65,
+        "left_only_calls": 0,
+        "matching_rule": "model-stage-and-input-digest multiset; corpus execution order may differ",
+        "right_generation_calls": 65,
+        "right_only_calls": 0,
+        "scope_limit": "Runtime lines have no episode IDs; this checks the corpus multiset, not per-episode tensor routing",
+        "status": "compared"
+      },
+      "tensor_input_agreement_verified": true
+    },
+    "persistent": {
+      "claim": "native_input_and_output_compatibility_not_annotation_quality",
+      "compared_episode_count": 3,
+      "comparison_stage": "all",
+      "compatible": true,
+      "difference_count": 0,
+      "differences_by_group": {},
+      "processor_tensors": {
+        "agreement": true,
+        "left_generation_calls": 65,
+        "left_only_calls": 0,
+        "matching_rule": "model-stage-and-input-digest multiset; corpus execution order may differ",
+        "right_generation_calls": 65,
+        "right_only_calls": 0,
+        "scope_limit": "Runtime lines have no episode IDs; this checks the corpus multiset, not per-episode tensor routing",
+        "status": "compared"
+      },
+      "tensor_input_agreement_verified": true
+    }
+  },
+  "observed_workflow_contrasts": {
+    "optimized": {
+      "baseline": "reference",
+      "condition_seconds": 1328.3967267316766,
+      "observed_speedup_ratio": 1.1197430061413034,
+      "observed_wall_time_reduction_percent": 10.693793619121983,
+      "reference_seconds": 1487.4629441387951,
+      "timing_boundary": "condition_subprocess_wall"
+    },
+    "optimized_over_persistent": {
+      "baseline": "persistent",
+      "observed_speedup_ratio": 1.032684243818686,
+      "observed_wall_time_reduction_percent": 3.164979422734804,
+      "timing_boundary": "condition_subprocess_wall"
+    },
+    "persistent": {
+      "baseline": "reference",
+      "condition_seconds": 1371.814369236119,
+      "observed_speedup_ratio": 1.084303370409419,
+      "observed_wall_time_reduction_percent": 7.774887795247476,
+      "reference_seconds": 1487.4629441387951,
+      "timing_boundary": "condition_subprocess_wall"
+    }
+  },
+  "project_accounting_after_benchmark": {
+    "benchmark_gpu_hours": 3.5,
+    "completed_gpu_allocations": 8,
+    "final_reproduction_gpu_hours_reserved": 2.25,
+    "final_reproduction_submission_slots_reserved": 1,
+    "prior_used_gpu_hours": 3.2872222222222223,
+    "used_cpu_only_core_hours": 3.007777777777777,
+    "used_gpu_hours": 6.787222222222223
+  },
+  "reproduction": {
+    "document": "docs/NATIVE_BENCHMARK.md",
+    "entrypoint": "scripts/native_benchmark.py",
+    "inputs": "Pinned prepared initial development manifest for homer_52, homer_50, homer_41; exact source hashes are in configuration.",
+    "required_release": "d2701b08a08b88d18887abed81f71c8373478d7b",
+    "requires_fresh_output_directory": true,
+    "requires_native_gate_c_and_scheduler_reservation": true
+  },
+  "schema_version": "bir_native_benchmark_report_v1",
+  "scope": "Measured native workflow comparison on three single-view human development episodes. This is not an independent annotation-quality evaluation, a general performance guarantee, or an adaptive result.",
+  "status": "completed_and_verified",
+  "summary": "The optimized condition completed the same three development videos in 1,328.397 seconds of subprocess wall time, versus 1,487.463 seconds for reference. This is an observed 1.120x speedup in one fixed-order trial. All 45 captions and native input/output projections matched."
+}
