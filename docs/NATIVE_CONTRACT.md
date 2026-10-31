@@ -72,3 +72,16 @@ Separate GPU gates remain required: a framework operation; native TempSeg; faith
 A successful resume is labeled as a cache retrieval when no new stage executes. An empty annotation cannot pass the native-caption gate. That gate requires a fresh caption stage, nonempty complete captions, and saved Captioner residency verification. Separate-stage runs preserve the TempSeg loader checks inside the segmentation checkpoint.
 
 Both probes reject nonzero `SLURM_RESTART_COUNT` before model work. The coordinator must reconcile a restarted allocation before another attempt. The probes do not submit, cancel, or retry scheduler jobs.
+
+## Asset trust anchors
+
+`source_manifest_identity` in the upstream Captioner configuration is a source
+model identity in `MODEL_PROVENANCE.json`. It is not the raw SHA256 of
+`SOURCE_MANIFEST.sha256`. `scripts/check_asset_provenance.py` independently pins
+both metadata files and checks that identity. Run it before Captioner loading.
+The unchanged native loader then verifies every payload against that anchored
+manifest. The metadata-only utility does not claim to read or verify weights.
+
+```bash
+python scripts/check_asset_provenance.py "$FLORA_MODEL_CACHE/captioner"
+```
