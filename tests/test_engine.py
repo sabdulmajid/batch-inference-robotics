@@ -5,6 +5,7 @@ import tempfile
 import threading
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 from bir.engine import Engine, TransientError
 from bir.manifest import load_manifest
@@ -119,6 +120,8 @@ class EngineTests(unittest.TestCase):
         self.assertTrue(first["execution_complete"])
         self.assertFalse(first["complete"])
         self.assertEqual(first["records"][-1]["status"], "partial")
+        self.assertEqual(first['episode_result_availability']['episodes'][0]['status'], 'partial')
+        self.assertFalse(first['episode_result_availability']['episodes'][0]['fresh_complete'])
         second = engine.run(self.jobs[:1])
         self.assertFalse(second["complete"])
         self.assertEqual(second["fresh_stage_attempts"], 0)
@@ -172,6 +175,52 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(resumed['telemetry']['backends'][0]['decoded_frame_cache']['hits'], 0)
         self.assertEqual(fresh['telemetry']['cpu_preparation']['preparation_requests'], 6)
         json.dumps(fresh['telemetry'], allow_nan=False)
+
+    def test_availability_tracks_async_preparation_exports_failures_and_cached_results(self):
+        from bir.native import NativeModelLoadBlocked
+        prepared_next, closed = threading.Event(), threading.Event()
+        class Backend:
+            def prepare(self, job):
+                if job['id'] == '1': prepared_next.set()
+                return job
+            def segment(self, job):
+                if job['id'] == '0' and not prepared_next.wait(2):
+                    raise AssertionError('Preparation did not overlap')
+                if job['id'] == '1': raise ValueError('Fixture stage failure')
+                if job['id'] == '2': raise NativeModelLoadBlocked('Fixture fatal load latch')
+                return {'segments': []}
+            def caption(self, job, segmentation):
+                return {'segments': []}
+            def close(self): closed.set()
+        engine = Engine(Backend, self.store, prefetch=1)
+        original_export = self.store.export
+        def export(*args, **kwargs):
+            self.assertTrue(closed.is_set(), 'Existing export-after-cleanup order changed')
+            return original_export(*args, **kwargs)
+        with patch.object(self.store, 'export', side_effect=export):
+            fresh = engine.run(self.jobs, output_dir=self.root / 'out')
+        availability = fresh['episode_result_availability']
+        self.assertEqual(availability['arrival'], 'all_jobs_at_engine_run_start')
+        self.assertEqual(availability['boundary'], 'serialized_export_completed')
+        rows = {row['episode_id']: row for row in availability['episodes']}
+        self.assertEqual(set(rows), {'0', '1', '2'})
+        complete = rows['0']
+        self.assertEqual(complete['request_id'], self.jobs[0].request_id)
+        self.assertTrue(complete['fresh_complete'])
+        self.assertLessEqual(complete['final_stage_committed_after_run_start_s'], complete['result_available_after_run_start_s'])
+        self.assertLessEqual(complete['result_available_after_run_start_s'], fresh['elapsed_s'])
+        for identity in ('1', '2'):
+            self.assertEqual(rows[identity]['status'], 'blocked')
+            self.assertIsNone(rows[identity]['result_available_after_run_start_s'])
+            self.assertFalse(rows[identity]['fresh_complete'])
+        blocked = [row for row in fresh['records'] if row['id'] == '2' and row['stage'] == 'segment'][0]
+        self.assertEqual(blocked['status'], 'blocked')
+        self.assertEqual([row['state'] for row in self.store.attempts() if row['request_id'] == self.jobs[2].request_id], ['failed'])
+        resumed = engine.run(self.jobs, output_dir=self.root / 'out')
+        cached = resumed['episode_result_availability']['episodes'][0]
+        self.assertEqual(cached['execution_origin'], 'cached')
+        self.assertFalse(cached['fresh_complete'])
+        self.assertIsNone(cached['final_stage_committed_after_run_start_s'])
 
 
 if __name__ == "__main__":

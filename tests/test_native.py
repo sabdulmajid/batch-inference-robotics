@@ -1,4 +1,5 @@
 import importlib.util
+import errno
 from pathlib import Path
 import tempfile
 import json
@@ -9,7 +10,7 @@ import types
 import unittest
 from unittest.mock import patch
 
-from bir.native import (NativeBackend, PersistentSession, PreparedEpisode,
+from bir.native import (NativeBackend, NativeModelLoadBlocked, PersistentSession, PreparedEpisode,
                         _json_audit, verify_source, UPSTREAM_COMMIT)
 
 SOURCE = Path(__file__).resolve().parents[1] / 'third_party' / 'Flora'
@@ -18,6 +19,14 @@ HAS_AV = importlib.util.find_spec('av') is not None
 
 
 class SessionTests(unittest.TestCase):
+    def setUp(self):
+        self.sync_patch = patch('bir.native._synchronize_cuda')
+        self.sync = self.sync_patch.start()
+        self.addCleanup(self.sync_patch.stop)
+        self.event_patch = patch('bir.native._runtime_event')
+        self.event = self.event_patch.start()
+        self.addCleanup(self.event_patch.stop)
+
     def test_model_lifetime_reused_and_stage_change_loads_once(self):
         class Session:
             def __init__(self): self.model = self.proc = None; self.audit = {}; self.loads = []
@@ -34,6 +43,11 @@ class SessionTests(unittest.TestCase):
             session.load('captioner')
             self.assertEqual(session.native.loads, ['tempseg', 'captioner'])
             placement.assert_called_once()
+            self.assertEqual(self.sync.call_count, 2)
+            self.assertEqual([call.args[0] for call in self.event.call_args_list], ['model_load_end', 'model_load_end'])
+            self.assertTrue(all(call.kwargs['cold_load'] and call.kwargs['synchronization_complete']
+                                for call in self.event.call_args_list))
+            self.assertTrue(all(call.kwargs['elapsed_s'] >= 0 for call in self.event.call_args_list))
         session.close()
         self.assertIsNone(session.kind)
 
@@ -45,11 +59,55 @@ class SessionTests(unittest.TestCase):
         session = PersistentSession(types.SimpleNamespace(Session=Session))
         with patch('bir.native.verify_residency', side_effect=RuntimeError('cpu offload')):
             with self.assertRaises(RuntimeError): session.load('tempseg')
+            with self.assertRaises(NativeModelLoadBlocked): session.load('tempseg')
         self.assertIsNone(session.kind)
         self.assertIsNone(session.native.model)
+        self.assertEqual([call.args[0] for call in self.event.call_args_list], ['model_load_end', 'model_load_blocked'])
+        self.assertEqual(session.load_timings['tempseg'][0]['status'], 'failed')
+        self.assertEqual(len(session.load_timings['tempseg']), 1)
+
+    def test_transient_load_failure_keeps_explicit_bounded_retry_available(self):
+        class Session:
+            def __init__(self): self.model = self.proc = None; self.audit = {}; self.calls = 0
+            def load(self, kind):
+                self.calls += 1
+                if self.calls == 1: raise OSError(errno.EIO, 'temporary I/O fixture')
+                self.model = object()
+                return self.model, None
+            def close(self): self.model = self.proc = None
+        session = PersistentSession(types.SimpleNamespace(Session=Session))
+        with patch('bir.native.verify_residency', return_value={}):
+            with self.assertRaises(OSError): session.load('tempseg')
+            session.load('tempseg')
+        self.assertEqual(session.native.calls, 2)
+        self.assertEqual([row['status'] for row in session.load_timings['tempseg']], ['failed', 'complete'])
+        self.assertTrue(session.load_timings['tempseg'][0]['transient'])
+
+    def test_full_load_event_follows_residency_and_all_device_synchronization(self):
+        order = []
+        class Session:
+            def __init__(self): self.model = self.proc = None; self.audit = {}
+            def load(self, kind):
+                order.append('native_load_and_processor')
+                self.model = object()
+                return self.model, None
+            def close(self): self.model = None
+        self.sync.side_effect = lambda: order.append('synchronize_all_visible_devices')
+        self.event.side_effect = lambda *args, **kwargs: order.append('timed_event')
+        with patch('bir.native.verify_residency', side_effect=lambda _: order.append('verify_residency')):
+            PersistentSession(types.SimpleNamespace(Session=Session)).load('tempseg')
+        self.assertEqual(order, ['native_load_and_processor', 'verify_residency',
+                                 'synchronize_all_visible_devices', 'timed_event'])
 
 
 class AuditSerializationTests(unittest.TestCase):
+    def setUp(self):
+        sync = patch('bir.native._synchronize_cuda')
+        sync.start()
+        self.addCleanup(sync.stop)
+        event = patch('bir.native._runtime_event')
+        event.start()
+        self.addCleanup(event.stop)
     def test_loading_diagnostics_preserve_values_with_stable_order(self):
         raw = {'missing_keys': {'z', 'a'}, 'unexpected_keys': set(),
                'mismatched_keys': {('z', (4, 5), (5, 4)), ('a', (1,), (2,))},

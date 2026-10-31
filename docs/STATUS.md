@@ -33,13 +33,17 @@ project policy choice, not a cluster quota change.
   annotation remains unvalidated until that job and its artifacts pass.
 - The adaptive protocol and task-separated split are frozen. All three exact
   development/final videos passed preparation with original bytes and clocks.
+- Native temporal and joint AI reference review is frozen for the three initial
+  development episodes and their 40 independent references.
+- A small CPU-only resume check is queued after successful Captioner completion.
+  It will verify an isolated copy of the exact inference state.
 - No performance or adaptive quality result exists.
 
 ## Resource state
 
 - GPU-hours used/reserved: 0.267222 / 3 of 24, including the failed allocation.
 - GPU submissions: 4 of 16.
-- CPU-only core-hours used/reserved: 3.006111 / 0 of 32.
+- CPU-only core-hours used/reserved: 3.006111 / 0.166667 of 32.
 - Measured persistent footprint: 128.775 GiB of the 250 GiB cap.
 - A durable coordinator marker and private operational ledger are established.
 

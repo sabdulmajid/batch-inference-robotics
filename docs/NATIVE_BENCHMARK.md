@@ -52,10 +52,14 @@ three timing boundaries separate:
   and engine cleanup. Worker framework checks occur before this timer.
 - Stage attempt time excludes input preparation.
 
-Native runtime events also separate model loading from generation. Load events
-include asset and parameter verification. Generation events exclude input
-preparation, hashing, and device transfer. These rounded event times explain the
-workflow; they are already included in wall time.
+Native runtime events also separate model loading from generation. The upstream
+parameter-verification event measures time through parameter checks. It excludes
+processor finalization. The upstream model-ready event has no duration field.
+The adapter records a separate full load time, including processor construction,
+audit and residency checks, and synchronization of every GPU. Failed load work
+is included. Older traces without this event retain an unknown full load time.
+Generation events exclude input preparation, hashing, and device transfer.
+These event intervals overlap. They are already included in wall time.
 
 Each fresh run also retains engine telemetry. CPU counters separate source
 verification, native input preparation, and prepared-metadata reuse. Their times
@@ -63,6 +67,14 @@ sum worker work, which can overlap inference. They are not elapsed wall time.
 Frame-cache records contain hits, misses, evictions, current and peak retained
 RGB bytes, and configured limits. The engine saves them before cache cleanup.
 Cache byte counts exclude Python objects and other process memory.
+
+Episode latency assumes that all manifest jobs arrive at the start of the engine
+run. The result becomes available when its serialized export completes. Exports
+occur after all inference and model cleanup, in manifest order. Their latencies
+can therefore be close. Reports give the median and p95 only for a wholly fresh,
+complete condition. They retain failed, partial, cached, and mixed results with
+explicit labels. Percentiles use linear interpolation at index `(n - 1) * p`.
+This boundary excludes CLI setup and the scheduler queue.
 
 The benchmark timer includes all three conditions, resume checks, and comparison
 work. Allocated GPU-hours remain unset until the coordinator reconciles the

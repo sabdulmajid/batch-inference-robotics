@@ -157,12 +157,15 @@ class Engine:
                 if stage == "caption":
                     result = dict(result, request_id=job.request_id, episode_id=job.id)
                 self.store.complete(job.request_id, stage, attempt, result, time.monotonic() - started)
+                committed = time.monotonic() - self._run_started
                 status = "partial" if stage == "caption" and any(
                     row.get("status") != "complete" for row in result.get("segments", [])) else "complete"
                 records.append(dict(id=job.id, request_id=job.request_id, stage=stage, status=status,
-                                    attempt=attempt, elapsed_s=time.monotonic() - started, fresh_execution=True))
+                                    attempt=attempt, elapsed_s=time.monotonic() - started, fresh_execution=True,
+                                    stage_committed_after_run_start_s=committed))
                 return
             except Exception as exc:
+                from .native import NativeModelLoadBlocked
                 kind = "transient" if is_transient(exc) else "deterministic"
                 self.store.fail(job.request_id, stage, attempt, exc, kind=kind, elapsed_s=time.monotonic() - started)
                 if kind == "transient" and attempt <= self.max_transient_retries:
@@ -173,7 +176,8 @@ class Engine:
                     except Exception as preparation_error_value:
                         preparation_error = preparation_error_value
                     continue
-                records.append(dict(id=job.id, request_id=job.request_id, stage=stage, status="failed",
+                status = 'blocked' if isinstance(exc, NativeModelLoadBlocked) else 'failed'
+                records.append(dict(id=job.id, request_id=job.request_id, stage=stage, status=status,
                                     attempt=attempt, error=str(exc), error_kind=kind, fresh_execution=True))
                 return
 
@@ -185,7 +189,8 @@ class Engine:
                 status = "partial" if stage == "caption" and any(
                     row.get("status") != "complete" for row in existing.get("segments", [])) else "resumed"
                 records.append(dict(id=job.id, request_id=job.request_id, stage=stage, status=status,
-                                    fresh_execution=False))
+                                    fresh_execution=False,
+                                    cached_result_observed_after_run_start_s=time.monotonic() - self._run_started))
             elif stage == "caption" and self.store.result(job.request_id, "segment") is None:
                 records.append(dict(id=job.id, request_id=job.request_id, stage=stage, status="blocked",
                                     error="Segmentation has no complete result", fresh_execution=False))
@@ -202,6 +207,7 @@ class Engine:
             raise ValueError("Episode identities must be unique")
         selected_stages = ("segment", "caption") if stages == "all" else (stages,)
         started, records = time.monotonic(), []
+        self._run_started = started
         self._reset_telemetry()
         self._prepared.clear()
         with self.store.exclusive():
@@ -224,19 +230,43 @@ class Engine:
                         self._stage(backend, jobs, stage, records)
                 finally:
                     self._close_backend(backend)
-            exported = []
+            exported, export_times = [], {}
             if output_dir is not None:
                 for job in jobs:
                     final_stage = selected_stages[-1]
                     if self.store.result(job.request_id, final_stage) is not None:
                         exported.append(str(self.store.export(job.request_id, output_dir, final_stage)))
+                        export_times[job.request_id] = time.monotonic() - started
             new_attempts = [dict(request_id=a["request_id"], stage=a["stage"], number=a["number"],
                                  state=a["state"], elapsed_s=a["elapsed_s"], error_kind=a["error_kind"])
                             for a in self.store.attempts()
                             if (a["request_id"], a["stage"], a["number"]) not in before_attempts]
         self._prepared.clear()
+        episode_availability = []
+        for job in jobs:
+            rows = [row for row in records if row['request_id'] == job.request_id]
+            final = next(row for row in rows if row['stage'] == selected_stages[-1])
+            fresh = any(row['fresh_execution'] for row in rows)
+            cached = any(not row['fresh_execution'] and row['status'] in {'resumed', 'partial'} for row in rows)
+            origin = 'mixed' if fresh and cached else 'fresh' if fresh else 'cached' if cached else 'no_execution'
+            available = None
+            if final['status'] in {'complete', 'resumed', 'partial'}:
+                available = export_times.get(job.request_id) if output_dir is not None else final.get(
+                    'stage_committed_after_run_start_s', final.get('cached_result_observed_after_run_start_s'))
+            episode_availability.append(dict(episode_id=job.id, request_id=job.request_id,
+                final_stage=selected_stages[-1], status='complete' if final['status'] == 'resumed' else final['status'],
+                execution_origin=origin,
+                fresh_complete=len(rows) == len(selected_stages) and all(
+                    row['fresh_execution'] and row['status'] == 'complete' for row in rows),
+                final_stage_committed_after_run_start_s=final.get('stage_committed_after_run_start_s'),
+                result_available_after_run_start_s=available))
         return dict(schema_version="bir_run_v1", mode=self.mode, elapsed_s=time.monotonic() - started,
                     records=records, exports=exported, telemetry=self._telemetry(),
+                    episode_result_availability=dict(arrival='all_jobs_at_engine_run_start',
+                        boundary='serialized_export_completed' if output_dir is not None else 'final_stage_committed_or_cached_result_observed',
+                        limitation=('Exports occur after all inference and backend cleanup, in manifest order; export latencies can therefore be close.'
+                                    if output_dir is not None else 'No serialized export was requested; availability refers to the stored requested-stage result.'),
+                        episodes=episode_availability),
                     attempts=new_attempts,
                     complete=all(row["status"] in {"complete", "resumed"} for row in records),
                     execution_complete=all(row["status"] in {"complete", "resumed", "partial"} for row in records),

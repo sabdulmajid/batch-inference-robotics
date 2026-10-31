@@ -71,6 +71,7 @@ class NativeEngineSerializationTests(unittest.TestCase):
         fake_torch = SimpleNamespace(cuda=SimpleNamespace(is_available=lambda: True))
         with tempfile.TemporaryDirectory() as directory, patch.dict(sys.modules, {"torch": fake_torch}), \
                 patch("bir.native.verify_residency", return_value={"all_parameters_and_nonempty_buffers_on_cuda": True}), \
+                patch("bir.native._synchronize_cuda"), \
                 patch("bir.native.captioner_placement", return_value=nullcontext()):
             root = Path(directory)
             (root / "identity.mp4").write_bytes(b"identity fixture; not decoded")

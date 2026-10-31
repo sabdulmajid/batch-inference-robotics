@@ -21,6 +21,9 @@ from pathlib import Path
 import re
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
+from bir.evaluation import percentile
+
 
 def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'),
@@ -214,6 +217,47 @@ def allocation_gpu_hours(rows):
     return total
 
 
+def episode_latency(run):
+    """Describe only fresh complete result availability under one fixed arrival."""
+    summary = run['summary']
+    result = dict(status='not_measured', median_seconds=None, p95_seconds=None, episodes=[],
+        arrival='all_jobs_at_engine_run_start',
+        percentile_method='linear interpolation of sorted values at (n-1)*p (type 7)',
+        population='all expected episodes from a wholly fresh complete run; partial, failed, cached, and mixed execution are excluded')
+    if run['errors'] or summary.get('complete') is not True:
+        return dict(result, status='excluded_not_fresh_complete')
+    measured = summary.get('episode_result_availability')
+    if measured is None:
+        return result
+    if (measured.get('arrival') != result['arrival'] or measured.get('boundary') not in {
+            'serialized_export_completed', 'final_stage_committed_or_cached_result_observed'}):
+        raise ValueError('Episode latency has an unknown arrival or availability boundary')
+    rows = measured['episodes']
+    expected = set(run['outputs'])
+    if not expected or len(rows) != len(expected) or {row['episode_id'] for row in rows} != expected:
+        raise ValueError('Episode latency does not cover the exact run workload')
+    if any(row.get('fresh_complete') is not True or row.get('execution_origin') != 'fresh' or
+           row.get('status') != 'complete' for row in rows):
+        return dict(result, status='excluded_not_fresh_complete')
+    final_stage = 'caption' if 'caption' in run['selected_stages'] else 'segment'
+    requests = {row['id']: row['request_id'] for row in summary['records'] if row['stage'] == final_stage}
+    engine_elapsed = finite(summary['elapsed_s'], 'Engine elapsed time', positive=True)
+    values, episodes = [], []
+    for row in rows:
+        if row.get('final_stage') != final_stage or row.get('request_id') != requests.get(row['episode_id']):
+            raise ValueError('Episode latency changed the final-stage request identity')
+        available = finite(row['result_available_after_run_start_s'], 'Episode result availability')
+        committed = finite(row['final_stage_committed_after_run_start_s'], 'Episode final-stage commit')
+        if not committed <= available <= engine_elapsed:
+            raise ValueError('Episode latency timestamps are outside their engine run boundary')
+        values.append(available)
+        episodes.append(dict(episode_id=row['episode_id'], result_available_seconds=available,
+                             final_stage_commit_seconds=committed))
+    return dict(result, status='measured', boundary=measured['boundary'],
+        limitation=measured.get('limitation'), episodes=episodes,
+        median_seconds=percentile(values, .5), p95_seconds=percentile(values, .95))
+
+
 def performance(run, accounting=None):
     summary = run['summary']
     wall = finite(summary.get('total_cli_workflow_s', summary.get('elapsed_s')), 'Measured wall time', positive=True)
@@ -234,7 +278,7 @@ def performance(run, accounting=None):
             'failed_attempts': sum(row.get('state') != 'complete' for row in attempts),
             'attempt_work_seconds_excluding_preparation': sum(known_times),
             'attempts_with_unknown_elapsed': len(attempts) - len(known_times),
-            'per_episode_end_to_end_latency': 'not_measured_by_this_report'}
+            'per_episode_end_to_end_latency': episode_latency(run)}
 
 
 def compare(left_dir, right_dir, *, stage='all', left_logs=(), right_logs=(), accounting=None):

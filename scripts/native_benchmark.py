@@ -52,12 +52,30 @@ def runner_source_hashes():
 
 def runtime_timings(path):
     """Keep native load and generation event boundaries separate from wall time."""
-    stages = {stage: dict(model_load_count=0, model_ready_count=0, model_load_event_seconds=0.0,
+    stages = {stage: dict(model_load_count=0, model_ready_count=0,
+                          model_parameter_load_verification_event_count=0,
+                          model_parameter_load_verification_event_seconds=None,
+                          session_load_event_count=0, session_load_failed_event_count=0,
+                          session_load_event_seconds=None,
                           generation_call_count=0, generation_event_seconds=0.0)
               for stage in ("tempseg", "captioner")}
     current = None
     with Path(path).open() as stream:
         for line in stream:
+            if line.startswith('BIR_RUNTIME '):
+                event = json.loads(line[len('BIR_RUNTIME '):])
+                if event.get('event') != 'model_load_end':
+                    continue
+                selected, elapsed = event.get('kind'), event.get('elapsed_s')
+                if (selected not in stages or event.get('cold_load') is not True or
+                        event.get('status') not in {'complete', 'failed'} or
+                        isinstance(elapsed, bool) or not isinstance(elapsed, (int, float)) or
+                        not math.isfinite(elapsed) or elapsed < 0):
+                    raise ValueError('Adapter model-load event has an invalid stage/time/status binding')
+                stages[selected]['session_load_event_count'] += 1
+                stages[selected]['session_load_failed_event_count'] += int(event['status'] == 'failed')
+                stages[selected]['session_load_event_seconds'] = (stages[selected]['session_load_event_seconds'] or 0.) + elapsed
+                continue
             if not line.startswith("FLORA_RUNTIME "):
                 continue
             event = json.loads(line[len("FLORA_RUNTIME "):])
@@ -67,20 +85,27 @@ def runtime_timings(path):
                 if current not in stages:
                     raise ValueError("Unexpected model stage in native runtime trace")
                 stages[current]["model_load_count"] += 1
-            elif kind in {"model_ready", "generation_end"}:
-                selected = event.get("kind") if kind == "model_ready" else current
+            elif kind == 'model_ready':
+                selected = event.get('kind')
+                if selected not in stages:
+                    raise ValueError('Native model-ready event has no valid stage binding')
+                # Upstream emits no elapsed_s here. Do not invent full load time.
+                stages[selected]['model_ready_count'] += 1
+            elif kind in {"model_parameters_verified", "generation_end"}:
+                selected = event.get("kind") if kind == "model_parameters_verified" else current
                 elapsed = event.get("elapsed_s")
                 if (selected not in stages or isinstance(elapsed, bool) or not isinstance(elapsed, (int, float)) or
                         not math.isfinite(elapsed) or elapsed < 0):
                     raise ValueError("Native runtime event has no valid stage/time binding")
-                if kind == "model_ready":
-                    stages[selected]["model_ready_count"] += 1
-                    stages[selected]["model_load_event_seconds"] += elapsed
+                if kind == "model_parameters_verified":
+                    stages[selected]["model_parameter_load_verification_event_count"] += 1
+                    stages[selected]["model_parameter_load_verification_event_seconds"] = (
+                        stages[selected]["model_parameter_load_verification_event_seconds"] or 0.) + elapsed
                 else:
                     stages[selected]["generation_call_count"] += 1
                     stages[selected]["generation_event_seconds"] += elapsed
     return dict(stages=stages,
-                timing_boundary="Native rounded event times: load includes asset checks and parameter verification; generation excludes preparation, input hashing, and device transfer; do not add them again to total wall time")
+                timing_boundary="Upstream model_parameters_verified is cumulative from native load start through parameter verification and excludes processor finalization. model_ready is counted only. Adapter session-load events include the full cold load, processor, audit/residency checks, synchronization, and failed-call work. Generation excludes preparation, input hashing, and device transfer. These overlapping event boundaries must not be added to wall time.")
 
 
 def verify_gate_c(path):

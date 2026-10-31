@@ -44,6 +44,10 @@ Transformers 5.8.1 returns sets in its model-loading diagnostics. The adapter co
 
 `PersistentSession` reuses the loaded model when the requested stage is unchanged. A stage change releases the former model through the upstream session. A failed load clears the cached model. The engine runs segmentation across the corpus before captioning across the corpus.
 
+The adapter emits `BIR_RUNTIME model_load_end` after the full load, processor construction, native audit checks, residency checks, and synchronization of every visible CUDA device. It records `kind`, `elapsed_s`, `cold_load`, and success/failure status. The same measurements are retained under `engine.model_load_timings`. Cached model access is not a cold load. Upstream events remain unchanged; their earlier parameter-verification time is not the full load time.
+
+A non-transient failure during loading or verification is retained for that stage within the session. Later work items receive an explicit blocked-load error before another model load. A new session requires a diagnosed configuration. Known transient transport/I/O errors retain the existing bounded retry policy. An error during generation is input-specific and does not set the model-load failure state.
+
 ## CPU preparation and frame reuse
 
 Video preparation can run in a CPU thread while the current inference call uses the GPU. Preparation does not acquire the global inference lock. Inference calls are serialized because the upstream modules contain process-wide state.

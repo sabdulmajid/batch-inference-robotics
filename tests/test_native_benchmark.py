@@ -87,20 +87,45 @@ class BenchmarkEvidenceTests(unittest.TestCase):
             placement_signature({"one": output, "two": changed})
 
     def test_runtime_load_and_generation_times_keep_stage_bindings(self):
+        # Sanitized fields from the actual TempSeg trace. Upstream model_ready
+        # deliberately has no elapsed_s; parameter verification precedes it.
         events = [dict(event="model_load_start", kind="tempseg"),
-                  dict(event="model_ready", kind="tempseg", elapsed_s=2.0),
-                  dict(event="generation_end", elapsed_s=3.0),
-                  dict(event="model_load_start", kind="captioner"),
-                  dict(event="model_ready", kind="captioner", elapsed_s=5.0),
-                  dict(event="generation_end", elapsed_s=7.0)]
+                  dict(event="model_parameters_verified", kind="tempseg", elapsed_s=67.285),
+                  dict(event="model_ready", kind="tempseg"),
+                  dict(event="generation_end", input_tokens=1811, output_limit=1024,
+                       generated_tokens=84, complete=True, elapsed_s=7.942),
+                  dict(event="generation_end", input_tokens=1810, output_limit=1024,
+                       generated_tokens=81, complete=True, elapsed_s=7.223)]
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "runtime.log"
             path.write_text("\n".join("FLORA_RUNTIME " + json.dumps(event) for event in events))
             result = runtime_timings(path)["stages"]
-            self.assertEqual(result["tempseg"]["model_load_event_seconds"], 2.0)
-            self.assertEqual(result["tempseg"]["generation_event_seconds"], 3.0)
-            self.assertEqual(result["captioner"]["model_load_count"], 1)
-            self.assertEqual(result["captioner"]["generation_event_seconds"], 7.0)
+            self.assertEqual(result["tempseg"]["model_parameter_load_verification_event_seconds"], 67.285)
+            self.assertEqual(result["tempseg"]["model_ready_count"], 1)
+            self.assertIsNone(result["tempseg"]["session_load_event_seconds"])
+            self.assertAlmostEqual(result["tempseg"]["generation_event_seconds"], 15.165)
+            self.assertEqual(result["tempseg"]["generation_call_count"], 2)
+            self.assertEqual(result["captioner"]["model_load_count"], 0)
+
+    def test_adapter_full_load_events_are_separate_and_failed_work_is_counted(self):
+        # Test the separately versioned adapter event, not an upstream field.
+        events = [dict(event='model_load_end', kind='captioner', cold_load=True,
+                       status='complete', elapsed_s=12., synchronization_complete=True),
+                  dict(event='model_load_end', kind='captioner', cold_load=True,
+                       status='failed', elapsed_s=3., synchronization_complete=False),
+                  dict(event='model_load_blocked', kind='captioner', cold_load=False, status='blocked')]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'runtime.log'
+            path.write_text('\n'.join('BIR_RUNTIME ' + json.dumps(event) for event in events))
+            result = runtime_timings(path)['stages']['captioner']
+            self.assertEqual(result['session_load_event_count'], 2)
+            self.assertEqual(result['session_load_failed_event_count'], 1)
+            self.assertEqual(result['session_load_event_seconds'], 15.)
+            self.assertIsNone(result['model_parameter_load_verification_event_seconds'])
+            events[0]['elapsed_s'] = -1
+            path.write_text('BIR_RUNTIME ' + json.dumps(events[0]))
+            with self.assertRaisesRegex(ValueError, 'invalid stage/time/status'):
+                runtime_timings(path)
 
     def test_no_allocation_or_restart_stops_before_gpu_import(self):
         script = Path(__file__).resolve().parents[1] / "scripts/native_benchmark.py"

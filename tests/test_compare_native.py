@@ -158,6 +158,30 @@ class NativeComparisonTests(unittest.TestCase):
         self.assertTrue(any(i['error'] == 'prior_attempts_are_outside_this_run_wall_measurement'
                             for i in result['issues']))
 
+    def test_result_availability_percentiles_require_exact_fresh_complete_population(self):
+        entries = [dict(episode_id=str(i), request_id='request-' + str(i), final_stage='caption',
+            status='complete', execution_origin='fresh', fresh_complete=True,
+            final_stage_committed_after_run_start_s=seconds - .5,
+            result_available_after_run_start_s=seconds) for i, seconds in enumerate((1., 3., 9.))]
+        run = dict(errors=[], selected_stages=['caption', 'segment'], outputs={str(i): {} for i in range(3)},
+            summary=dict(complete=True, elapsed_s=10., records=[dict(id=row['episode_id'],
+                request_id=row['request_id'], stage='caption') for row in entries],
+                episode_result_availability=dict(arrival='all_jobs_at_engine_run_start',
+                    boundary='serialized_export_completed', episodes=entries)))
+        result = COMPARE.episode_latency(run)
+        self.assertEqual(result['status'], 'measured')
+        self.assertEqual(result['median_seconds'], 3.)
+        self.assertAlmostEqual(result['p95_seconds'], 8.4)
+        self.assertIn('type 7', result['percentile_method'])
+        entries[0]['execution_origin'] = 'mixed'
+        excluded = COMPARE.episode_latency(run)
+        self.assertEqual(excluded['status'], 'excluded_not_fresh_complete')
+        self.assertIsNone(excluded['median_seconds'])
+        entries[0]['execution_origin'] = 'fresh'
+        entries[0]['request_id'] = 'another-request'
+        with self.assertRaisesRegex(ValueError, 'request identity'):
+            COMPARE.episode_latency(run)
+
 
 if __name__ == '__main__':
     unittest.main()

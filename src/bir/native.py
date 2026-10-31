@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass
+from datetime import datetime, timezone
 import hashlib
 import importlib
 import json
@@ -29,6 +30,21 @@ MODEL_REVISIONS = {
     'tempseg_base': 'c202236235762e1c871ad0ccb60c8ee5ba337b9a',
 }
 _NATIVE_LOCK = threading.RLock()
+
+
+def _runtime_event(event, **values):
+    print('BIR_RUNTIME ' + json.dumps(dict(event=event, utc=datetime.now(timezone.utc).isoformat(), **values),
+                                     sort_keys=True, allow_nan=False), flush=True)
+
+
+def _synchronize_cuda():
+    import torch
+    if torch.cuda.is_available():
+        for device in range(torch.cuda.device_count()): torch.cuda.synchronize(device)
+
+
+class NativeModelLoadBlocked(RuntimeError):
+    """A prior fatal load failed in this session; no repeated load was attempted."""
 
 
 def verify_source(source_root):
@@ -97,6 +113,8 @@ class PersistentSession:
         self.placement_audit = {}
         self.residency_audit = {}
         self.load_counts = {'tempseg': 0, 'captioner': 0}
+        self.load_timings = {}
+        self._fatal_load_failures = {}
 
     @property
     def audit(self):
@@ -107,6 +125,13 @@ class PersistentSession:
             raise ValueError('Unknown native model stage')
         if self.kind == kind and self.native.model is not None:
             return self.native.model, self.native.proc
+        if kind in self._fatal_load_failures:
+            failure = self._fatal_load_failures[kind]
+            _runtime_event('model_load_blocked', kind=kind, cold_load=False, status='blocked',
+                           original_error_type=failure)
+            raise NativeModelLoadBlocked(f'Previous native {kind} load failed with {failure}; '
+                                         'diagnose the configuration before using a new session')
+        started = time.monotonic()
         self.kind = None
         placement = {}
         context = captioner_placement(self.headroom, placement) if kind == 'captioner' else nullcontext()
@@ -118,11 +143,33 @@ class PersistentSession:
             self.residency_audit[kind] = verify_residency(result[0])
             if placement:
                 self.placement_audit[kind] = placement
+            _synchronize_cuda()
             self.load_counts[kind] += 1
             self.kind = kind
+            timing = dict(kind=kind, cold_load=True, status='complete',
+                          elapsed_s=time.monotonic() - started, synchronization_complete=True)
+            self.load_timings.setdefault(kind, []).append(timing)
+            _runtime_event('model_load_end', **timing)
             return result
-        except BaseException:
-            self.native.close()
+        except BaseException as error:
+            from .engine import is_transient
+            timing = dict(kind=kind, cold_load=True, status='failed', error_type=type(error).__name__,
+                          transient=is_transient(error), synchronization_complete=False)
+            if isinstance(error, Exception) and not timing['transient']:
+                self._fatal_load_failures[kind] = type(error).__name__
+            self.kind = None
+            try:
+                self.native.close()
+            except Exception as cleanup_error:
+                timing['cleanup_error_type'] = type(cleanup_error).__name__
+            try:
+                _synchronize_cuda()
+                timing['synchronization_complete'] = True
+            except Exception as sync_error:
+                timing['synchronization_error_type'] = type(sync_error).__name__
+            timing['elapsed_s'] = time.monotonic() - started
+            self.load_timings.setdefault(kind, []).append(timing)
+            _runtime_event('model_load_end', **timing)
             raise
 
     def close(self):
@@ -211,6 +258,7 @@ class NativeBackend:
                   'source_commit': UPSTREAM_COMMIT, 'model_revisions': self.config.MODELS,
                   'engine': {'model_verification': dict(self.session.audit),
                              'residency': dict(self.session.residency_audit),
+                             'model_load_timings': _json_audit(self.session.load_timings),
                              'model_load_counts': dict(self.session.load_counts)}}
         result['stage_digest'] = _json_digest(result)
         return result
@@ -250,6 +298,8 @@ class NativeBackend:
                        'request_batch_size': 1, 'stage_elapsed_s': {'tempseg': segmentation['elapsed_s'],
                        'captioner': caption_elapsed}, 'model_load_counts': dict(self.session.load_counts),
                        'placement': dict(self.session.placement_audit),
+                       'model_load_timings': {**segmentation.get('engine', {}).get('model_load_timings', {}),
+                                              **_json_audit(self.session.load_timings)},
                        'residency': {**segmentation.get('engine', {}).get('residency', {}),
                                      **self.session.residency_audit},
                        'model_verification': {**segmentation.get('engine', {}).get('model_verification', {}),
