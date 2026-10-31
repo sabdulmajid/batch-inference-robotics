@@ -1,0 +1,175 @@
+{
+  "adaptive_quality_verdict": "inconclusive; no held-out inference or quality measurement",
+  "configuration": {
+    "caption_request_batch_size": 1,
+    "compact_preset": "compact_block_5242880",
+    "compact_total_pixels_per_temporal_block": 5242880,
+    "cpu_count": 4,
+    "development_episodes": [
+      "homer_41"
+    ],
+    "format_gate": "complete nonempty caption; no semantic or reference access",
+    "gpu_count": 3,
+    "gpu_model": "NVIDIA GeForce RTX 3090",
+    "independent_reference_intervals": 7,
+    "native_model_unchanged": true,
+    "native_temporal_evidence_retained": true,
+    "native_total_pixels_per_temporal_block": 25165824,
+    "policy_items": 21,
+    "requested_job_minutes": 30,
+    "requested_ram_gib": 128
+  },
+  "date": "2026-10-31",
+  "development": {
+    "allocated_gpu_hours": 0.7158333333333333,
+    "allocation_accounting": "One parent allocation charged once, including all policies, setup, cleanup, audit recording, failures and idle time. Per-policy allocation shares are not measured.",
+    "application_elapsed_seconds": 856.6208135029301,
+    "cached_items": 0,
+    "caption_agreement_across_all_policies": {
+      "matched_intervals": 7,
+      "total_intervals": 7
+    },
+    "compact_policy_wall_reduction_percent": 7.941609150966089,
+    "failed_or_unsupported_items": 0,
+    "fresh_items": 21,
+    "gpu_memory": [
+      {
+        "logical_device": 0,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 22459096064,
+        "peak_reserved_bytes": 24903680000
+      },
+      {
+        "logical_device": 1,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 23959384064,
+        "peak_reserved_bytes": 24773656576
+      },
+      {
+        "logical_device": 2,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 24360223744,
+        "peak_reserved_bytes": 24792530944
+      }
+    ],
+    "policy_measurements": {
+      "adaptive": {
+        "complete_items": 7,
+        "generated_tokens": 76,
+        "generation_seconds": 56.093,
+        "input_tokens": 40865,
+        "items": 7,
+        "native_fallbacks": 0,
+        "policy_wall_seconds": 243.60766333341599
+      },
+      "compact": {
+        "complete_items": 7,
+        "generated_tokens": 76,
+        "generation_seconds": 56.05,
+        "input_tokens": 40865,
+        "items": 7,
+        "native_fallbacks": 0,
+        "policy_wall_seconds": 243.72791033890098
+      },
+      "native": {
+        "complete_items": 7,
+        "generated_tokens": 76,
+        "generation_seconds": 76.3,
+        "input_tokens": 57449,
+        "items": 7,
+        "native_fallbacks": 0,
+        "policy_wall_seconds": 264.7536070216447
+      }
+    },
+    "policy_timing_boundary": "Full synchronized fixed-interval path, including preparation, processing, generation, gate and fallback. Shared work is separate. Generation timers are nested and must not be added again.",
+    "quality": {
+      "binary_reviewer_disagreements": 0,
+      "blind_reviewers": 2,
+      "denominator_per_policy": 7,
+      "exact_reviewer_model_identifiers": [
+        "unavailable",
+        "unavailable"
+      ],
+      "extra_claim_flags_per_policy": 7,
+      "fixed_comparator": "compact",
+      "human_evaluation": false,
+      "metric": "AI reference-event agreement",
+      "new_paid_api_calls": 0,
+      "offline_review_work_seconds": 103.5680103302002,
+      "positive_intervals_per_policy": 3,
+      "score_per_policy": 0.42857142857142855,
+      "selection_rule": "Eligible fixed policy score >= native minus 0.01; lowest measured policy time wins; exact tie selects native.",
+      "unique_blind_cards": 7,
+      "visual_factual_correctness_assessed": false
+    },
+    "scheduler_elapsed_seconds": 859,
+    "scheduler_exit_code": "0:0",
+    "scheduler_status": "COMPLETED",
+    "shared_work_seconds": {
+      "cleanup": 0.4048616881482303,
+      "model_load": 91.77344551309943,
+      "preflight": 0.08517248090356588,
+      "preparation": 7.744932819157839,
+      "setup": 0.2210119622759521
+    },
+    "spatial_fidelity": {
+      "changed_block_area_fractions": [
+        0.47619047619047616,
+        0.753968253968254
+      ],
+      "compact_and_adaptive_tensor_digests_equal": true,
+      "compact_block_count_per_fixed_policy": 21,
+      "compact_changed_blocks": 7,
+      "compact_unchanged_blocks": 14,
+      "paired_native_frame_clock_prompt_audits_equal": true,
+      "spatial_audit_count": 14
+    }
+  },
+  "development_selection_file": "reports/adaptive-development.json",
+  "development_selection_sha256": "e83e5d15ca52e2f009cfe9c2e42163d294d1d763842efa7e29d942495edafe27",
+  "final_admission": {
+    "admitted": false,
+    "best_fixed_policy": "compact",
+    "ceiling_seconds": 5400,
+    "development_receipt_sha256": "daa4a368aab122cbe0355f7dc34e63635eaf0d3dfa971670622b8360ad3eb097",
+    "development_selection_sha256": "e83e5d15ca52e2f009cfe9c2e42163d294d1d763842efa7e29d942495edafe27",
+    "estimate_not_measurement": true,
+    "execution_contract_sha256": "cd85532b6476e95e2685097c72d2c71cb9f9d8102ff03abba3dd816c729f70f5",
+    "final_gpu_submissions": 0,
+    "final_predictions_generated": 0,
+    "gate_maximum_seconds": 7.090158760547638e-06,
+    "headroom_factor": 1.5,
+    "measured_setup_seconds": 92.48449164442718,
+    "observed_policy_maxima_seconds": {
+      "adaptive": 40.87448138417676,
+      "compact": 40.96139296796173,
+      "native": 44.1719702957198
+    },
+    "policy_item_count": 81,
+    "policy_maxima_seconds": {
+      "adaptive": 85.13337035384029,
+      "compact": 40.96139296796173,
+      "native": 44.1719702957198
+    },
+    "projected_seconds": 7061.572529317202,
+    "reason": "Measured final projection exceeds the frozen job ceiling; keep all targets and report not run",
+    "scaled_preparation_seconds": 18.02872022728455,
+    "target_count": 27
+  },
+  "freeze_file_sha256": "822c211c5c6b688401ca998987defe2936935f64c52d63aa80e84e60a401366a",
+  "freeze_sha256": "5f2990337b9ba7a411b9a4ab33f48b1880707c5cae44e2115269a37b4adaeaa0",
+  "limitations": [
+    "One development episode and one execution per policy; no population quality or speed guarantee.",
+    "The final cost estimate exceeds the frozen 90-minute phase limit. Final inference was not submitted; all 81 planned items and the protocol remain unchanged.",
+    "The conservative estimate includes a native fallback for each adaptive item and 1.5 headroom. It is a planning estimate, not observed final runtime.",
+    "Even a completed two-group final set could not establish the frozen one-percentage-point population quality margin.",
+    "This fixed-reference-interval experiment omits TempSeg; it does not measure full-pipeline adaptive speedup.",
+    "AI text-reference agreement is not human annotation or visual correctness. Extra-claim flags do not prove visual errors.",
+    "The format gate accepted all compact outputs, including those with zero reference-agreement scores. It is not a semantic quality gate."
+  ],
+  "outcome_set_sha256": "c4ef907fba9808a890984c62f5272975cc7c960e6a86b004ead2f2e56b403642",
+  "run_summary_sha256": "daa4a368aab122cbe0355f7dc34e63635eaf0d3dfa971670622b8360ad3eb097",
+  "runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+  "schema_version": "bir_adaptive_experiment_report_v1",
+  "status": "development_complete_final_not_admitted"
+}

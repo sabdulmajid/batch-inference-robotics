@@ -12,7 +12,10 @@ videos. TempSeg used one RTX 3090; Captioner used three on one node. It exported
 model reload correction also passed on two videos, with 30 captions that exactly
 matched the prior native outputs. In one three-video benchmark, optimized
 execution used 10.7% less subprocess wall time than reference, with all 45 captions
-unchanged. Adaptive development is running; adaptive quality is not yet measured.
+unchanged. Adaptive development also completed. Its compact policy produced the
+same seven captions in 7.94% less interval-policy time. Final evaluation was not
+admitted because its estimated runtime exceeded the frozen limit. Held-out
+quality remains unvalidated. See [the adaptive result and limits](docs/ADAPTIVE_RESULTS.md).
 See [current status](docs/STATUS.md) and
 [native end-to-end evidence](reports/native-end-to-end.json), plus
 [reload verification](reports/native-reload-verification.json).

@@ -2,7 +2,7 @@
 
 This module tests a smaller spatial budget for Captioner while retaining every selected source frame and its timestamp. For example, a 40-frame target can use fewer visual tokens while a short context block stays unchanged. This is an experimental path. It does not replace the native reference.
 
-The experiment has a separate fixed-reference interval API. The native CLI default remains unchanged. Complete the native end-to-end gate before GPU evaluation. No quality or GPU performance result exists yet.
+The experiment has a separate fixed-reference interval API. The native CLI default remains unchanged. The native end-to-end gate and adaptive development run completed. Final evaluation was not admitted under the frozen runtime limit. See [the measured results and limits](ADAPTIVE_RESULTS.md).
 
 ## The exact processor control
 

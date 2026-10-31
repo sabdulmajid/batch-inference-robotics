@@ -45,7 +45,8 @@ project policy choice, not a cluster quota change.
   Request identities, stage artifact hashes, and original evidence were unchanged.
 - CPU caption-pair preparation and ordered replay passed. This does not admit
   GPU batching. See [the CPU preparation report](../reports/caption-batch-cpu-preparation.json).
-- Controlled native performance is measured. Adaptive quality remains pending.
+- Controlled native performance is measured. Adaptive development is complete;
+  held-out adaptive quality remains unvalidated.
 - The first native benchmark was stopped after the reference path failed a later
   Captioner placement check. Its successful and failed work is preserved.
   A bounded two-episode diagnosis reproduced the rejection and recorded a typed
@@ -67,18 +68,26 @@ project policy choice, not a cluster quota change.
   native inputs matched. All three cache-only resume checks passed. The optimized
   retained-frame cache stayed within 256 MiB. See
   [the measurements and limits](NATIVE_BENCHMARK.md).
-- The frozen adaptive development run is active. It covers seven independent
-  reference intervals from one development episode with three policies. Final
-  evaluation requires measured costs and a committed development comparator.
+- Adaptive development completed all 21 items. Compact used 7.942% less
+  interval-policy time than native and produced the same seven captions.
+  Two blinded AI reviews gave every policy 3/7 reference-event agreement.
+  The frozen rule selected compact as the fixed comparator.
+- Final adaptive evaluation was not admitted. The unchanged conservative
+  projection is 117.693 minutes, above the frozen 90-minute limit. No final
+  inference ran. Targets and rules remain unchanged; quality is inconclusive.
+  See [the adaptive results and limits](ADAPTIVE_RESULTS.md).
+- One bounded GPU batch calibration is reserved. It permits at most five
+  generation calls and no retries. Native batch size one remains the default.
 
 ## Resource state
 
-- GPU-hours used/reserved: 6.787222 / 1.5 of 24, including failed allocations.
+- GPU-hours used/reserved: 7.503056 / 2.0 of 24, including failed allocations.
   The stopped benchmark used 0.639167 GPU-hours. The diagnosis used another
   0.554167 GPU-hours, and the successful reload used 0.763333 GPU-hours.
   The successful full benchmark used another 3.5 GPU-hours.
+  Adaptive development used 0.715833 GPU-hours.
   All completed allocation outcomes are reconciled.
-- GPU submissions and reservations: 9 of 16.
+- GPU submissions and reservations: 10 of 16.
 - CPU-only core-hours used/reserved: 3.007778 / 0 of 32.
 - Final reproduction allowance: 2.25 GPU-hours and one submission slot, based
   on the completed native pilot.
@@ -88,11 +97,10 @@ project policy choice, not a cluster quota change.
 
 ## Next actions
 
-Verify adaptive development, obtain two blind AI reference-event reviews, and
-commit the fixed comparator before final inference. Admit the frozen final set
-only if its measured projection fits the remaining budget and reproduction
-allowance. GPU batching still requires its own measured admission and native
-batch-one agreement. Complete the protected final reproduction before delivery.
+Complete the single bounded batch calibration. GPU batching requires measured
+headroom and native batch-one agreement; a negative admission is valid. Complete
+the protected fresh native reproduction and resume check. Then reconcile all
+resources, independently review the delivery, and publish the final report.
 
 Private records retain exact job IDs, connection settings, output paths, skill
 hashes, and scheduler output. Public reports contain sanitized measurements.
