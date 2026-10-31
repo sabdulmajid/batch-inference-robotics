@@ -48,19 +48,29 @@ project policy choice, not a cluster quota change.
 - Controlled native performance and adaptive quality results are still pending.
 - The first native benchmark was stopped after the reference path failed a later
   Captioner placement check. Its successful and failed work is preserved.
-  The first placement succeeded, but a later pre-load capacity check failed.
   A bounded two-episode diagnosis reproduced the rejection and recorded a typed
-  fatal-load failure. Local tests verify that later fresh stages are blocked. The model object was released, but unused allocator reserve remained
-  on two GPUs. The capacity check omitted that owned cache. The estimate
-  correction retains the 4 GiB headroom. A bounded two-video GPU reload test is
-  submitted. See [the diagnostic evidence](../reports/native-lifecycle-diagnosis.json).
+  fatal-load failure. Local tests verify that later fresh stages are blocked.
+  The model object was released, but unused allocator reserve remained on two
+  GPUs. The capacity check omitted that owned cache.
+  See [the diagnostic evidence](../reports/native-lifecycle-diagnosis.json).
+- The corrected capacity check passed a fresh two-episode native reload test.
+  Both TempSeg and Captioner loaded twice. All 30 captions, segment boundaries,
+  and native input audits exactly matched the prior Gate C outputs. Actual model
+  placement was unchanged, and the check retained 4 GiB headroom per GPU.
+  The allocation completed in 916 seconds and used 0.763333 GPU-hours.
+  This validates repeated loading for this configuration. It does not establish
+  benchmark speedup or adaptive quality.
+  See [the reload verification](../reports/native-reload-verification.json).
+- The second full native benchmark is queued for shared cluster capacity.
+  No complete performance comparison is available yet.
 
 ## Resource state
 
-- GPU-hours used/reserved: 2.523889 / 1.5 of 24, including the failed allocation.
+- GPU-hours used/reserved: 3.287222 / 6 of 24, including failed allocations.
   The stopped benchmark used 0.639167 GPU-hours. The diagnosis used another
-  0.554167 GPU-hours. Both final outcomes are reconciled.
-- GPU submissions and reservations: 7 of 16.
+  0.554167 GPU-hours, and the successful reload used 0.763333 GPU-hours.
+  All completed allocation outcomes are reconciled.
+- GPU submissions and reservations: 8 of 16.
 - CPU-only core-hours used/reserved: 3.007778 / 0 of 32.
 - Final reproduction allowance: 2.25 GPU-hours and one submission slot, based
   on the completed native pilot.
@@ -69,10 +79,11 @@ project policy choice, not a cluster quota change.
 
 ## Next actions
 
-Verify the running native reference, persistent, and optimized comparison on
-matching inputs and placement. GPU batching requires its own measured admission
-and native batch-one agreement. Then run the bounded adaptive development/final experiment if its
-measured projection fits the remaining budget and reproduction allowance.
+Verify the queued native reference, persistent, and optimized comparison on
+matching inputs and placement when it completes. GPU batching requires its own
+measured admission and native batch-one agreement. Then run the bounded adaptive
+development/final experiment if its measured projection fits the remaining
+budget and reproduction allowance.
 
 Private records retain exact job IDs, connection settings, output paths, skill
 hashes, and scheduler output. Public reports contain sanitized measurements.

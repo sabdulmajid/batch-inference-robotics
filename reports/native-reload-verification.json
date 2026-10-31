@@ -1,0 +1,442 @@
+{
+  "allocation": {
+    "allocated_gpu_count": 3,
+    "allocated_gpu_hours": 0.7633333333333333,
+    "batch_step_max_rss_kib": 7439324,
+    "counting_rule": "Charge the parent allocation once, including load, generation, cleanup and idle time. Do not add the batch or extern steps.",
+    "max_rss_limitation": "This is the scheduler batch-step sample; it is not a complete host-process memory trace.",
+    "parent_elapsed_seconds": 916,
+    "parent_exit_code": "0:0",
+    "parent_final_state": "COMPLETED"
+  },
+  "configuration": {
+    "camera_roles": [
+      "main"
+    ],
+    "captioner_headroom_gib": 4.0,
+    "condition": "reference",
+    "cuda_runtime": "12.8",
+    "empty_instructions": true,
+    "environment": {
+      "accelerate": "1.12.0",
+      "av": "16.0.1",
+      "huggingface-hub": "1.33.0",
+      "peft": "0.18.1",
+      "safetensors": "0.7.0",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.8.1"
+    },
+    "episode_ids": [
+      "homer_52",
+      "homer_50"
+    ],
+    "execution_contract_sha256": "b082dde51224c3f8ebd077bf0c432a485a0af6483b10bb31ca6ce6981449270e",
+    "gpu_count": 3,
+    "gpu_model": "NVIDIA GeForce RTX 3090",
+    "profile": "Human",
+    "reference_model_lifetime": "A new session per episode; TempSeg and Captioner remain staged.",
+    "request_batch_size": 1,
+    "same_node": true,
+    "source_and_model_lock": {
+      "captioner": {
+        "repo": "nvidia/Flora-Captioner",
+        "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6"
+      },
+      "captioner_headroom_gib": 4,
+      "microbatch_size": 1,
+      "microbatch_status": "larger batches require measured GPU verification",
+      "native_contract": "flora-native-placement-v1",
+      "source": {
+        "repo": "https://github.com/NVIDIA/Flora.git",
+        "revision": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "tempseg": {
+        "adapter_sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3",
+        "repo": "nvidia/Flora-TempSeg",
+        "revision": "114a1076f70eb53f4a58ac045505db3087e79347"
+      },
+      "tempseg_base": {
+        "repo": "Qwen/Qwen3.5-9B",
+        "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+      }
+    }
+  },
+  "date": "2026-10-31",
+  "engine_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+  "evidence_sha256": {
+    "independent_native_comparison": "c2a9d3e8ea202383b3f48e94e33ecf17248c29a06492544613fcaaf0676d85a0",
+    "probe_summary": "0bcbb9f1b2b6203c5ccdacea0d7099e9d690e0dca7445c124fa28e5eec7d0627",
+    "run_contract": "53558a9b085baaf027840e90687d97ba6b6201cc30582dd3f52146961601b91a",
+    "run_summary": "8206f8edfd7a090d809591ef19c93e5f31cdcdb9f88242c292961325893ff65b",
+    "runtime_log": "2fd348e0b3fcff562aa6e18eed913905e9b57b3015fcdb99ff5b6a131482aff7",
+    "scheduler_record": "e69ad203ce2f27f8734ff4ce400b0d801a0fc512442cceaeeed8e2b8ee66a04b",
+    "sqlite_checkpoint": "3a39c9299ee4ff59bcf193d7e63bd17082147e047dd18258355828dc52756e6d"
+  },
+  "gpu_memory": [
+    {
+      "allocated_at_end_bytes": 19136512,
+      "logical_device": 0,
+      "name": "NVIDIA GeForce RTX 3090",
+      "peak_allocated_bytes": 22466212352,
+      "peak_reserved_bytes": 24928845824,
+      "total_memory_bytes": 25296044032
+    },
+    {
+      "allocated_at_end_bytes": 8519680,
+      "logical_device": 1,
+      "name": "NVIDIA GeForce RTX 3090",
+      "peak_allocated_bytes": 23959430144,
+      "peak_reserved_bytes": 24905777152,
+      "total_memory_bytes": 25296044032
+    },
+    {
+      "allocated_at_end_bytes": 8519680,
+      "logical_device": 2,
+      "name": "NVIDIA GeForce RTX 3090",
+      "peak_allocated_bytes": 24368743424,
+      "peak_reserved_bytes": 24800919552,
+      "total_memory_bytes": 25296044032
+    }
+  ],
+  "limits": [
+    "This run contains two development episodes and 30 captions. It is not the complete three-condition performance benchmark.",
+    "Adaptive quality, microbatch admission and other input or memory configurations are not validated by this result.",
+    "Compatibility with prior native outputs does not establish annotation accuracy against independent references."
+  ],
+  "native_fidelity": {
+    "all_parameters_and_nonempty_buffers_cuda": true,
+    "captioner_gdn_fp32_values_exact": true,
+    "captioner_gdn_tensors_verified_per_load": 96,
+    "captioner_loading_errors": 0,
+    "captioner_mismatched_parameter_keys": 0,
+    "captioner_missing_parameter_keys": 0,
+    "full_native_artifact_verifier_passed": true,
+    "model_verification_receipts_equal_prior_gate_c": true,
+    "tempseg_gdn_fp32_values_exact": true,
+    "tempseg_unmerged_fp32_adapter_values_exact": true
+  },
+  "observed_execution": {
+    "annotation_exports": 2,
+    "attempts": [
+      {
+        "attempt": 1,
+        "elapsed_seconds": 165.3256237138994,
+        "episode_id": "homer_52",
+        "payload_sha256": "7cf49c71ccd9677f57fde2b181bc4aae5f46da717ab487161457ea444326a91c",
+        "request_id": "05291d7660b89d357c5f8879ed83cd30784abd5f739ab56b769ae37b1883fe90",
+        "segment_count": 10,
+        "stage": "segment",
+        "state": "complete"
+      },
+      {
+        "attempt": 1,
+        "elapsed_seconds": 380.40530689805746,
+        "episode_id": "homer_52",
+        "payload_sha256": "cce8aa9d55423d9f96463b8abd67ab92f55c26c08bfe5f1e2dbd9f8e7feaa638",
+        "request_id": "05291d7660b89d357c5f8879ed83cd30784abd5f739ab56b769ae37b1883fe90",
+        "segment_count": 10,
+        "stage": "caption",
+        "state": "complete"
+      },
+      {
+        "attempt": 1,
+        "elapsed_seconds": 80.58803871273994,
+        "episode_id": "homer_50",
+        "payload_sha256": "c71dd6b24f2488cf5b45452eaa5aad2086d6ecbe2bec48e0d4542a9c81817749",
+        "request_id": "8589ce4a952cb9715e66fb82dd0d3f1a28658cf1b773bd05e1abafae5bebf045",
+        "segment_count": 20,
+        "stage": "segment",
+        "state": "complete"
+      },
+      {
+        "attempt": 1,
+        "elapsed_seconds": 259.4381685787812,
+        "episode_id": "homer_50",
+        "payload_sha256": "f562b6933df85076585f0b6b54652e578512b2a5804d0da61d3c682bbe0dc3fb",
+        "request_id": "8589ce4a952cb9715e66fb82dd0d3f1a28658cf1b773bd05e1abafae5bebf045",
+        "segment_count": 20,
+        "stage": "caption",
+        "state": "complete"
+      }
+    ],
+    "cli_workflow_seconds": 898.8506900309585,
+    "complete_captions": 30,
+    "complete_episodes": 2,
+    "complete_stage_attempts": 4,
+    "completed_generation_calls_by_model": {
+      "captioner": 30,
+      "tempseg": 12
+    },
+    "engine_workflow_seconds": 898.6797177842818,
+    "failed_stage_attempts": 0,
+    "model_load_sequence": [
+      {
+        "elapsed_seconds": 46.41085829399526,
+        "kind": "tempseg",
+        "status": "complete"
+      },
+      {
+        "elapsed_seconds": 85.76805952889845,
+        "kind": "captioner",
+        "status": "complete"
+      },
+      {
+        "elapsed_seconds": 36.83046283898875,
+        "kind": "tempseg",
+        "status": "complete"
+      },
+      {
+        "elapsed_seconds": 19.916990879923105,
+        "kind": "captioner",
+        "status": "complete"
+      }
+    ],
+    "probe_elapsed_seconds": 913.5779620609246,
+    "resumed_stages": 0,
+    "timing_interpretation": "These are measured boundaries for one diagnostic invocation. Model-load and generation times overlap the workflow timers and must not be added to them. No speedup comparison was made."
+  },
+  "output_compatibility": {
+    "compared_fields": [
+      "native source/model revisions",
+      "source content hashes",
+      "profile and duration",
+      "camera roles",
+      "all segment boundaries/status/caption/provenance",
+      "complete native temporal-window audits",
+      "complete caption frame/source-timestamp/prompt audits"
+    ],
+    "comparisons": [
+      {
+        "caption_count": 20,
+        "episode_id": "homer_50",
+        "gate_c_artifact_sha256": "c4187fa424eab156b9fdf299dffeca52ac1a7e70599969e2fa3e174a98165c86",
+        "model_verification_exact_agreement": true,
+        "native_projection_exact_agreement": true,
+        "native_projection_sha256": "303321497580b03607757c9eff803a0f8ad2bbb2350ee371f373906fd58eeee2",
+        "reload_artifact_sha256": "8801648da1de779af6d82fa7388c44b0f3e6b891f690484c09c78bf8feebc744"
+      },
+      {
+        "caption_count": 10,
+        "episode_id": "homer_52",
+        "gate_c_artifact_sha256": "f016d025d533d714d753edbafd3a5a0edd3f55e5bdd07abd165f5abf2b030f26",
+        "model_verification_exact_agreement": true,
+        "native_projection_exact_agreement": true,
+        "native_projection_sha256": "283b55ee194c70efaca2d875a795b61658ddd0af4315e5151d31b7e8513422b0",
+        "reload_artifact_sha256": "a2a43381cfd86ac2d864ab826827fbf8806ff3db6fcd113665ee2253eefe81e6"
+      }
+    ],
+    "excluded_fields": [
+      "request IDs changed with execution contract",
+      "timings",
+      "load counts",
+      "new instrumentation",
+      "allocator capacity settings/measurements"
+    ],
+    "independent_review": true,
+    "scope": "Native-output compatibility, not independent annotation quality.",
+    "status": "exact_agreement_on_both_episodes",
+    "timing_comparison_performed": false
+  },
+  "placement_verification": {
+    "captioner_residency": {
+      "all_parameters_and_nonempty_buffers_on_cuda": true,
+      "buffer_devices": {
+        "cuda:0": 1,
+        "cuda:2": 2
+      },
+      "device_map": {
+        "lm_head": "2",
+        "model.language_model.embed_tokens": "0",
+        "model.language_model.layers.0": "0",
+        "model.language_model.layers.1": "0",
+        "model.language_model.layers.10": "0",
+        "model.language_model.layers.11": "0",
+        "model.language_model.layers.12": "0",
+        "model.language_model.layers.13": "0",
+        "model.language_model.layers.14": "0",
+        "model.language_model.layers.15": "0",
+        "model.language_model.layers.16": "0",
+        "model.language_model.layers.17": "1",
+        "model.language_model.layers.18": "1",
+        "model.language_model.layers.19": "1",
+        "model.language_model.layers.2": "0",
+        "model.language_model.layers.20": "1",
+        "model.language_model.layers.21": "1",
+        "model.language_model.layers.22": "1",
+        "model.language_model.layers.23": "1",
+        "model.language_model.layers.24": "1",
+        "model.language_model.layers.25": "1",
+        "model.language_model.layers.26": "1",
+        "model.language_model.layers.27": "1",
+        "model.language_model.layers.28": "1",
+        "model.language_model.layers.29": "1",
+        "model.language_model.layers.3": "0",
+        "model.language_model.layers.30": "1",
+        "model.language_model.layers.31": "1",
+        "model.language_model.layers.32": "1",
+        "model.language_model.layers.33": "1",
+        "model.language_model.layers.34": "1",
+        "model.language_model.layers.35": "1",
+        "model.language_model.layers.36": "1",
+        "model.language_model.layers.37": "1",
+        "model.language_model.layers.38": "1",
+        "model.language_model.layers.39": "1",
+        "model.language_model.layers.4": "0",
+        "model.language_model.layers.40": "1",
+        "model.language_model.layers.41": "1",
+        "model.language_model.layers.42": "2",
+        "model.language_model.layers.43": "2",
+        "model.language_model.layers.44": "2",
+        "model.language_model.layers.45": "2",
+        "model.language_model.layers.46": "2",
+        "model.language_model.layers.47": "2",
+        "model.language_model.layers.48": "2",
+        "model.language_model.layers.49": "2",
+        "model.language_model.layers.5": "0",
+        "model.language_model.layers.50": "2",
+        "model.language_model.layers.51": "2",
+        "model.language_model.layers.52": "2",
+        "model.language_model.layers.53": "2",
+        "model.language_model.layers.54": "2",
+        "model.language_model.layers.55": "2",
+        "model.language_model.layers.56": "2",
+        "model.language_model.layers.57": "2",
+        "model.language_model.layers.58": "2",
+        "model.language_model.layers.59": "2",
+        "model.language_model.layers.6": "0",
+        "model.language_model.layers.60": "2",
+        "model.language_model.layers.61": "2",
+        "model.language_model.layers.62": "2",
+        "model.language_model.layers.63": "2",
+        "model.language_model.layers.7": "0",
+        "model.language_model.layers.8": "0",
+        "model.language_model.layers.9": "0",
+        "model.language_model.norm": "2",
+        "model.language_model.rotary_emb": "2",
+        "model.visual": "0"
+      },
+      "parameter_bytes_by_device": {
+        "cuda:0": 16407404128,
+        "cuda:1": 19031447424,
+        "cuda:2": 19274614784
+      },
+      "parameter_dtypes": {
+        "torch.bfloat16": 1088,
+        "torch.float32": 96
+      }
+    },
+    "guard_change": "For the native PyTorch allocator, include process-owned reserved-minus-allocated cache in the capacity estimate. Cap it at total memory minus live allocations. Retain 4 GiB headroom per device.",
+    "per_load_receipts": [
+      {
+        "aggregate_budget_bytes": 62097391616,
+        "allocator_backend": "native",
+        "capacity_basis": "driver_free_plus_unused_owned_native_cache",
+        "device_memory": [
+          {
+            "allocated_bytes": 9568256,
+            "credited_allocator_cache_bytes": 44957696,
+            "effective_available_bytes": 24944377856,
+            "free_bytes": 24899420160,
+            "logical_device": 0,
+            "reserved_bytes": 54525952,
+            "total_bytes": 25296044032,
+            "unused_allocator_bytes": 44957696
+          },
+          {
+            "allocated_bytes": 0,
+            "credited_allocator_cache_bytes": 0,
+            "effective_available_bytes": 25018957824,
+            "free_bytes": 25018957824,
+            "logical_device": 1,
+            "reserved_bytes": 0,
+            "total_bytes": 25296044032,
+            "unused_allocator_bytes": 0
+          },
+          {
+            "allocated_bytes": 0,
+            "credited_allocator_cache_bytes": 0,
+            "effective_available_bytes": 25018957824,
+            "free_bytes": 25018957824,
+            "logical_device": 2,
+            "reserved_bytes": 0,
+            "total_bytes": 25296044032,
+            "unused_allocator_bytes": 0
+          }
+        ],
+        "episode_id": "homer_52",
+        "headroom_gib": 4.0,
+        "max_memory_bytes": {
+          "0": 20649410560,
+          "1": 20723990528,
+          "2": 20723990528
+        },
+        "native_weight_bytes_estimate": 54713466336
+      },
+      {
+        "aggregate_budget_bytes": 61938663424,
+        "allocator_backend": "native",
+        "capacity_basis": "driver_free_plus_unused_owned_native_cache",
+        "device_memory": [
+          {
+            "allocated_bytes": 19136512,
+            "credited_allocator_cache_bytes": 89915392,
+            "effective_available_bytes": 24924323840,
+            "free_bytes": 24834408448,
+            "logical_device": 0,
+            "reserved_bytes": 109051904,
+            "total_bytes": 25296044032,
+            "unused_allocator_bytes": 89915392
+          },
+          {
+            "allocated_bytes": 8519680,
+            "credited_allocator_cache_bytes": 19023134720,
+            "effective_available_bytes": 24949620736,
+            "free_bytes": 5926486016,
+            "logical_device": 1,
+            "reserved_bytes": 19031654400,
+            "total_bytes": 25296044032,
+            "unused_allocator_bytes": 19023134720
+          },
+          {
+            "allocated_bytes": 8519680,
+            "credited_allocator_cache_bytes": 19266404352,
+            "effective_available_bytes": 24949620736,
+            "free_bytes": 5683216384,
+            "logical_device": 2,
+            "reserved_bytes": 19274924032,
+            "total_bytes": 25296044032,
+            "unused_allocator_bytes": 19266404352
+          }
+        ],
+        "episode_id": "homer_50",
+        "headroom_gib": 4.0,
+        "max_memory_bytes": {
+          "0": 20629356544,
+          "1": 20654653440,
+          "2": 20654653440
+        },
+        "native_weight_bytes_estimate": 54713466336
+      }
+    ],
+    "same_actual_parameter_and_buffer_placement_across_loads": true,
+    "same_actual_placement_as_gate_c": true,
+    "scope_limit": "The estimate passed and the actual second load and generation completed here. This does not establish that every cached block is reusable or that all input shapes and allocator states will fit.",
+    "second_load_corrected_aggregate_budget_bytes": 61938663424,
+    "second_load_counterfactual_free_only_budget_bytes": 23559208960,
+    "second_load_succeeded": true
+  },
+  "project_accounting_after_allocation": {
+    "accounting_status": "Reconciled against completed parent scheduler records. Later reservations are not included in completed usage.",
+    "allocation_gpu_hours": 0.7633333333333333,
+    "completed_gpu_allocations": 7,
+    "final_reproduction_gpu_hour_hold": 2.25,
+    "final_reproduction_submission_hold": 1,
+    "prior_used_gpu_hours": 2.523888888888889,
+    "used_cpu_only_core_hours": 3.007777777777777,
+    "used_gpu_hours": 3.2872222222222223
+  },
+  "schema_version": "bir_native_reload_verification_v1",
+  "scope": "Repeated native model loading completed for two development episodes in one three-GPU reference invocation. This verifies this configuration, not the complete performance benchmark or adaptive experiment.",
+  "status": "passed_native_repeated_load_and_output_compatibility"
+}
