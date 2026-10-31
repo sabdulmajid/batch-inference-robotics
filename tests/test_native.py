@@ -9,7 +9,8 @@ import types
 import unittest
 from unittest.mock import patch
 
-from bir.native import NativeBackend, PersistentSession, verify_source, UPSTREAM_COMMIT
+from bir.native import (NativeBackend, PersistentSession, PreparedEpisode,
+                        _json_audit, verify_source, UPSTREAM_COMMIT)
 
 SOURCE = Path(__file__).resolve().parents[1] / 'third_party' / 'Flora'
 HAS_SOURCE = (SOURCE / 'captioner/batch_utils/models.json').is_file()
@@ -46,6 +47,109 @@ class SessionTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): session.load('tempseg')
         self.assertIsNone(session.kind)
         self.assertIsNone(session.native.model)
+
+
+class AuditSerializationTests(unittest.TestCase):
+    def test_loading_diagnostics_preserve_values_with_stable_order(self):
+        raw = {'missing_keys': {'z', 'a'}, 'unexpected_keys': set(),
+               'mismatched_keys': {('z', (4, 5), (5, 4)), ('a', (1,), (2,))},
+               'error_msgs': [], 'nested': frozenset({'b', 'a'})}
+        normalized = _json_audit(raw)
+        self.assertEqual(normalized['missing_keys'], ['a', 'z'])
+        self.assertEqual(normalized['unexpected_keys'], [])
+        self.assertEqual(normalized['mismatched_keys'], [['a', [1], [2]], ['z', [4, 5], [5, 4]]])
+        self.assertEqual(normalized['nested'], ['a', 'b'])
+        self.assertEqual(json.loads(json.dumps(normalized, allow_nan=False)), normalized)
+        self.assertIsInstance(raw['missing_keys'], set)
+        for invalid in (object(), {1: 'invalid'}, float('nan')):
+            with self.assertRaises((TypeError, ValueError)):
+                _json_audit({'nested': invalid})
+
+    @unittest.skipUnless(importlib.util.find_spec('transformers') is not None,
+                         'requires optional pinned Transformers CPU environment')
+    def test_actual_transformers_loading_info(self):
+        from transformers.utils.loading_report import LoadStateDictInfo
+        info = LoadStateDictInfo(set(), set(), set(), [], {}).to_dict()
+        self.assertIsInstance(info['missing_keys'], set)
+        self.assertEqual(_json_audit(info), {'missing_keys': [], 'unexpected_keys': [],
+                                           'mismatched_keys': [], 'error_msgs': []})
+
+    def test_unknown_audit_fails_during_load_and_clears_model(self):
+        class Session:
+            def __init__(self): self.model = self.proc = None; self.audit = {}
+            def load(self, kind):
+                self.model = object()
+                self.audit[kind] = {'invalid': object()}
+                return self.model, None
+            def close(self): self.model = None
+        session = PersistentSession(types.SimpleNamespace(Session=Session))
+        with patch('bir.native.verify_residency') as residency:
+            with self.assertRaisesRegex(TypeError, 'audit.tempseg.invalid'):
+                session.load('tempseg')
+            residency.assert_not_called()
+        self.assertIsNone(session.kind)
+        self.assertIsNone(session.native.model)
+
+    def test_signed_checkpoint_store_resume_and_final_caption_diagnostics(self):
+        """Exercise actual adapter/store boundaries; model calls are CPU stubs."""
+        from contextlib import nullcontext
+        from bir.manifest import load_manifest
+        from bir.store import RunStore
+        class Session:
+            def __init__(self): self.model = self.proc = None; self.audit = {}
+            def load(self, kind):
+                self.model, self.proc = object(), object()
+                info = dict(missing_keys=set(), unexpected_keys=set(), mismatched_keys=set(), error_msgs=[])
+                self.audit[kind] = ({'MODEL_LOADED.json': {'base_loading_info': info}}
+                                    if kind == 'tempseg' else {'loading_info': info})
+                return self.model, self.proc
+            def close(self): self.model = self.proc = None
+        backend = NativeBackend.__new__(NativeBackend)
+        backend.frame_cache = None
+        backend.progress = lambda *args: None
+        backend.config = types.SimpleNamespace(PROFILE_POOLS={'human': 'human'}, MODELS={'test': 'pinned'})
+        backend.session = PersistentSession(types.SimpleNamespace(Session=Session))
+        def segment(videos, pool, session, instruction, progress):
+            session.load('tempseg')
+            return [{'start_s': 0.0, 'end_s': 1.0, 'metadata': {}}], [{'source_pts_us': [0, 999999]}]
+        def caption(videos, segments, profile, session, instruction, progress):
+            session.load('captioner')
+            return [{'start_s': 0.0, 'end_s': 1.0, 'status': 'complete', 'caption': 'fixture'}], []
+        backend.pipeline = types.SimpleNamespace(segment=segment, caption_single=caption)
+        metadata = dict(input_sha256={'main': 'hash'}, profile='human', yam32=False,
+                        instruction_sha256='instruction', duration_s=1.0)
+        prepared = PreparedEpisode({}, {'main': object()}, 'human', metadata)
+        cuda = types.SimpleNamespace(cuda=types.SimpleNamespace(is_available=lambda: True))
+        with tempfile.TemporaryDirectory() as directory, patch.dict(sys.modules, {'torch': cuda}), \
+                patch('bir.native.verify_residency', return_value={}), \
+                patch('bir.native.captioner_placement', return_value=nullcontext()):
+            root = Path(directory)
+            (root / 'video.mp4').write_bytes(b'identity-only fixture')
+            (root / 'manifest.jsonl').write_text(json.dumps({'id': 'test', 'video': 'video.mp4'}))
+            job = load_manifest(root / 'manifest.jsonl', contract={'test': 'audit boundary'})[0]
+            store = RunStore(root / 'run.sqlite')
+            try:
+                with store.exclusive():
+                    store.register(job)
+                    attempt = store.begin(job.request_id, 'segment')
+                    signed = backend.segment(prepared)
+                    store.complete(job.request_id, 'segment', attempt, signed, 1.0)
+                    restored = store.result(job.request_id, 'segment')
+                    self.assertEqual(restored, signed)
+                    annotation = backend.caption(prepared, restored)
+                    caption_attempt = store.begin(job.request_id, 'caption')
+                    store.complete(job.request_id, 'caption', caption_attempt, annotation, 1.0)
+                    self.assertEqual(store.result(job.request_id, 'caption'), annotation)
+                    verification = annotation['engine']['model_verification']
+                    self.assertEqual(verification['tempseg']['MODEL_LOADED.json']['base_loading_info']['missing_keys'], [])
+                    self.assertEqual(verification['captioner']['loading_info']['missing_keys'], [])
+                    self.assertIsInstance(backend.session.native.audit['captioner']['loading_info']['missing_keys'], set)
+                    restored['temporal_audit'][0]['source_pts_us'][1] -= 1
+                    with self.assertRaisesRegex(RuntimeError, 'digest mismatch'):
+                        backend.caption(prepared, restored)
+            finally:
+                store.close()
+                backend.close()
 
 
 class ProbeGuardTests(unittest.TestCase):

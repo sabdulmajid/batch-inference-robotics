@@ -1,0 +1,16 @@
+{
+  "manifest_entry_count": 20,
+  "manifest_sha256": "75241af6f42d26f955f207f8cfb98ba6e6d05c303f74a7c85bde30a6cf997ad8",
+  "model_weight_bytes_read": 0,
+  "payload_bytes_read": 0,
+  "payload_files_verified": 0,
+  "provenance_sha256": "b1979e729def7828c8d7600692ba17a3913bdac6ddd152c22bfcabd3f0ad924e",
+  "repository": "nvidia/Flora-Captioner",
+  "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+  "schema_version": "bir_asset_provenance_v1",
+  "source_identity_is_raw_manifest_hash": false,
+  "source_model_identity_sha256": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778",
+  "source_weights_modified": false,
+  "status": "metadata_trust_anchors_verified",
+  "weight_integrity_scope": "not_checked_by_this_metadata_only_call"
+}

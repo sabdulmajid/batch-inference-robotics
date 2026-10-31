@@ -54,6 +54,32 @@ def _json_digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
 
 
+def _json_audit(value, path='audit'):
+    """Copy loader diagnostics to strict JSON without changing upstream data.
+
+    Transformers 5.8.1 returns sets in ``output_loading_info``. Their order
+    must be stable before a checkpoint is signed. Unknown diagnostic types
+    fail at model load, rather than after an expensive generation call.
+    """
+    if value is None or type(value) in (str, bool, int):
+        return value
+    if type(value) is float:
+        if not math.isfinite(value):
+            raise ValueError(f'Nonfinite native diagnostic at {path}')
+        return value
+    if isinstance(value, dict):
+        if any(type(key) is not str for key in value):
+            raise TypeError(f'Non-string native diagnostic key at {path}')
+        return {key: _json_audit(item, f'{path}.{key}') for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_audit(item, f'{path}[{index}]') for index, item in enumerate(value)]
+    if isinstance(value, (set, frozenset)):
+        items = [_json_audit(item, f'{path}{{item}}') for item in value]
+        return sorted(items, key=lambda item: json.dumps(item, sort_keys=True,
+                      separators=(',', ':'), allow_nan=False))
+    raise TypeError(f'Unsupported native diagnostic type {type(value).__name__} at {path}')
+
+
 @dataclass(frozen=True)
 class PreparedEpisode:
     job: dict
@@ -74,7 +100,7 @@ class PersistentSession:
 
     @property
     def audit(self):
-        return self.native.audit
+        return _json_audit(self.native.audit)
 
     def load(self, kind):
         if kind not in self.load_counts:
@@ -87,6 +113,8 @@ class PersistentSession:
         try:
             with context:
                 result = self.native.load(kind)
+            # Validate all diagnostics before upstream starts model inference.
+            self.audit
             self.residency_audit[kind] = verify_residency(result[0])
             if placement:
                 self.placement_audit[kind] = placement

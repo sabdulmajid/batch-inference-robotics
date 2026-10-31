@@ -1,0 +1,24 @@
+{
+  "status": "failed",
+  "reason": "Native inference ran, but model diagnostic sets were not JSON serializable; no complete annotation artifacts",
+  "source_commit": "cad5b8380ff6aaf3327bb87908be1c156eaa2caa",
+  "episodes_attempted": 3,
+  "condition": "optimized_native",
+  "gpus": 1,
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "allocated_seconds": 526,
+  "allocated_gpu_hours": 0.1461111111111111,
+  "application_seconds": 521.2535068057477,
+  "gpu_memory": [
+    {
+      "allocated_at_end_bytes": 9568256,
+      "logical_device": 0,
+      "name": "NVIDIA GeForce RTX 3090",
+      "peak_allocated_bytes": 19706209792,
+      "peak_reserved_bytes": 19801309184,
+      "total_memory_bytes": 25296044032
+    }
+  ],
+  "complete_annotations": 0,
+  "outcome_is_not_native_gate_pass": true
+}

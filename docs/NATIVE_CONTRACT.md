@@ -40,6 +40,8 @@ The native loader still verifies saved Gated DeltaNet values. After loading, the
 
 The adapter retains the upstream caption output schema and audit records. Unsupported intervals retain their explicit status. They do not become complete captions. Native generation still requires a stop token and nonempty output.
 
+Transformers 5.8.1 returns sets in its model-loading diagnostics. The adapter copies these diagnostics to JSON before inference. Sets become arrays sorted by canonical JSON; tuples become arrays. No diagnostic entries are dropped. The upstream objects remain unchanged. Unknown object types and nonfinite numbers fail at model load. The resulting JSON diagnostics are part of the signed segmentation checkpoint and the final Captioner record.
+
 `PersistentSession` reuses the loaded model when the requested stage is unchanged. A stage change releases the former model through the upstream session. A failed load clears the cached model. The engine runs segmentation across the corpus before captioning across the corpus.
 
 ## CPU preparation and frame reuse

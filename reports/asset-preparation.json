@@ -1,0 +1,20 @@
+{
+  "status": "complete",
+  "allocated_cpu_seconds": 2477,
+  "allocated_cpus": 4,
+  "allocated_cpu_core_hours": 2.752222222222222,
+  "allocation_exit_code": "0:0",
+  "persistent_project_bytes": 138270720404,
+  "persistent_project_gib": 128.77464332059026,
+  "storage_cap_gib": 250,
+  "model_weight_bytes": 129079719871,
+  "dataset_parquet_bytes": 1401440590,
+  "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7",
+  "base_weight_shards_verified": 4,
+  "captioner_manifest_payloads_verified": 20,
+  "captioner_payload_bytes_hashed": 109447256940,
+  "captioner_verification_elapsed_s": 439.359,
+  "cpu_step_time_not_added_twice": true,
+  "framework_gate": "complete",
+  "native_model_inference_gate": "not_yet_validated"
+}
