@@ -1,0 +1,300 @@
+{
+  "allocation": {
+    "allocated_gpu_count": 3,
+    "allocated_gpu_hours": 0.5541666666666667,
+    "batch_step_max_rss_kib": 7511248,
+    "counting_rule": "Charge the parent allocation once, including failed and idle time. Batch and extern steps are not extra allocations.",
+    "max_rss_limitation": "This is the scheduler batch-step sample; it is not a complete host-process memory trace.",
+    "parent_elapsed_seconds": 665,
+    "parent_exit_code": "1:0",
+    "parent_final_state": "FAILED"
+  },
+  "configuration": {
+    "batch_size": 1,
+    "camera_roles": [
+      "main"
+    ],
+    "captioner_headroom_gib": 4.0,
+    "condition": "reference",
+    "cuda_runtime": "12.8",
+    "empty_instructions": true,
+    "environment": {
+      "accelerate": "1.12.0",
+      "av": "16.0.1",
+      "huggingface-hub": "1.33.0",
+      "peft": "0.18.1",
+      "safetensors": "0.7.0",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.8.1"
+    },
+    "episode_ids": [
+      "homer_52",
+      "homer_50"
+    ],
+    "execution_contract_sha256": "f3a334b75d748c8b783f3177309c341c1aaf89c886e68d32328727977416ed06",
+    "gpu_count": 3,
+    "gpu_model": "NVIDIA GeForce RTX 3090",
+    "profile": "Human",
+    "same_node": true,
+    "source_and_model_lock": {
+      "captioner": {
+        "repo": "nvidia/Flora-Captioner",
+        "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6"
+      },
+      "captioner_headroom_gib": 4,
+      "microbatch_size": 1,
+      "microbatch_status": "larger batches require measured GPU verification",
+      "native_contract": "flora-native-placement-v1",
+      "source": {
+        "repo": "https://github.com/NVIDIA/Flora.git",
+        "revision": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "tempseg": {
+        "adapter_sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3",
+        "repo": "nvidia/Flora-TempSeg",
+        "revision": "114a1076f70eb53f4a58ac045505db3087e79347"
+      },
+      "tempseg_base": {
+        "repo": "Qwen/Qwen3.5-9B",
+        "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+      }
+    }
+  },
+  "date": "2026-10-31",
+  "engine_commit": "f1f8b414fd74ae93071d12d6bb5b5a39ca066e41",
+  "evidence_sha256": {
+    "annotation_export": "99f9eedd8fed6baa73c1c88b76925585000f5c8aae2d455d3753606e6863871d",
+    "probe_summary": "9c4277f464521faa19d661ebbcd62e54882be79efc4177f5d09b2f63ef053393",
+    "run_contract": "29c252d4f743a2b71f57677d321df1491d0f5bbc8d03684d6c1c90be38f4a1b3",
+    "run_summary": "d15975ed3bccca326a28528e1a22b13597bf9f9d3e9f01696bb8f9f7442026ca",
+    "runtime_log": "4c64b5ae77f5f2fe9783515546f9628bed08e19c7c5a70a242883174bf640aac",
+    "scheduler_record": "ae6f8daf5f1154900ebf75cab84491833c00e50babc8abd20d3c1bb806f754f3",
+    "sqlite_checkpoint": "5b4963be8348fad660ec30a2c11fd437e7a9faef3a8d2886c32cbdd04c37363e"
+  },
+  "failed_placement": {
+    "device_measurements_and_calculations": [
+      {
+        "allocated_bytes": 19136512,
+        "estimated_driver_free_plus_unused_owned_cache_budget_bytes": 20629356544,
+        "free_bytes": 24834408448,
+        "logical_device": 0,
+        "old_driver_free_only_budget_bytes": 20539441152,
+        "reserved_bytes": 109051904,
+        "total_bytes": 25296044032,
+        "unused_owned_cache_bytes_difference": 89915392
+      },
+      {
+        "allocated_bytes": 8519680,
+        "estimated_driver_free_plus_unused_owned_cache_budget_bytes": 20654653440,
+        "free_bytes": 5926486016,
+        "logical_device": 1,
+        "old_driver_free_only_budget_bytes": 1631518720,
+        "reserved_bytes": 19031654400,
+        "total_bytes": 25296044032,
+        "unused_owned_cache_bytes_difference": 19023134720
+      },
+      {
+        "allocated_bytes": 8519680,
+        "estimated_driver_free_plus_unused_owned_cache_budget_bytes": 20654653440,
+        "free_bytes": 5683216384,
+        "logical_device": 2,
+        "old_driver_free_only_budget_bytes": 1388249088,
+        "reserved_bytes": 19274924032,
+        "total_bytes": 25296044032,
+        "unused_owned_cache_bytes_difference": 19266404352
+      }
+    ],
+    "error": "Faithful checkpoint weights exceed all-GPU placement budget",
+    "error_type": "RuntimeError",
+    "estimate_formula": "sum(max(0, min(total_bytes - allocated_bytes, free_bytes + max(0, reserved_bytes - allocated_bytes)) - headroom_bytes))",
+    "estimate_status": "Aggregate capacity estimate only. No second load success was measured.",
+    "estimated_driver_free_plus_unused_owned_cache_budget_bytes": 61938663424,
+    "estimated_driver_free_plus_unused_owned_cache_budget_gib": 57.68487548828125,
+    "estimated_margin_above_weight_bytes": 7225197088,
+    "headroom_bytes_per_device": 4294967296,
+    "interpretation": "The reproduced free-only guard omitted the process-owned reserved-minus-allocated memory. Including that difference changes the aggregate floor from below to above the native weight estimate while retaining 4 GiB headroom on each device. This does not establish that every reserved block is reusable, that the layer placement can fit, or that a new load will succeed.",
+    "native_weight_bytes_estimate": 54713466336,
+    "old_budget_shortfall_bytes": 31154257376,
+    "old_driver_free_only_budget_bytes": 23559208960,
+    "old_driver_free_only_budget_gib": 21.94122314453125,
+    "old_formula": "sum(max(0, driver_free_bytes - headroom_bytes))",
+    "transient": false,
+    "weight_estimate_scope": "Pinned checkpoint tensor headers at native runtime dtypes, excluding activations, caches and allocator overhead."
+  },
+  "gpu_peaks": [
+    {
+      "allocated_at_end_bytes": 19136512,
+      "logical_device": 0,
+      "name": "NVIDIA GeForce RTX 3090",
+      "peak_allocated_bytes": 22448639488,
+      "peak_reserved_bytes": 24928845824,
+      "total_memory_bytes": 25296044032
+    },
+    {
+      "allocated_at_end_bytes": 8519680,
+      "logical_device": 1,
+      "name": "NVIDIA GeForce RTX 3090",
+      "peak_allocated_bytes": 23959430144,
+      "peak_reserved_bytes": 24905777152,
+      "total_memory_bytes": 25296044032
+    },
+    {
+      "allocated_at_end_bytes": 8519680,
+      "logical_device": 2,
+      "name": "NVIDIA GeForce RTX 3090",
+      "peak_allocated_bytes": 24360223744,
+      "peak_reserved_bytes": 24800919552,
+      "total_memory_bytes": 25296044032
+    }
+  ],
+  "limits": [
+    "The earlier cancelled benchmark did not record its failed-preflight memory. This later diagnostic cannot prove that its exact memory state or complete failure cause was identical.",
+    "The estimated capacity does not prove reusable block sizes, absence of fragmentation, or sufficient generation memory.",
+    "No model dtypes, values, temporal inputs, prompts or 4 GiB headroom were reduced for this diagnostic."
+  ],
+  "observed_captioner_close": {
+    "close_elapsed_seconds": 0.40263641299679875,
+    "device_memory_after_close": [
+      {
+        "allocated_bytes": 9568256,
+        "free_bytes": 24899420160,
+        "logical_device": 0,
+        "reserved_bytes": 54525952,
+        "total_bytes": 25296044032
+      },
+      {
+        "allocated_bytes": 8519680,
+        "free_bytes": 5926486016,
+        "logical_device": 1,
+        "reserved_bytes": 19031654400,
+        "total_bytes": 25296044032
+      },
+      {
+        "allocated_bytes": 8519680,
+        "free_bytes": 5683216384,
+        "logical_device": 2,
+        "reserved_bytes": 19274924032,
+        "total_bytes": 25296044032
+      }
+    ],
+    "interpretation": "The first Captioner object was no longer live through the saved weak reference. Small live allocations remained. GPU 1 and GPU 2 retained large allocator reservations. A dead model weak reference does not prove that every tensor or allocator block is free.",
+    "model_alive_after_close": false,
+    "model_weakref_available": true,
+    "synchronization_complete": true
+  },
+  "observed_execution": {
+    "annotation_exports": 1,
+    "attempt_count": 4,
+    "attempts": [
+      {
+        "attempt": 1,
+        "elapsed_seconds": 166.81856840196997,
+        "episode_id": "homer_52",
+        "error_kind": null,
+        "payload_sha256": "1f58eea431b63523dc8453994fe3996b0cc70c605f5eba72a4bdd88828f4d360",
+        "request_id": "fbf79338a4303539caeb5fae20ea4c14e358251e1bba704577203a159f7de29d",
+        "segment_count": 10,
+        "stage": "segment",
+        "state": "complete"
+      },
+      {
+        "attempt": 1,
+        "elapsed_seconds": 380.71657981397584,
+        "episode_id": "homer_52",
+        "error_kind": null,
+        "payload_sha256": "ce830d877d0fdcae59d27b7b1198fc46d16b7013167ba52c601be8ba5865bf9a",
+        "request_id": "fbf79338a4303539caeb5fae20ea4c14e358251e1bba704577203a159f7de29d",
+        "segment_count": 10,
+        "stage": "caption",
+        "state": "complete"
+      },
+      {
+        "attempt": 1,
+        "elapsed_seconds": 81.2342483131215,
+        "episode_id": "homer_50",
+        "error_kind": null,
+        "payload_sha256": "593a2e241c845e24639faf132d110a0f95adbac6f8d4e1abc7b5044fb28da520",
+        "request_id": "e54bd174ddc60d6274493cc0236d0fbd621a327fa478c846b6ab45100094a132",
+        "segment_count": 20,
+        "stage": "segment",
+        "state": "complete"
+      },
+      {
+        "attempt": 1,
+        "elapsed_seconds": 0.8722015721723437,
+        "episode_id": "homer_50",
+        "error_kind": "deterministic",
+        "payload_sha256": null,
+        "request_id": "e54bd174ddc60d6274493cc0236d0fbd621a327fa478c846b6ab45100094a132",
+        "segment_count": null,
+        "stage": "caption",
+        "state": "failed"
+      }
+    ],
+    "cli_workflow_seconds": 642.2321381112561,
+    "complete_attempts": 3,
+    "complete_captions": 10,
+    "complete_episodes": 1,
+    "engine_workflow_seconds": 642.0456413291395,
+    "fail_fast_observation": "The engine recorded the typed load failure and exited with no later model load or generation event. This two-episode input has no third episode, so it does not directly test skipping a later episode. That behavior has local test coverage.",
+    "failed_attempts": 1,
+    "load_sequence": [
+      {
+        "elapsed_seconds": 46.483434431720525,
+        "kind": "tempseg",
+        "status": "complete"
+      },
+      {
+        "elapsed_seconds": 86.14124149875715,
+        "kind": "captioner",
+        "status": "complete"
+      },
+      {
+        "elapsed_seconds": 36.92591722123325,
+        "kind": "tempseg",
+        "status": "complete"
+      },
+      {
+        "elapsed_seconds": 0.7830754853785038,
+        "kind": "captioner",
+        "status": "failed"
+      }
+    ],
+    "model_load_failure": {
+      "error": "Faithful checkpoint weights exceed all-GPU placement budget",
+      "error_type": "RuntimeError",
+      "id": "homer_50",
+      "model_kind": "captioner",
+      "request_id": "e54bd174ddc60d6274493cc0236d0fbd621a327fa478c846b6ab45100094a132",
+      "stage": "caption"
+    },
+    "native_caption_gate": false,
+    "probe_elapsed_seconds": 656.9818985820748,
+    "probe_status": "incomplete",
+    "requested_episodes": 2,
+    "resumed_stages": 0
+  },
+  "primary_reference": {
+    "interpretation": "PyTorch distinguishes tensor-allocated memory from allocator-reserved memory. Unused allocator cache can remain visible as occupied GPU memory. empty_cache releases unused cache, but does not release memory occupied by live tensors.",
+    "title": "PyTorch 2.11 CUDA semantics: Memory management",
+    "url": "https://docs.pytorch.org/docs/2.11/notes/cuda.html#memory-management"
+  },
+  "project_accounting_after_diagnostic": {
+    "final_reproduction_gpu_hour_hold": 2.25,
+    "final_reproduction_submission_hold": 1,
+    "gpu_submissions": 7,
+    "reserved_gpu_hours": 1.5,
+    "used_cpu_only_core_hours": 3.007777777777777,
+    "used_gpu_hours": 2.523888888888889
+  },
+  "schema_version": "bir_native_lifecycle_diagnosis_v1",
+  "scope": "A fresh two-episode native reference diagnostic. This is not a completed benchmark or a successful second Captioner reload.",
+  "status": "reproduced_guard_failure_with_allocator_measurements",
+  "supported_conclusions": [
+    "The second Captioner placement guard failure reproduced with exact memory measurements.",
+    "The first Captioner object was released, while large unused allocator reservations remained on two devices.",
+    "The old free-only guard omitted the reserved-minus-allocated quantity.",
+    "Native second-reload success, a complete reference benchmark, optimized speedup and adaptive results remain unvalidated by this diagnostic."
+  ]
+}
