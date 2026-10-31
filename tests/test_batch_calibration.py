@@ -1,5 +1,6 @@
 """Local calibration controls. No GPU evidence or production admission is made."""
 import importlib.util
+from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
@@ -13,10 +14,87 @@ from unittest.mock import patch
 from bir.batching import CaptionRequest, collate_caption_requests
 from bir.batching_contract import native_batching_contract, native_batching_contract_id
 from scripts.calibrate_caption_batch import (CompatiblePairSearch, admission_from_evidence, memory_stress,
-                                             verify_frozen_release)
+                                             verify_frozen_release, calibration_intervals, capture_episode)
+from bir.native import MODEL_REVISIONS, UPSTREAM_COMMIT, _json_digest
 
 
 class CalibrationControlTests(unittest.TestCase):
+    def signed_fixture(self, root):
+        episode = dict(episode_id='homer_41', split='development', source_sha256='a' * 64,
+                       instruction_sha256='b' * 64, duration_s=5, targets=[dict(reference_index=0, start_s=0, end_s=5)])
+        freeze = dict(freeze_sha256='f' * 64, episodes=[episode])
+        stage = dict(schema_version='bir_segmentation_v1', source_commit=UPSTREAM_COMMIT,
+            input_sha256={'main': episode['source_sha256']}, instruction_sha256=episode['instruction_sha256'],
+            model_revisions={k: {'revision': v} for k, v in MODEL_REVISIONS.items()},
+            profile='Human', yam32=False, duration_s=5, temporal_audit=[{'native': 'window'}],
+            segments=[dict(start_s=1, end_s=2, metadata={}), dict(start_s=3, end_s=4, metadata={})])
+        stage['stage_digest'] = _json_digest(stage)
+        checkpoint = root / 'segment.json'; checkpoint.write_text(json.dumps(stage))
+        output = dict(episode_id='homer_41', input_sha256=stage['input_sha256'], profile='Human',
+                      model_revisions=stage['model_revisions'], segments=stage['segments'],
+                      pipeline={'temporal_windows': stage['temporal_audit']})
+        (root / 'caption.json').write_text(json.dumps(output))
+        args = types.SimpleNamespace(signed_segmentation=checkpoint, segment_indices=[0, 1], gate_evidence=root / 'gate.json')
+        return args, freeze, {'run': {'exports': ['caption.json']}}, stage, output
+
+    def test_signed_selection_binds_checkpoint_gate_intervals_and_prediction_provenance(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            args, freeze, gate, stage, output = self.signed_fixture(Path(temporary))
+            targets, receipt = calibration_intervals(args, freeze, gate)
+            self.assertEqual([r['signed_segment_index'] for r in targets['homer_41']], [0, 1])
+            self.assertFalse(receipt['independent_reference'])
+            self.assertEqual(receipt['stage_digest'], stage['stage_digest'])
+            self.assertNotIn('reference_index', targets['homer_41'][0])
+            args.signed_segmentation.write_text(json.dumps(stage, indent=2))
+            changed = calibration_intervals(args, freeze, gate)[1]
+            self.assertNotEqual(receipt['checkpoint_sha256'], changed['checkpoint_sha256'])
+            self.assertEqual(receipt['stage_digest'], changed['stage_digest'])
+            args.signed_segmentation = args.segment_indices = None
+            references, receipt = calibration_intervals(args, freeze, gate)
+            self.assertEqual(references['homer_41'], freeze['episodes'][0]['targets'])
+            self.assertEqual(receipt['kind'], 'fixed_development_reference_intervals')
+
+    def test_signed_selection_rejects_corruption_wrong_source_or_changed_gate_bounds(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            args, freeze, gate, stage, output = self.signed_fixture(root)
+            stage['segments'][0]['end_s'] = 2.1
+            args.signed_segmentation.write_text(json.dumps(stage))
+            with self.assertRaisesRegex(ValueError, 'integrity'):
+                calibration_intervals(args, freeze, gate)
+            stage['stage_digest'] = _json_digest({k: v for k, v in stage.items() if k != 'stage_digest'})
+            args.signed_segmentation.write_text(json.dumps(stage))
+            with self.assertRaisesRegex(ValueError, 'Gate C episode intervals'):
+                calibration_intervals(args, freeze, gate)
+            stage['input_sha256'] = {'main': 'c' * 64}
+            stage['stage_digest'] = _json_digest({k: v for k, v in stage.items() if k != 'stage_digest'})
+            args.signed_segmentation.write_text(json.dumps(stage))
+            with self.assertRaisesRegex(ValueError, 'frozen development'):
+                calibration_intervals(args, freeze, gate)
+
+    def test_signed_selection_rejects_invalid_or_partial_pair_arguments(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            args, freeze, gate, _, _ = self.signed_fixture(Path(temporary))
+            for indices in (None, [0, 0], [1, 0], [0, 9], [True, 1]):
+                args.segment_indices = indices
+                with self.assertRaises(ValueError): calibration_intervals(args, freeze, gate)
+
+    def test_capture_keeps_predicted_interval_indices_separate_from_references(self):
+        pipeline = types.SimpleNamespace(generate=None)
+        def caption(videos, segments, profile, session, instruction, progress):
+            model, processor = session.load('captioner')
+            rows = [dict(caption=pipeline.generate(model, processor, {}, 512)) for segment in segments]
+            return rows, [dict(event_id=f'event_{i:04d}') for i in range(len(segments))]
+        pipeline.caption_single = caption
+        backend = types.SimpleNamespace(_execution=nullcontext, pipeline=pipeline, progress=None)
+        prepared = types.SimpleNamespace(videos={}, profile='Human', job={'instruction': ''})
+        targets = [dict(signed_segment_index=i, start_s=i, end_s=i + 1,
+                        interval_provenance='signed_tempseg_model_predicted_intervals') for i in (10, 13)]
+        routes = capture_episode(backend, prepared, types.SimpleNamespace(id='homer_41', request_id='request'),
+                                 targets, object(), types.SimpleNamespace(offer=lambda request: None), 'contract')
+        self.assertEqual([r['signed_segment_index'] for r in routes.values()], [10, 13])
+        self.assertTrue(all('reference_index' not in r for r in routes.values()))
+
     def test_live_release_guard_rejects_changed_code_or_gate_evidence(self):
         args = types.SimpleNamespace(model_lock=None, captioner_headroom_gib=4,
                                      max_prepared_mib=2, freeze=None, gate_evidence=None)
@@ -35,6 +113,23 @@ class CalibrationControlTests(unittest.TestCase):
             gate.return_value = {'receipt': 'changed'}
             with self.assertRaisesRegex(RuntimeError, 'Gate C evidence'):
                 verify_frozen_release(args, report, contract)
+
+    def test_live_release_guard_rechecks_signed_interval_receipt(self):
+        args = types.SimpleNamespace(model_lock=None, captioner_headroom_gib=4,
+                                     max_prepared_mib=2, freeze=None, gate_evidence=None)
+        report = dict(calibration_sources_sha256={}, freeze_sha256='freeze', gate_c={},
+                      interval_selection={'checkpoint_sha256': 'original'})
+        with patch('scripts.calibrate_caption_batch.native_batching_contract', return_value={}), \
+                patch('scripts.calibrate_caption_batch.calibration_sources', return_value={}), \
+                patch('scripts.calibrate_caption_batch.load_freeze', return_value={'freeze_sha256': 'freeze'}), \
+                patch('scripts.calibrate_caption_batch.verify_gate_c', return_value={}), \
+                patch('scripts.calibrate_caption_batch.read_json', return_value={}), \
+                patch('scripts.calibrate_caption_batch.calibration_intervals',
+                      return_value=({}, report['interval_selection'])) as selection:
+            verify_frozen_release(args, report, {})
+            selection.return_value = ({}, {'checkpoint_sha256': 'changed'})
+            with self.assertRaisesRegex(RuntimeError, 'interval selection changed'):
+                verify_frozen_release(args, report, {})
 
     def test_contract_is_path_independent_and_separate_from_run_evidence(self):
         original = native_batching_contract()

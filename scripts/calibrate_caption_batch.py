@@ -161,8 +161,11 @@ def capture_episode(backend, prepared, job, targets, processor, search, contract
         index = int(event_id[6:])
         if not 0 <= index < len(targets) or rows[index]['caption'] != 'BIR_CAPTURE_ONLY_NO_MODEL_INFERENCE':
             raise RuntimeError('Native capture event routing changed')
-        routes[capture_row['provisional_id']] = dict(episode_id=job.id,
-            reference_index=targets[index]['reference_index'], native_event_id=event_id,
+        target = targets[index]
+        identity = {key: target[key] for key in ('reference_index', 'signed_segment_index') if key in target}
+        routes[capture_row['provisional_id']] = dict(episode_id=job.id, **identity,
+            interval_provenance=target.get('interval_provenance', 'fixed_development_reference_intervals'),
+            native_event_id=event_id,
             start_s=targets[index]['start_s'], end_s=targets[index]['end_s'],
             native_input_audit=audit)
     return routes
@@ -238,6 +241,71 @@ def calibration_sources():
     return {name: file_sha256(Path(__file__).with_name(name)) for name in scripts}
 
 
+def calibration_intervals(args, freeze, gate_marker):
+    """Select fixed references or an explicit pair from signed native output.
+
+    The alternate pair remains a model prediction. It does not rewrite the
+    quality freeze or claim that TempSeg predictions are independent labels.
+    """
+    development = {e['episode_id']: e for e in freeze['episodes'] if e['split'] == 'development'}
+    checkpoint = getattr(args, 'signed_segmentation', None)
+    indices = getattr(args, 'segment_indices', None)
+    if checkpoint is None and indices is None:
+        return ({key: value['targets'] for key, value in development.items()},
+                dict(kind='fixed_development_reference_intervals', freeze_sha256=freeze['freeze_sha256']))
+    if checkpoint is None or indices is None:
+        raise ValueError('--signed-segmentation and --segment-indices must be used together')
+    if (len(indices) != 2 or any(type(i) is not int or i < 0 for i in indices) or
+            len(set(indices)) != 2 or list(indices) != sorted(indices)):
+        raise ValueError('Select exactly two distinct signed segment indices in source order')
+    stage = read_json(checkpoint)
+    if (stage.get('schema_version') != 'bir_segmentation_v1' or
+            stage.get('stage_digest') != _digest({k: v for k, v in stage.items() if k != 'stage_digest'}) or
+            stage.get('source_commit') != UPSTREAM_COMMIT):
+        raise ValueError('The signed native segmentation checkpoint failed integrity validation')
+    matches = [e for e in development.values() if stage.get('input_sha256') == {'main': e['source_sha256']}]
+    if len(matches) != 1 or len(development) != 1:
+        raise ValueError('Signed interval calibration requires the one frozen development episode')
+    episode = matches[0]
+    if (stage.get('profile') != 'Human' or stage.get('yam32') is not False or
+            stage.get('instruction_sha256') != episode['instruction_sha256'] or
+            abs(stage.get('duration_s', -1) - episode['duration_s']) > .001 or
+            any(stage.get('model_revisions', {}).get(k, {}).get('revision') != v for k, v in MODEL_REVISIONS.items())):
+        raise ValueError('Signed segmentation source/configuration differs from the native development input')
+    segments = stage.get('segments', [])
+    if max(indices) >= len(segments):
+        raise ValueError('Selected signed segment index is outside the checkpoint')
+    intervals = [[s['start_s'], s['end_s']] for s in segments]
+    if any(not all(math.isfinite(x) for x in pair) or not 0 <= pair[0] < pair[1] <= episode['duration_s'] + .001
+           for pair in intervals):
+        raise ValueError('Signed segmentation contains an invalid source interval')
+    gate_outputs = []
+    for value in gate_marker['run']['exports']:
+        path = Path(value)
+        if not path.is_absolute(): path = Path(args.gate_evidence).parent / path
+        output = read_json(path)
+        if output.get('episode_id') == episode['episode_id']:
+            gate_outputs.append((path, output))
+    if len(gate_outputs) != 1:
+        raise ValueError('Gate C does not contain exactly one matching development episode')
+    gate_path, output = gate_outputs[0]
+    if (output.get('input_sha256') != stage['input_sha256'] or output.get('profile') != stage['profile'] or
+            output.get('model_revisions') != stage['model_revisions'] or
+            [[s['start_s'], s['end_s']] for s in output.get('segments', [])] != intervals or
+            output.get('pipeline', {}).get('temporal_windows') != stage.get('temporal_audit') or
+            not stage.get('temporal_audit')):
+        raise ValueError('Signed segmentation differs from the verified Gate C episode intervals or source')
+    provenance = 'signed_tempseg_model_predicted_intervals'
+    targets = [dict(signed_segment_index=i, start_s=segments[i]['start_s'], end_s=segments[i]['end_s'],
+                    interval_provenance=provenance) for i in indices]
+    receipt = dict(kind=provenance, independent_reference=False, episode_id=episode['episode_id'],
+        source_sha256=episode['source_sha256'], instruction_sha256=episode['instruction_sha256'],
+        checkpoint_sha256=file_sha256(checkpoint), stage_digest=stage['stage_digest'],
+        gate_annotation_sha256=file_sha256(gate_path), all_intervals_sha256=_digest(intervals),
+        signed_segment_indices=list(indices), selected_intervals=targets)
+    return {episode['episode_id']: targets}, receipt
+
+
 def verify_frozen_release(args, report, contract):
     current = native_batching_contract(model_lock=args.model_lock,
         captioner_headroom_gib=args.captioner_headroom_gib,
@@ -247,6 +315,10 @@ def verify_frozen_release(args, report, contract):
     if (load_freeze(args.freeze)['freeze_sha256'] != report['freeze_sha256'] or
             verify_gate_c(args.gate_evidence) != report['gate_c']):
         raise RuntimeError('Calibration frozen input or Gate C evidence changed during execution')
+    if 'interval_selection' in report:
+        _, selection = calibration_intervals(args, load_freeze(args.freeze), read_json(args.gate_evidence))
+        if selection != report['interval_selection']:
+            raise RuntimeError('Calibration interval selection changed during execution')
 
 
 def main(argv=None):
@@ -255,6 +327,10 @@ def main(argv=None):
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--gate-evidence', type=Path, required=True)
     parser.add_argument('--freeze', type=Path, default=Path('manifests/adaptive-freeze.json'))
+    parser.add_argument('--signed-segmentation', type=Path,
+        help='Optional signed native TempSeg checkpoint for the frozen development episode')
+    parser.add_argument('--segment-indices', type=int, nargs=2,
+        help='Two exact source-order indices from --signed-segmentation; these are model predictions')
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--model-lock', type=Path, default=Path('configs/native-models.json'))
     parser.add_argument('--captioner-headroom-gib', type=float, default=4.0)
@@ -315,6 +391,7 @@ def main(argv=None):
         development = {e['episode_id']: e for e in freeze['episodes'] if e['split'] == 'development'}
         if {j.id for j in jobs} != set(development) or not 1 <= len(jobs) <= 3:
             raise ValueError('Calibration accepts exactly the frozen development videos, never final videos')
+        targets_by_episode, report['interval_selection'] = calibration_intervals(args, freeze, gate_marker)
         backend = NativeBackend(args.source_root, captioner_headroom_gib=args.captioner_headroom_gib)
         capture_started = time.perf_counter()
         processor = backend.models.processor('captioner', backend.models.snapshot('captioner'))
@@ -333,7 +410,7 @@ def main(argv=None):
                     abs(prepared.metadata['duration_s'] - expected['duration_s']) > .001):
                 raise ValueError('Calibration source changed during preparation')
             prepared_episodes[job.id] = prepared
-            routes.update(capture_episode(backend, prepared, job, expected['targets'], processor, search, contract_id))
+            routes.update(capture_episode(backend, prepared, job, targets_by_episode[job.id], processor, search, contract_id))
         report.update(capture_seconds=time.perf_counter() - capture_started,
             capture_mode='real_native_cpu_inputs_no_model_inference_no_annotations',
             capture_observations=search.observations, candidate_peak_source_bytes=search.peak_retained_source_bytes)
@@ -402,7 +479,7 @@ def main(argv=None):
             report['memory_stress'] = stress_result
         evidence_id = _digest({key: report[key] for key in ('execution_contract_sha256', 'input_routes',
             'native_single_captions', 'native_batch_rows', 'memory_stress', 'passes', 'topology_fingerprint',
-            'gate_c', 'freeze_sha256', 'calibration_script_sha256', 'calibration_sources_sha256')})
+            'gate_c', 'freeze_sha256', 'interval_selection', 'calibration_script_sha256', 'calibration_sources_sha256')})
         admission = admission_from_evidence(batch=batch, fingerprint=fingerprint, evidence_id=evidence_id,
             native_agreement=agreement, batch_record=batch_record, stress_record=stress_record,
             stress_complete=stress_result['complete'], headroom_bytes=headroom)
@@ -410,8 +487,8 @@ def main(argv=None):
         admission.require(batch, runtime_fingerprint=fingerprint,
             total_bytes=[m['total_bytes'] for m in current], free_bytes=[m['free_bytes'] for m in current],
             allocated_bytes=[m['allocated_bytes'] for m in current], reserved_bytes=[m['reserved_bytes'] for m in current])
-        # Exercise the actual upstream planner plus deferred collector. These
-        # are fixed development reference intervals, not TempSeg predictions.
+        # Exercise the actual upstream planner plus deferred collector with
+        # the selected interval source recorded separately from quality labels.
         episode_id = selected[0].episode_id
         if any(r.episode_id != episode_id for r in selected):
             raise RuntimeError('The collector demonstration cannot batch across episodes')
@@ -446,8 +523,9 @@ def main(argv=None):
             complete = (len(collector.audit['batch_runs']) == 1 and not collector.audit['single_runs'] and
                         observed == expected and captions == singles and
                         all(r['status'] == 'complete' for r in resolved['segments']))
-            return dict(complete=complete, interval_provenance='fixed_development_reference_intervals',
-                original_reference_indices=[r['reference_index'] for r in selected_routes],
+            identity = ('signed_segment_index' if args.signed_segmentation is not None else 'reference_index')
+            return dict(complete=complete, interval_provenance=report['interval_selection']['kind'],
+                original_interval_indices=[{identity: r[identity]} for r in selected_routes],
                 native_captions=captions, input_digests_match=observed == expected,
                 native_caption_agreement=captions == singles, collector=collector.audit)
         demo, _ = measured_pass(torch, report['passes'], 'native_collector_demonstration', demonstrate_collector)
