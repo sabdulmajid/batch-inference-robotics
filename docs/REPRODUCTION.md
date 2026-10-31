@@ -16,11 +16,43 @@ model and dataset revisions, and checks the released model manifests. Set
 `BIR_PROJECT_ROOT` to a verified private project directory first. The script
 requires a SLURM allocation and rejects a restarted job. It never submits jobs.
 
+For initial setup, place this repository at `$BIR_PROJECT_ROOT/code`. The setup
+script uses that exact layout. It creates the pinned upstream checkout at
+`$BIR_PROJECT_ROOT/Flora`. Use a fresh task-owned directory for this setup:
+
+```bash
+git clone https://github.com/sabdulmajid/batch-inference-robotics.git "$BIR_PROJECT_ROOT/code"
+cd "$BIR_PROJECT_ROOT/code"
+# Inside the reserved CPU allocation:
+bash scripts/prepare_environment.sh
+```
+
 Before setup, the coordinator must reserve CPU time and record storage estimates
 with `bir.resource_ledger.ResourceLedger` and `check_storage`. The current setup
 plan allows 180 GiB of new storage against the unchanged 250 GiB cap. No script
 is permission to exceed the resource policy. Preserve the runtime environment
 freeze file and private setup logs.
+
+In the prepared CPU environment, extract the initial three-video fixture:
+
+```bash
+export PATH="$BIR_PROJECT_ROOT/venv/bin:$PATH"
+export PYTHONPATH="$BIR_PROJECT_ROOT/code/src"
+export HF_HOME="$BIR_PROJECT_ROOT/cache/huggingface"
+export FLORA_MODEL_CACHE="$BIR_PROJECT_ROOT/models"
+python scripts/prepare_wgo.py prepare \
+  --parquet "$BIR_PROJECT_ROOT/datasets/wgo/data/annotations.parquet" \
+  --source "$BIR_PROJECT_ROOT/Flora" \
+  --output-dir "$BIR_PROJECT_ROOT/datasets/initial" \
+  --max-episodes 3 --split development
+```
+
+The output directory must be new. The expected IDs, in order, are `homer_52`,
+`homer_50`, and `homer_41`. Their source hashes and selection evidence are in
+[the initial manifest](../manifests/initial-native.json). Preparation copies the
+original video bytes. It does not generate model outputs. The automated split
+proposal from this command is only for the initial fixture; the later adaptive
+experiment uses its separately frozen task groups.
 
 ## 2. Native gates
 
