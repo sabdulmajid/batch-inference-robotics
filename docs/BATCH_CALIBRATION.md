@@ -57,3 +57,12 @@ The script rechecks implementation hashes, its helper scripts, frozen inputs, an
 Episode IDs, output directories, scheduler job IDs, and admission-file hashes are separate. This avoids a circular identity between evidence and the configuration it validates. Relevant runtime code or setting changes require new calibration. A CLI presentation change alone does not redefine model computation.
 
 CPU calibration and independent review tests check bounded pair selection, distinct inputs, episode boundaries, stable contract identity, current code and physical GPU bindings, admission prerequisites, copied stress settings, full token-count requirements, live release changes, and restart rejection. They use synthetic tensors and stub generation. They do not establish GPU feasibility or native batch agreement.
+
+Real CPU preparation also found a pair in the frozen development video. Each
+request contains 8,504 input tokens and three temporal blocks. Rebuilding only
+those two intervals preserved ordered tensors, prompts, frames, and timestamps.
+The retained input and combined tensors use 793,540,128 bytes. The two local CPU
+workflows took 111.740 seconds in total. See the
+[sanitized preparation report](../reports/caption-batch-cpu-preparation.json).
+This establishes input compatibility only. GPU generation and memory admission
+remain unverified.

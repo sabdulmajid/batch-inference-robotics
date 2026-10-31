@@ -1,0 +1,294 @@
+{
+  "dataset": {
+    "parquet_sha256": "24c6c23447753385b9cea0d17f17d7a8aa74131d800d9bc9ab74d7669d7404ab",
+    "repository": "macrodata/WGO-Bench",
+    "revision": "9cfb7bb98d60a58319f4b3d7b41374eedfb7980c"
+  },
+  "engine_commit": "18367b454c237b17d471b2704cb85f35f5e1f5e1",
+  "environment": {
+    "recorded_in": "original CPU capture receipt",
+    "replay_versions_separately_recorded": false,
+    "versions": {
+      "Pillow": "12.3.0",
+      "av": "16.0.1",
+      "numpy": "2.5.4",
+      "tokenizers": "0.22.2",
+      "torch": "2.11.0",
+      "torchvision": "0.26.0",
+      "transformers": "5.8.1"
+    }
+  },
+  "episode_id": "homer_41",
+  "evidence_sha256": {
+    "cpu_pair_replay": "6eba4e7b9050bd5a46cd2fd2e9013136ae86cd4a39d637847150fc42d3b8c419",
+    "original_cpu_capture": "aa6d770cc59c987de4414e9d87ebe5d06220816657a2c4e5ba6c58fcd501e8e4"
+  },
+  "execution_contract_sha256": "f3bd8a9d6f13dcf52f4777718096440a9abfa45aa5de451dd4fbfb09481d8a64",
+  "freeze_sha256": "5f2990337b9ba7a411b9a4ab33f48b1880707c5cae44e2115269a37b4adaeaa0",
+  "independent_receipt_checks": {
+    "audit_boundary": "Receipt consistency and current code/contract hashes were independently checked. This audit did not rerun CPU preparation or rehash raw tensor memory.",
+    "current_batching_contract_matches": true,
+    "event_renumbering": "Original events 1/2 become replay events 0/1. Frozen reference indices 1/2 and their ordered tensors, prompts, frame indices, and source timestamps are unchanged.",
+    "first_receipt_link_matches": true,
+    "frozen_reference_bounds_match": true,
+    "ordered_prompt_and_frame_timestamp_blocks_match": true,
+    "ordered_tensor_descriptors_and_hashes_match": true,
+    "original_and_replay_use_distinct_pair_inputs": true
+  },
+  "limitations": [
+    "CPU input compatibility does not establish model placement, GPU memory fit, generation compatibility, or throughput.",
+    "No model parameters were loaded by these captures. Model pins describe the preparation contract, not a weight validation in this result.",
+    "Private raw receipts remain outside the public repository. Public evidence includes hashes and numeric metadata only."
+  ],
+  "memory": {
+    "bound_bytes": 2147483648,
+    "collated_tensor_bytes": 396770064,
+    "combined_retained_tensor_bytes": 793540128,
+    "retained_source_peak_bytes": 396770064,
+    "scope": "Retained input and collated CPU tensors. This is not total host peak RAM or GPU memory.",
+    "within_bound": true
+  },
+  "model_work": {
+    "annotation_quality_measured": false,
+    "gpu_admission": false,
+    "gpu_generation_validated": false,
+    "model_inference": false,
+    "model_load_counts_original": {
+      "captioner": 0,
+      "tempseg": 0
+    },
+    "model_load_counts_replay": {
+      "captioner": 0,
+      "tempseg": 0
+    },
+    "native_output_agreement_measured": false
+  },
+  "pair": {
+    "batch_size": 2,
+    "captured_reference_intervals": 7,
+    "collated_tensor_shapes": {
+      "attention_mask": [
+        2,
+        8504
+      ],
+      "input_ids": [
+        2,
+        8504
+      ],
+      "mm_token_type_ids": [
+        2,
+        8504
+      ],
+      "pixel_values_videos": [
+        64512,
+        1536
+      ],
+      "video_grid_thw": [
+        6,
+        3
+      ]
+    },
+    "compatibility_signature": "2dbc59e8ebb7cadad1df5ef59502dc22e017dd491b9ac973f2cd83b0f8a4aec7",
+    "input_tokens_per_request": 8504,
+    "requests": [
+      {
+        "block_roles": [
+          "BEFORE",
+          "TARGET",
+          "AFTER"
+        ],
+        "end_s": 14.244,
+        "frame_counts": [
+          12,
+          40,
+          12
+        ],
+        "grid_rows": [
+          0,
+          3
+        ],
+        "input_tensor_digest": "ad325c1d5b80eb1147d05f22de41d0386e4c51e2ff5ca7f20b7a64a1c7fa89b6",
+        "input_tensors": {
+          "attention_mask": {
+            "dtype": "torch.int64",
+            "sha256": "5f3974630b8e6aa5299dd4d1e6197d57fd2a382db9137fd70b07b9b974034c44",
+            "shape": [
+              1,
+              8504
+            ]
+          },
+          "input_ids": {
+            "dtype": "torch.int64",
+            "sha256": "29b8182d6913c6e68ba40761b58d7a19e02081e7761eab3ae58639eed78359fc",
+            "shape": [
+              1,
+              8504
+            ]
+          },
+          "mm_token_type_ids": {
+            "dtype": "torch.int64",
+            "sha256": "73af65590f8cf273f9338a0643fad9cba3dc38de227fc9a5a087d468b87107f7",
+            "shape": [
+              1,
+              8504
+            ]
+          },
+          "pixel_values_videos": {
+            "dtype": "torch.float32",
+            "sha256": "885986601b863b16d74e4ce42b0e189ca672ba2e5c6f4999321588931c736ad9",
+            "shape": [
+              32256,
+              1536
+            ]
+          },
+          "video_grid_thw": {
+            "dtype": "torch.int64",
+            "sha256": "fe5160433263a19ab302002c7079429cd482621cf9854d5877b675080da1c26d",
+            "shape": [
+              3,
+              3
+            ]
+          }
+        },
+        "original_native_event_id": "event_0001",
+        "output_row": 0,
+        "pixel_rows": [
+          0,
+          32256
+        ],
+        "prompt_sha256": "eee187f1973ae90325afaa89ae33d47da1c5eb865132b47da86c1ff0d82b9b57",
+        "reference_index": 1,
+        "replay_native_event_id": "event_0000",
+        "retained_source_tensor_bytes": 198385032,
+        "start_s": 8.682,
+        "temporal_blocks_sha256": "a2cc048a33474f4fa3cd0023299cb319ccf4c9d83e2982b08f5c4eee45996469"
+      },
+      {
+        "block_roles": [
+          "BEFORE",
+          "TARGET",
+          "AFTER"
+        ],
+        "end_s": 20.238,
+        "frame_counts": [
+          12,
+          40,
+          12
+        ],
+        "grid_rows": [
+          3,
+          6
+        ],
+        "input_tensor_digest": "ff17e0447b6e3eb1f313a1f5f20909c353d5ed001d079f4951eb8765b3b063a6",
+        "input_tensors": {
+          "attention_mask": {
+            "dtype": "torch.int64",
+            "sha256": "5f3974630b8e6aa5299dd4d1e6197d57fd2a382db9137fd70b07b9b974034c44",
+            "shape": [
+              1,
+              8504
+            ]
+          },
+          "input_ids": {
+            "dtype": "torch.int64",
+            "sha256": "a7ffbb5c5a159fb8fd55febe8c086956c721b82a87b2b3b053a2dd402fb4640f",
+            "shape": [
+              1,
+              8504
+            ]
+          },
+          "mm_token_type_ids": {
+            "dtype": "torch.int64",
+            "sha256": "73af65590f8cf273f9338a0643fad9cba3dc38de227fc9a5a087d468b87107f7",
+            "shape": [
+              1,
+              8504
+            ]
+          },
+          "pixel_values_videos": {
+            "dtype": "torch.float32",
+            "sha256": "01102b357ffa8f8d9f51dd30b34fc1ee64c18ff75bda9c9792353052a3a36c82",
+            "shape": [
+              32256,
+              1536
+            ]
+          },
+          "video_grid_thw": {
+            "dtype": "torch.int64",
+            "sha256": "fe5160433263a19ab302002c7079429cd482621cf9854d5877b675080da1c26d",
+            "shape": [
+              3,
+              3
+            ]
+          }
+        },
+        "original_native_event_id": "event_0002",
+        "output_row": 1,
+        "pixel_rows": [
+          32256,
+          64512
+        ],
+        "prompt_sha256": "eee187f1973ae90325afaa89ae33d47da1c5eb865132b47da86c1ff0d82b9b57",
+        "reference_index": 2,
+        "replay_native_event_id": "event_0001",
+        "retained_source_tensor_bytes": 198385032,
+        "start_s": 14.244,
+        "temporal_blocks_sha256": "01a3cd8e86f3fcf6a29445c236a375153ddc752872ab62a9bb756c699c0197c7"
+      }
+    ],
+    "selected_reference_indices": [
+      1,
+      2
+    ],
+    "selection": "First exact compatible distinct pair during the seven-interval development capture",
+    "temporal_blocks_per_request": 3
+  },
+  "processor_sha256": "c6f1b591b0fb0e0ab4a93129b4678a8cfe0481d4c505466bbf49ad40f43472c1",
+  "runtime_source_sha256": {
+    "batching.py": "6efb4e39cf52d52e485813a3658b6093e69ce9971e5dc3d56fca72a2ae4adb97",
+    "batching_contract.py": "fc8cb87b936f94b5d63e08021a733ae0a4c3c3bd58d1dbc4018548abd1867fe3",
+    "caption_batching.py": "5ffb7bbac6681e5ba41b21d4939335afebc48334962aab5fa24010b952e28ec5",
+    "frame_cache.py": "ced64e426ee64c3609113da5d3f33802c9704a5d744fcb1733cc72ec1cefc635",
+    "native.py": "205a82f2bc8f16a177abba1382b7c9747e6c0642bd25698f75a686eb78bbbb3b",
+    "placement.py": "964690d00bc4d5cf334d977b2a276c71a0b3dd5d96756809bd9b3e8be69b77e2"
+  },
+  "schema_version": "bir_caption_batch_cpu_preparation_report_v1",
+  "scope": "CPU preparation and tensor collation only; no model inference or GPU admission",
+  "source_and_model_pins": {
+    "captioner": {
+      "repo": "nvidia/Flora-Captioner",
+      "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6"
+    },
+    "captioner_headroom_gib": 4,
+    "microbatch_size": 1,
+    "microbatch_status": "larger batches require measured GPU verification",
+    "native_contract": "flora-native-placement-v1",
+    "source": {
+      "repo": "https://github.com/NVIDIA/Flora.git",
+      "revision": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+    },
+    "tempseg": {
+      "adapter_sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3",
+      "repo": "nvidia/Flora-TempSeg",
+      "revision": "114a1076f70eb53f4a58ac045505db3087e79347"
+    },
+    "tempseg_base": {
+      "repo": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+    }
+  },
+  "source_sha256": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12",
+  "split": "development",
+  "status": "exact_ordered_cpu_preparation_and_replay_verified",
+  "timing": {
+    "allocated_gpu_hours": null,
+    "allocated_remote_cpu_core_hours": null,
+    "allocation_accounting": "These application timers do not establish scheduler allocation time. No remote allocated time or GPU throughput is claimed.",
+    "boundary": "Application workflow wall timers from both CPU receipts. Capture timers are subsets and are not added again.",
+    "combined_workflow_wall_seconds": 111.740467958,
+    "original_capture_subset_seconds": 63.952004291000776,
+    "original_workflow_wall_seconds": 84.76034500000242,
+    "replay_capture_subset_seconds": 18.550873458007118,
+    "replay_workflow_wall_seconds": 26.980122957989806
+  }
+}
