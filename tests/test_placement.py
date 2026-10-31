@@ -3,11 +3,35 @@ from pathlib import Path
 import tempfile
 import types
 import unittest
+from unittest.mock import Mock, patch
 
-from bir.placement import GIB, checkpoint_weight_bytes, memory_budgets, verify_residency, inspect_checkpoint
+from bir.placement import GIB, captioner_placement, checkpoint_weight_bytes, memory_budgets, verify_residency, inspect_checkpoint
 
 
 class PlacementTests(unittest.TestCase):
+    def test_failed_capacity_floor_retains_all_device_measurements_without_loading(self):
+        original = Mock()
+        auto_model = types.SimpleNamespace(from_pretrained=original)
+        modules = {'torch': types.SimpleNamespace(bfloat16='bf16', cuda=types.SimpleNamespace(
+            device_count=lambda: 3, mem_get_info=lambda i: (20 * GIB, 24 * GIB),
+            memory_allocated=lambda i: (i + 1) * GIB, memory_reserved=lambda i: (i + 2) * GIB)),
+            'transformers': types.SimpleNamespace(AutoModelForImageTextToText=auto_model),
+            'transformers.models.qwen3_5.modeling_qwen3_5': types.SimpleNamespace(
+                Qwen3_5PreTrainedModel=types.SimpleNamespace(_keep_in_fp32_modules_strict=['A_log', 'dt_bias']))}
+        audit = {}
+        with patch.dict('sys.modules', modules), patch('bir.placement.inspect_checkpoint',
+                return_value={'native_weight_bytes_estimate': 51 * GIB}):
+            with captioner_placement(4, audit):
+                with self.assertRaisesRegex(RuntimeError, 'weights exceed'):
+                    auto_model.from_pretrained('private-snapshot', device_map='balanced', dtype='bf16',
+                        local_files_only=True, attn_implementation={'text_config': 'sdpa', 'vision_config': 'sdpa'})
+        original.assert_not_called()
+        self.assertEqual(audit['feasibility'], 'failed')
+        self.assertEqual(audit['headroom_gib'], 4)
+        self.assertEqual([r['logical_device'] for r in audit['device_memory']], [0, 1, 2])
+        self.assertEqual(audit['device_memory'][2], dict(logical_device=2, total_bytes=24 * GIB,
+                         free_bytes=20 * GIB, allocated_bytes=3 * GIB, reserved_bytes=4 * GIB))
+
     def test_27b_cannot_fit_two_24gib_devices(self):
         with self.assertRaisesRegex(RuntimeError, 'weights exceed'):
             memory_budgets([(24 * GIB, 24 * GIB)] * 2, 4, weight_bytes=54_000_000_000)

@@ -1,5 +1,6 @@
 import json
 import importlib.util
+import errno
 from pathlib import Path
 import tempfile
 import threading
@@ -63,6 +64,87 @@ class EngineTests(unittest.TestCase):
         stages = [c[0] for c in self.calls if c[0] != "prepare"]
         self.assertEqual(stages, ["segment", "caption", "close"] * 3)
         self.assertEqual(len([c for c in self.calls if c[0] == "prepare"]), 3)
+
+    def test_reference_fatal_load_stops_new_backends_and_preserves_completed_checkpoints(self):
+        from bir.native import NativeModelLoadError
+        calls = self.calls
+        base = self.factory()
+        class Backend(base):
+            def __init__(self): calls.append(('new_backend',))
+            def caption(self, prepared, segmentation):
+                if prepared['id'] == '1':
+                    calls.append(('caption_load_failed', '1'))
+                    raise NativeModelLoadError('captioner', RuntimeError('Native capacity floor failed'))
+                return super().caption(prepared, segmentation)
+        engine = Engine(Backend, self.store, mode='reference')
+        result = engine.run(self.jobs, output_dir=self.root / 'out')
+        self.assertFalse(result['complete'])
+        self.assertFalse(result['execution_complete'])
+        self.assertEqual(result['fresh_stage_attempts'], 4)
+        self.assertEqual(len(result['records']), 6)
+        self.assertEqual(calls.count(('new_backend',)), 2)
+        self.assertEqual(calls.count(('close',)), 2)
+        self.assertFalse(any(len(call) > 1 and call[1] == '2' for call in calls))
+        failure = result['model_load_failure']
+        self.assertEqual((failure['id'], failure['stage'], failure['model_kind'], failure['error_type']),
+                         ('1', 'caption', 'captioner', 'RuntimeError'))
+        failed = [row for row in result['records'] if row['id'] == '1' and row['stage'] == 'caption'][0]
+        self.assertEqual(failed['status'], 'failed')
+        self.assertTrue(failed['fresh_execution'])
+        blocked = [row for row in result['records'] if row['id'] == '2']
+        self.assertEqual({row['stage'] for row in blocked}, {'segment', 'caption'})
+        self.assertTrue(all(row['status'] == 'blocked' and not row['fresh_execution'] and
+                            row['blocked_by'] == failure and 'attempt' not in row for row in blocked))
+        self.assertEqual(self.store.attempts(self.jobs[2].request_id), [])
+        before = self.store.attempts(self.jobs[0].request_id)
+        self.assertEqual([row['state'] for row in before], ['complete', 'complete'])
+        self.assertEqual(len(result['exports']), 1)
+        self.assertEqual(json.loads(Path(result['exports'][0]).read_text())['episode_id'], '0')
+        available = {row['episode_id']: row for row in result['episode_result_availability']['episodes']}
+        self.assertTrue(available['0']['fresh_complete'])
+        self.assertEqual(available['2']['execution_origin'], 'no_execution')
+        self.assertIsNone(available['2']['result_available_after_run_start_s'])
+        # An explicit later invocation resets the in-memory stop. The old
+        # deterministic failure remains non-retryable; skipped work can run.
+        later = engine.run(self.jobs)
+        self.assertIsNone(later['model_load_failure'])
+        self.assertEqual(self.store.attempts(self.jobs[0].request_id), before)
+        self.assertEqual(later['fresh_stage_attempts'], 2)
+        self.assertEqual(len(self.store.attempts(self.jobs[1].request_id)), 2)
+
+    def test_staged_fatal_load_blocks_remaining_stages_without_new_attempts(self):
+        from bir.native import NativeModelLoadError
+        def fail(job):
+            if job['id'] == '1':
+                raise NativeModelLoadError('tempseg', ValueError('Checkpoint verification failed'))
+        result = Engine(self.factory(fail), self.store, prefetch=1).run(self.jobs)
+        self.assertEqual(result['fresh_stage_attempts'], 2)
+        self.assertEqual([call for call in self.calls if call[0] in {'segment', 'caption'}],
+                         [('segment', '0'), ('segment', '1')])
+        blocked = [row for row in result['records'] if row['status'] == 'blocked']
+        self.assertEqual(len(blocked), 4)
+        self.assertTrue(all(not row['fresh_execution'] for row in blocked))
+        self.assertIsNotNone(self.store.result(self.jobs[0].request_id, 'segment'))
+        self.assertEqual(self.calls.count(('close',)), 1)
+
+    def test_reference_generation_failure_and_transient_io_do_not_stop_other_episodes(self):
+        attempts = {}
+        def transient(job):
+            attempts[job['id']] = attempts.get(job['id'], 0) + 1
+            if job['id'] == '1' and attempts[job['id']] == 1:
+                raise OSError(errno.EIO, 'Temporary checkpoint read failure')
+        base = self.factory(transient)
+        class Backend(base):
+            def caption(self, prepared, segmentation):
+                if prepared['id'] == '0': raise RuntimeError('Input-specific generation failure')
+                return super().caption(prepared, segmentation)
+        result = Engine(Backend, self.store, mode='reference').run(self.jobs)
+        self.assertIsNone(result['model_load_failure'])
+        self.assertEqual(result['fresh_stage_attempts'], 7)
+        self.assertEqual(attempts, {'0': 1, '1': 2, '2': 1})
+        self.assertEqual([row['status'] for row in result['records']],
+                         ['complete', 'failed', 'complete', 'complete', 'complete', 'complete'])
+        self.assertEqual(self.calls.count(('close',)), 3)
 
     def test_transient_attempts_are_counted_and_deterministic_failures_block_caption(self):
         attempts = {}

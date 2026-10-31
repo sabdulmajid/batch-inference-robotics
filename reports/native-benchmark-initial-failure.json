@@ -1,0 +1,215 @@
+{
+  "allocation": {
+    "allocated_gpu_count": 3,
+    "allocated_gpu_hours": 0.6391666666666667,
+    "batch_step_elapsed_seconds": 768,
+    "batch_step_exit_code": "0:15",
+    "batch_step_final_state": "CANCELLED",
+    "counting_rule": "Charge the 767-second parent allocation once at 3 GPUs, including failed and idle work. Do not add batch or extern step time. The one-second longer child cleanup is retained as scheduler evidence.",
+    "parent_elapsed_seconds": 767,
+    "parent_exit_code": "0:0",
+    "parent_final_state": "CANCELLED",
+    "success_interpretation": "The parent exit code 0:0 accompanies cancellation and is not proof of workflow completion."
+  },
+  "configuration": {
+    "allocated_gpus": 3,
+    "camera_roles": [
+      "main"
+    ],
+    "captioner_headroom_gib": 4.0,
+    "condition_order": [
+      "reference",
+      "persistent",
+      "optimized"
+    ],
+    "episode_ids": [
+      "homer_52",
+      "homer_50",
+      "homer_41"
+    ],
+    "execution_contract_sha256": "48ef2fabc446c79949151f24e77fe8e1b28eab58204469547b293776608b9c18",
+    "gpu_model_observed": "NVIDIA GeForce RTX 3090",
+    "profile": "Human",
+    "reference_mode": "Model session reopened for each episode",
+    "request_batch_size": 1,
+    "same_node": true,
+    "source_and_model_lock": {
+      "captioner": {
+        "repo": "nvidia/Flora-Captioner",
+        "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6"
+      },
+      "captioner_headroom_gib": 4,
+      "microbatch_size": 1,
+      "microbatch_status": "larger batches require measured GPU verification",
+      "native_contract": "flora-native-placement-v1",
+      "source": {
+        "repo": "https://github.com/NVIDIA/Flora.git",
+        "revision": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "tempseg": {
+        "adapter_sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3",
+        "repo": "nvidia/Flora-TempSeg",
+        "revision": "114a1076f70eb53f4a58ac045505db3087e79347"
+      },
+      "tempseg_base": {
+        "repo": "Qwen/Qwen3.5-9B",
+        "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+      }
+    }
+  },
+  "date": "2026-10-31",
+  "engine_commit": "18367b454c237b17d471b2704cb85f35f5e1f5e1",
+  "evidence_sha256": {
+    "benchmark_plan": "97c0daa62880f6b1071fdce4c76199830045f8cd5c80360a0e0509f63245d85d",
+    "benchmark_summary": "5d8953d8520f0082071ace3735d54a5ee936ba0953ccb0abdb73b7946e040415",
+    "final_scheduler_record": "45c03590420824986d3b0c80272a08c794f9f4cb4866cbf06782e78efb38ab6c",
+    "reference_probe_summary": "31d94c56b7ad043d627d56061621258f984d76c9889a051a633a2d9eb344a431",
+    "reference_runtime_log": "25a83cc3953aa965d2af2580f7609a2ae2b2154103fbfa5e43c4cec3bc8c684f",
+    "sqlite_checkpoint": "ada418d1ddf9c5fa629d0e96d8d4f400dc6d7ab73ff4d63139a5a33f221e634b"
+  },
+  "failure": {
+    "attempt_elapsed_seconds": 0.876731941010803,
+    "classification": "deterministic",
+    "episode_id": "homer_50",
+    "exception_type": "RuntimeError",
+    "interpretation": "The failed preflight memory values were not saved. The guard rejection alone does not establish the underlying cause. Earlier successful three-GPU native execution remains valid; this interrupted reference reload needs separate diagnosis.",
+    "message": "Faithful checkpoint weights exceed all-GPU placement budget",
+    "missing_evidence": [
+      "Per-device free and allocated GPU memory at the rejected placement preflight.",
+      "A completed final GPU peak-memory receipt for the interrupted condition."
+    ],
+    "observed_phase": "Second reference Captioner reload was rejected by the all-GPU placement budget guard before model-ready or generation.",
+    "root_cause": "unresolved",
+    "stage": "caption",
+    "subsequent_work": "The reference engine then started the third episode TempSeg load and recorded five completed generation calls before coordinator cancellation. No complete third-stage checkpoint was saved."
+  },
+  "limits": [
+    "Checkpoint attempt times are partial workflow measurements, not comparable complete-engine throughput.",
+    "The saved third-stage running state denotes an interrupted checkpoint, not a currently active scheduler job.",
+    "No final per-GPU peak memory or failed-preflight memory value is inferred from earlier successful loads."
+  ],
+  "model_event_counts_by_load_in_saved_order": [
+    {
+      "generation_ends": 8,
+      "generation_starts": 8,
+      "kind": "tempseg",
+      "ready": true
+    },
+    {
+      "generation_ends": 10,
+      "generation_starts": 10,
+      "kind": "captioner",
+      "ready": true
+    },
+    {
+      "generation_ends": 4,
+      "generation_starts": 4,
+      "kind": "tempseg",
+      "ready": true
+    },
+    {
+      "generation_ends": 0,
+      "generation_starts": 0,
+      "kind": "captioner",
+      "ready": false
+    },
+    {
+      "generation_ends": 5,
+      "generation_starts": 5,
+      "kind": "tempseg",
+      "ready": true
+    }
+  ],
+  "performance_result": {
+    "controlled_native_speedup": null,
+    "native_output_agreement_comparison": null,
+    "reason": "No full reference condition or matched persistent/optimized comparison completed."
+  },
+  "project_accounting_after_reconciliation": {
+    "failed_and_cancelled_allocations_included": true,
+    "gpu_limit_hours": 24,
+    "gpu_submissions": 5,
+    "this_job_allocated_gpu_hours": 0.6391666666666667,
+    "used_cpu_only_core_hours": 3.007777777777777,
+    "used_gpu_hours": 1.9697222222222222,
+    "used_gpu_hours_before_this_job": 1.3305555555555555
+  },
+  "schema_version": "bir_native_benchmark_failure_report_v1",
+  "status": "cancelled_incomplete_no_comparison",
+  "workflow": {
+    "annotation_files_exported": 0,
+    "application_benchmark_summary_saved_state": "started",
+    "application_probe_saved_state": "started",
+    "attempt_records": [
+      {
+        "attempt_number": 1,
+        "elapsed_seconds": 169.49073085701093,
+        "episode_id": "homer_52",
+        "error_kind": null,
+        "payload_sha256": "da9b81716be558b1cd0e5cbda07f9a5c47e6821482b99b42c453d5acbc96c395",
+        "request_id": "f599623c8b6e7a38ffd867512d8304ef6f425e8063fc62225a113ce1c6b8b9bc",
+        "saved_state": "complete",
+        "segment_count": 10,
+        "stage": "segment"
+      },
+      {
+        "attempt_number": 1,
+        "complete_caption_count": 10,
+        "elapsed_seconds": 381.470417666249,
+        "episode_id": "homer_52",
+        "error_kind": null,
+        "payload_sha256": "7272c8ef74dcfb667dcd48155277e071d019838ddeec4b8e0eb3737d115c36c9",
+        "request_id": "f599623c8b6e7a38ffd867512d8304ef6f425e8063fc62225a113ce1c6b8b9bc",
+        "saved_state": "complete",
+        "segment_count": 10,
+        "stage": "caption"
+      },
+      {
+        "attempt_number": 1,
+        "elapsed_seconds": 80.9526760559529,
+        "episode_id": "homer_50",
+        "error_kind": null,
+        "payload_sha256": "735ddef09e2899db1700aee35860f076dd7fc74adccc81f7a33247ed979ddef0",
+        "request_id": "73f5811e1dc327f2f13d05e0ab3a4f6d7dbd2eaf13dbe036a5a6fdb99f2610a9",
+        "saved_state": "complete",
+        "segment_count": 20,
+        "stage": "segment"
+      },
+      {
+        "attempt_number": 1,
+        "elapsed_seconds": 0.876731941010803,
+        "episode_id": "homer_50",
+        "error_kind": "deterministic",
+        "payload_sha256": null,
+        "request_id": "73f5811e1dc327f2f13d05e0ab3a4f6d7dbd2eaf13dbe036a5a6fdb99f2610a9",
+        "saved_state": "failed",
+        "stage": "caption"
+      },
+      {
+        "attempt_number": 1,
+        "elapsed_seconds": null,
+        "episode_id": "homer_41",
+        "error_kind": null,
+        "interpretation": "Interrupted by allocation cancellation; saved database state was not rewritten during this audit.",
+        "payload_sha256": null,
+        "request_id": "299fcc0b47697d0a699b044acd916a9a7aea584496dacfca3fa2796354072bab",
+        "saved_state": "running",
+        "stage": "segment"
+      }
+    ],
+    "attempts_complete": 3,
+    "attempts_failed": 1,
+    "attempts_left_running_at_cancellation": 1,
+    "attempts_started": 5,
+    "checkpoint_note": "The first episode has complete TempSeg and Captioner payloads in SQLite. Cancellation occurred before the reference condition exported annotations or wrote its final run summary.",
+    "comparison_results": 0,
+    "complete_captions_in_database": 10,
+    "complete_reference_episodes_in_database": 1,
+    "completed_conditions": 0,
+    "first_condition": "reference",
+    "optimized_condition_started": false,
+    "persistent_condition_started": false,
+    "planned_reference_stage_items": 6,
+    "reference_condition_complete": false
+  }
+}

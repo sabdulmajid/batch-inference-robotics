@@ -169,20 +169,27 @@ def captioner_placement(headroom_gib, audit):
             raise RuntimeError('The pinned Captioner loader contract changed')
         if kwargs.get('attn_implementation') != {'text_config': 'sdpa', 'vision_config': 'sdpa'}:
             raise RuntimeError('The pinned Captioner attention contract changed')
-        devices = []
+        devices, measurements = [], []
         for i in range(torch.cuda.device_count()):
             free, total = torch.cuda.mem_get_info(i)
             devices.append((int(total), int(free)))
+            measurements.append(dict(logical_device=i, total_bytes=int(total), free_bytes=int(free),
+                allocated_bytes=int(torch.cuda.memory_allocated(i)), reserved_bytes=int(torch.cuda.memory_reserved(i))))
         from transformers.models.qwen3_5.modeling_qwen3_5 import Qwen3_5PreTrainedModel
         keep_fp32 = tuple(getattr(Qwen3_5PreTrainedModel, '_keep_in_fp32_modules_strict', ()))
         if not {'A_log', 'dt_bias'} <= set(keep_fp32):
             raise RuntimeError('Native Gated DeltaNet FP32 preservation is not installed')
         checkpoint = inspect_checkpoint(path, keep_fp32_names=keep_fp32)
         size = checkpoint['native_weight_bytes_estimate']
-        budgets = memory_budgets(devices, headroom_gib, weight_bytes=size)
         audit.update(policy='placement_only', headroom_gib=headroom_gib,
-                     native_weight_bytes_estimate=size, checkpoint_header_inspection=checkpoint, max_memory_bytes=budgets,
-                     device_memory=[{'total_bytes': total, 'free_bytes': free} for total, free in devices])
+                     native_weight_bytes_estimate=size, checkpoint_header_inspection=checkpoint,
+                     device_memory=measurements, feasibility='checking')
+        try:
+            budgets = memory_budgets(devices, headroom_gib, weight_bytes=size)
+        except Exception as error:
+            audit.update(feasibility='failed', error_type=type(error).__name__, error=str(error))
+            raise
+        audit.update(max_memory_bytes=budgets, feasibility='passed')
         kwargs['max_memory'] = budgets
         return original(path, *args, **kwargs)
 

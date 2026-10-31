@@ -35,6 +35,15 @@ resume against the original state. The original fresh summary is retained even
 though the run store's current summary becomes a resume summary. Resume must
 show zero new attempts and no model-load or generation events.
 
+A deterministic native model-load failure stops the current engine invocation.
+Completed checkpoints remain available. Later fresh stages are marked blocked
+without another model load. Input-specific generation failures and bounded
+transient I/O retries retain their separate behavior. Lifecycle events measure
+all-device free, allocated, and reserved memory before and after synchronized
+upstream cleanup. Failed placement checks retain their measured memory limits.
+These diagnostics help distinguish a capacity failure from a generated-input
+out-of-memory error; they do not relax the placement rule.
+
 The script compares actual device placement, parameter dtype/byte distribution,
 hardware, package versions, source files, and input hashes across conditions.
 The plan pins the benchmark/comparison scripts and Gate C artifact hashes before

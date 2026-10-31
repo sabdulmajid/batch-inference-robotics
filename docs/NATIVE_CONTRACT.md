@@ -48,6 +48,8 @@ The adapter emits `BIR_RUNTIME model_load_end` after the full load, processor co
 
 A non-transient failure during loading or verification is retained for that stage within the session. Later work items receive an explicit blocked-load error before another model load. A new session requires a diagnosed configuration. Known transient transport/I/O errors retain the existing bounded retry policy. An error during generation is input-specific and does not set the model-load failure state.
 
+The first deterministic failure raises `NativeModelLoadError` with the original cause, message, and type. This lets the engine stop fresh work across reference sessions. Cleanup emits `model_close_start` and `model_close_end`, including synchronized free, allocated, and reserved bytes for every visible GPU. The same wrapper covers the upstream close inside each stage change. A weak reference records whether the former model remains alive without retaining it. Measurement errors are recorded and do not prevent upstream cleanup. The adapter adds no extra garbage collection, cache flush, offload, or memory-policy change. Placement receipts retain the same device measurements even when the capacity floor rejects the load. These diagnostics distinguish hypotheses; they do not establish the cause of a prior uninstrumented failure.
+
 ## CPU preparation and frame reuse
 
 Video preparation can run in a CPU thread while the current inference call uses the GPU. Preparation does not acquire the global inference lock. Inference calls are serialized because the upstream modules contain process-wide state.

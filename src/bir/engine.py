@@ -165,9 +165,15 @@ class Engine:
                                     stage_committed_after_run_start_s=committed))
                 return
             except Exception as exc:
-                from .native import NativeModelLoadBlocked
+                from .native import NativeModelLoadBlocked, NativeModelLoadError
                 kind = "transient" if is_transient(exc) else "deterministic"
                 self.store.fail(job.request_id, stage, attempt, exc, kind=kind, elapsed_s=time.monotonic() - started)
+                if isinstance(exc, NativeModelLoadError):
+                    # This type is raised only inside native loading/verification.
+                    # An input-specific generation failure must not stop other jobs.
+                    self._model_load_failure = dict(id=job.id, request_id=job.request_id,
+                        stage=stage, model_kind=exc.kind, error_type=exc.original_error_type,
+                        error=str(exc))
                 if kind == "transient" and attempt <= self.max_transient_retries:
                     # A preparation failure needs new input inspection. The
                     # native model session remains owned by this same worker.
@@ -181,6 +187,12 @@ class Engine:
                                     attempt=attempt, error=str(exc), error_kind=kind, fresh_execution=True))
                 return
 
+    def _record_load_blocked(self, job, stage, records):
+        records.append(dict(id=job.id, request_id=job.request_id, stage=stage,
+            status="blocked", fresh_execution=False, error_kind="deterministic",
+            error="Native model loading failed earlier in this invocation; no new stage was attempted",
+            blocked_by=dict(self._model_load_failure)))
+
     def _stage(self, backend, jobs, stage, records):
         pending = []
         for job in jobs:
@@ -191,13 +203,25 @@ class Engine:
                 records.append(dict(id=job.id, request_id=job.request_id, stage=stage, status=status,
                                     fresh_execution=False,
                                     cached_result_observed_after_run_start_s=time.monotonic() - self._run_started))
+            elif self._model_load_failure is not None:
+                self._record_load_blocked(job, stage, records)
             elif stage == "caption" and self.store.result(job.request_id, "segment") is None:
                 records.append(dict(id=job.id, request_id=job.request_id, stage=stage, status="blocked",
                                     error="Segmentation has no complete result", fresh_execution=False))
             else:
                 pending.append(job)
-        for job, prepared, error in self._stream_prepared(backend, pending):
-            self._execute(backend, job, stage, prepared, error, records)
+        prepared_jobs = self._stream_prepared(backend, pending)
+        try:
+            for index, (job, prepared, error) in enumerate(prepared_jobs):
+                self._execute(backend, job, stage, prepared, error, records)
+                if self._model_load_failure is not None:
+                    for remaining in pending[index + 1:]:
+                        self._record_load_blocked(remaining, stage, records)
+                    break
+        finally:
+            # Drain only preparation already submitted before the failure. Do
+            # not close a backend while a queued CPU task still uses it.
+            prepared_jobs.close()
 
     def run(self, jobs, *, stages="all", output_dir=None):
         if stages not in {"all", "segment", "caption"}:
@@ -208,6 +232,7 @@ class Engine:
         selected_stages = ("segment", "caption") if stages == "all" else (stages,)
         started, records = time.monotonic(), []
         self._run_started = started
+        self._model_load_failure = None
         self._reset_telemetry()
         self._prepared.clear()
         with self.store.exclusive():
@@ -216,12 +241,13 @@ class Engine:
                 self.store.register(job)
             if self.mode == "reference":
                 for job in jobs:
-                    backend = self.backend_factory()
+                    backend = self.backend_factory() if self._model_load_failure is None else None
                     try:
                         for stage in selected_stages:
                             self._stage(backend, [job], stage, records)
                     finally:
-                        self._close_backend(backend, episode_id=job.id)
+                        if backend is not None:
+                            self._close_backend(backend, episode_id=job.id)
                         self._prepared.clear()
             else:
                 backend = self.backend_factory()
@@ -262,6 +288,7 @@ class Engine:
                 result_available_after_run_start_s=available))
         return dict(schema_version="bir_run_v1", mode=self.mode, elapsed_s=time.monotonic() - started,
                     records=records, exports=exported, telemetry=self._telemetry(),
+                    model_load_failure=self._model_load_failure,
                     episode_result_availability=dict(arrival='all_jobs_at_engine_run_start',
                         boundary='serialized_export_completed' if output_dir is not None else 'final_stage_committed_or_cached_result_observed',
                         limitation=('Exports occur after all inference and backend cleanup, in manifest order; export latencies can therefore be close.'

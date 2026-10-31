@@ -48,12 +48,14 @@ project policy choice, not a cluster quota change.
 - Controlled native performance and adaptive quality results are still pending.
 - The first native benchmark was stopped after the reference path failed a later
   Captioner placement check. Its successful and failed work is preserved.
-  A reload correction and independent review are in progress.
+  The first placement succeeded, but a later pre-load capacity check failed.
+  The saved trace does not identify the memory cause. Fatal-load stopping and
+  all-device lifecycle measurements are being added before a bounded diagnosis.
 
 ## Resource state
 
-- GPU-hours used/reserved: 1.330556 / 6 of 24, including the failed allocation.
-  The benchmark reservation is retained until final scheduler reconciliation.
+- GPU-hours used/reserved: 1.969722 / 0 of 24, including the failed allocation.
+  The stopped benchmark used 0.639167 GPU-hours; its final cancellation is reconciled.
 - GPU submissions and reservations: 5 of 16.
 - CPU-only core-hours used/reserved: 3.007778 / 0 of 32.
 - Final reproduction allowance: 2.25 GPU-hours and one submission slot, based

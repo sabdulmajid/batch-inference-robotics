@@ -18,6 +18,7 @@ import subprocess
 import sys
 import threading
 import time
+import weakref
 from unittest.mock import patch
 import os
 
@@ -43,8 +44,34 @@ def _synchronize_cuda():
         for device in range(torch.cuda.device_count()): torch.cuda.synchronize(device)
 
 
+def _synchronized_memory_snapshot():
+    """Diagnostic only: a measurement failure must not prevent model cleanup."""
+    try:
+        import torch
+        _synchronize_cuda()
+        devices = []
+        if torch.cuda.is_available():
+            for index in range(torch.cuda.device_count()):
+                free, total = torch.cuda.mem_get_info(index)
+                devices.append(dict(logical_device=index, free_bytes=int(free), total_bytes=int(total),
+                    allocated_bytes=int(torch.cuda.memory_allocated(index)),
+                    reserved_bytes=int(torch.cuda.memory_reserved(index))))
+        return dict(synchronization_complete=True, devices=devices)
+    except Exception as error:
+        return dict(synchronization_complete=False, measurement_error_type=type(error).__name__,
+                    measurement_error=str(error))
+
+
 class NativeModelLoadBlocked(RuntimeError):
     """A prior fatal load failed in this session; no repeated load was attempted."""
+
+
+class NativeModelLoadError(RuntimeError):
+    """A deterministic model-load failure; preserve its exact cause for review."""
+    def __init__(self, kind, original_error):
+        self.kind = kind
+        self.original_error_type = type(original_error).__name__
+        super().__init__(str(original_error))
 
 
 def verify_source(source_root):
@@ -108,6 +135,7 @@ class PersistentSession:
     """Reuse exactly one upstream model until the engine changes stages."""
     def __init__(self, models, *, captioner_headroom_gib=4.0):
         self.native = models.Session()
+        self._native_close = self.native.close
         self.kind = None
         self.headroom = captioner_headroom_gib
         self.placement_audit = {}
@@ -119,6 +147,28 @@ class PersistentSession:
     @property
     def audit(self):
         return _json_audit(self.native.audit)
+
+    def _measured_close(self, kind):
+        started = time.monotonic()
+        model_reference = None
+        if self.native.model is not None:
+            try: model_reference = weakref.ref(self.native.model)
+            except TypeError: pass
+        record = dict(kind=kind, had_model=self.native.model is not None,
+                      model_weakref_available=model_reference is not None,
+                      before=_synchronized_memory_snapshot(), status='started')
+        _runtime_event('model_close_start', **record)
+        try:
+            # The original upstream close owns reference release, GC and empty_cache.
+            self._native_close()
+            record['status'] = 'complete'
+        except BaseException as error:
+            record.update(status='failed', error_type=type(error).__name__, error=str(error))
+            raise
+        finally:
+            record.update(after=_synchronized_memory_snapshot(), elapsed_s=time.monotonic() - started,
+                          model_alive_after_close=model_reference() is not None if model_reference is not None else None)
+            _runtime_event('model_close_end', **record)
 
     def load(self, kind):
         if kind not in self.load_counts:
@@ -132,11 +182,12 @@ class PersistentSession:
             raise NativeModelLoadBlocked(f'Previous native {kind} load failed with {failure}; '
                                          'diagnose the configuration before using a new session')
         started = time.monotonic()
+        previous_kind = self.kind
         self.kind = None
         placement = {}
         context = captioner_placement(self.headroom, placement) if kind == 'captioner' else nullcontext()
         try:
-            with context:
+            with context, patch.object(self.native, 'close', side_effect=lambda: self._measured_close(previous_kind)):
                 result = self.native.load(kind)
             # Validate all diagnostics before upstream starts model inference.
             self.audit
@@ -159,7 +210,7 @@ class PersistentSession:
                 self._fatal_load_failures[kind] = type(error).__name__
             self.kind = None
             try:
-                self.native.close()
+                self._measured_close(kind)
             except Exception as cleanup_error:
                 timing['cleanup_error_type'] = type(cleanup_error).__name__
             try:
@@ -168,14 +219,20 @@ class PersistentSession:
             except Exception as sync_error:
                 timing['synchronization_error_type'] = type(sync_error).__name__
             timing['elapsed_s'] = time.monotonic() - started
+            if placement:
+                self.placement_audit[kind] = placement
+                timing['placement'] = _json_audit(placement)
             self.load_timings.setdefault(kind, []).append(timing)
             _runtime_event('model_load_end', **timing)
+            if isinstance(error, Exception) and not timing['transient']:
+                raise NativeModelLoadError(kind, error) from error
             raise
 
     def close(self):
+        previous_kind = self.kind
         self.kind = None
         if self.native.model is not None or self.native.proc is not None:
-            self.native.close()
+            self._measured_close(previous_kind)
 
 
 class NativeBackend:

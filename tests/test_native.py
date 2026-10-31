@@ -10,7 +10,7 @@ import types
 import unittest
 from unittest.mock import patch
 
-from bir.native import (NativeBackend, NativeModelLoadBlocked, PersistentSession, PreparedEpisode,
+from bir.native import (NativeBackend, NativeModelLoadBlocked, NativeModelLoadError, PersistentSession, PreparedEpisode,
                         _json_audit, verify_source, UPSTREAM_COMMIT)
 
 SOURCE = Path(__file__).resolve().parents[1] / 'third_party' / 'Flora'
@@ -26,6 +26,9 @@ class SessionTests(unittest.TestCase):
         self.event_patch = patch('bir.native._runtime_event')
         self.event = self.event_patch.start()
         self.addCleanup(self.event_patch.stop)
+        self.memory_patch = patch('bir.native._synchronized_memory_snapshot', return_value={'devices': [], 'synchronization_complete': True})
+        self.memory = self.memory_patch.start()
+        self.addCleanup(self.memory_patch.stop)
 
     def test_model_lifetime_reused_and_stage_change_loads_once(self):
         class Session:
@@ -58,11 +61,16 @@ class SessionTests(unittest.TestCase):
             def close(self): self.model = None
         session = PersistentSession(types.SimpleNamespace(Session=Session))
         with patch('bir.native.verify_residency', side_effect=RuntimeError('cpu offload')):
-            with self.assertRaises(RuntimeError): session.load('tempseg')
+            with self.assertRaises(NativeModelLoadError) as caught: session.load('tempseg')
+            self.assertEqual(caught.exception.kind, 'tempseg')
+            self.assertEqual(caught.exception.original_error_type, 'RuntimeError')
+            self.assertEqual(str(caught.exception), 'cpu offload')
+            self.assertIs(type(caught.exception.__cause__), RuntimeError)
             with self.assertRaises(NativeModelLoadBlocked): session.load('tempseg')
         self.assertIsNone(session.kind)
         self.assertIsNone(session.native.model)
-        self.assertEqual([call.args[0] for call in self.event.call_args_list], ['model_load_end', 'model_load_blocked'])
+        self.assertEqual([call.args[0] for call in self.event.call_args_list if call.args[0].startswith('model_load')],
+                         ['model_load_end', 'model_load_blocked'])
         self.assertEqual(session.load_timings['tempseg'][0]['status'], 'failed')
         self.assertEqual(len(session.load_timings['tempseg']), 1)
 
@@ -82,6 +90,64 @@ class SessionTests(unittest.TestCase):
         self.assertEqual(session.native.calls, 2)
         self.assertEqual([row['status'] for row in session.load_timings['tempseg']], ['failed', 'complete'])
         self.assertTrue(session.load_timings['tempseg'][0]['transient'])
+
+    def test_native_stage_close_preserves_upstream_cleanup_and_records_both_snapshots(self):
+        order = []
+        class Session:
+            def __init__(self): self.model = object(); self.proc = None; self.audit = {}
+            def load(self, kind):
+                self.close()
+                order.append('load_new_model')
+                self.model = object()
+                return self.model, None
+            def close(self):
+                order.append('original_native_close')
+                self.model = self.proc = None
+        session = PersistentSession(types.SimpleNamespace(Session=Session))
+        session.kind = 'captioner'
+        snapshots = iter([{'devices': [{'allocated_bytes': 100, 'reserved_bytes': 150}]},
+                          {'devices': [{'allocated_bytes': 0, 'reserved_bytes': 50}]}])
+        def snapshot():
+            order.append('synchronized_snapshot')
+            return next(snapshots)
+        self.memory.side_effect = snapshot
+        with patch('bir.native.verify_residency', return_value={}): session.load('tempseg')
+        self.assertEqual(order, ['synchronized_snapshot', 'original_native_close', 'synchronized_snapshot', 'load_new_model'])
+        close = next(call.kwargs for call in self.event.call_args_list if call.args[0] == 'model_close_end')
+        self.assertEqual(close['kind'], 'captioner')
+        self.assertEqual(close['before']['devices'][0]['allocated_bytes'], 100)
+        self.assertEqual(close['after']['devices'][0]['allocated_bytes'], 0)
+        self.assertEqual(close['after']['devices'][0]['reserved_bytes'], 50)
+
+    def test_failed_placement_receipt_survives_typed_load_failure(self):
+        from contextlib import contextmanager
+        class Session:
+            def __init__(self): self.model = self.proc = None; self.audit = {}
+            def load(self, kind): raise RuntimeError('weights exceed measured budget')
+            def close(self): self.model = self.proc = None
+        @contextmanager
+        def placement(headroom, audit):
+            audit.update(feasibility='failed', device_memory=[{'allocated_bytes': 10, 'reserved_bytes': 20, 'free_bytes': 30}])
+            yield
+        session = PersistentSession(types.SimpleNamespace(Session=Session))
+        with patch('bir.native.captioner_placement', side_effect=placement):
+            with self.assertRaises(NativeModelLoadError): session.load('captioner')
+        self.assertEqual(session.load_timings['captioner'][0]['placement'], session.placement_audit['captioner'])
+        self.assertEqual(session.placement_audit['captioner']['device_memory'][0]['reserved_bytes'], 20)
+
+    def test_close_weak_reference_does_not_retain_the_model(self):
+        class Model: pass
+        class Session:
+            def __init__(self): self.model = Model(); self.proc = None; self.audit = {}
+            def close(self): self.model = self.proc = None
+        for externally_retained in (False, True):
+            session = PersistentSession(types.SimpleNamespace(Session=Session))
+            external = session.native.model if externally_retained else None
+            session.close()
+            receipt = self.event.call_args.kwargs
+            self.assertTrue(receipt['model_weakref_available'])
+            self.assertEqual(receipt['model_alive_after_close'], externally_retained)
+            del external
 
     def test_full_load_event_follows_residency_and_all_device_synchronization(self):
         order = []
@@ -108,6 +174,9 @@ class AuditSerializationTests(unittest.TestCase):
         event = patch('bir.native._runtime_event')
         event.start()
         self.addCleanup(event.stop)
+        memory = patch('bir.native._synchronized_memory_snapshot', return_value={'devices': [], 'synchronization_complete': True})
+        memory.start()
+        self.addCleanup(memory.stop)
     def test_loading_diagnostics_preserve_values_with_stable_order(self):
         raw = {'missing_keys': {'z', 'a'}, 'unexpected_keys': set(),
                'mismatched_keys': {('z', (4, 5), (5, 4)), ('a', (1,), (2,))},
@@ -142,8 +211,9 @@ class AuditSerializationTests(unittest.TestCase):
             def close(self): self.model = None
         session = PersistentSession(types.SimpleNamespace(Session=Session))
         with patch('bir.native.verify_residency') as residency:
-            with self.assertRaisesRegex(TypeError, 'audit.tempseg.invalid'):
+            with self.assertRaisesRegex(NativeModelLoadError, 'audit.tempseg.invalid') as caught:
                 session.load('tempseg')
+            self.assertIs(type(caught.exception.__cause__), TypeError)
             residency.assert_not_called()
         self.assertIsNone(session.kind)
         self.assertIsNone(session.native.model)
