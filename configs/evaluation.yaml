@@ -1,0 +1,59 @@
+# Protocol proposal. Freeze exact dataset splits and evaluator before final runs.
+version: 1
+status: not_run
+frozen: false
+split_manifest: null
+split_group: episode_and_scene_when_available
+maximum_adaptive_development_revisions: 1
+native_fidelity:
+  claim: compatibility_only
+  checks:
+    - source_frame_ids_and_timestamps
+    - camera_geometry_and_color_preparation
+    - prompts_and_processor_inputs
+    - model_parameter_values_and_dtypes
+    - gpu_parameter_and_buffer_residency
+    - generation_settings_and_parsing
+    - stable_request_routing_and_stitching
+systems_conditions:
+  - placement_adapted_reference
+  - persistent_native
+  - optimized_native
+timing:
+  compare_on_identical_hardware_placement_inputs_and_revisions: true
+  separate_startup_and_steady_state: true
+  cached_final_results_are_fresh_inference: false
+  synchronized_cameras_count_as_one_episode_duration: true
+  include_failed_and_idle_allocations: true
+adaptive:
+  status: not_run
+  change: caption_spatial_pixel_area_only
+  temporal_frame_selection: unchanged
+  compact_area_fraction: 0.5
+  preserve_aspect_ratio_and_processor_alignment: true
+  fallback_initial_rule: native_on_invalid_compact_parse
+  accepted_compact_audit_required: true
+  runtime_native_output_is_not_a_gate_feature: true
+  comparator: best_fixed_budget_selected_on_development_only
+  cost_components: [decoding, segmentation, compact, gate, native_fallback, audit, failures, retries]
+  matched_cost_random_fallback: only_if_budget_fits_after_release_reserve
+quality:
+  independent_targets: required
+  evaluator: null
+  evaluator_status: must_be_selected_and_frozen_before_final_evaluation
+  ai_review_must_be_labeled: true
+  exact_caption_string_match_is_quality: false
+  absolute_loss_margin: 0.01
+  failure_score: 0.0
+  aggregation: mean_of_episode_scores_including_failed_episodes
+  uncertainty: paired_episode_percentile_bootstrap
+  confidence_level: 0.95
+  bootstrap_seed: 20261031
+  bootstrap_resamples: 10000
+  minimum_episodes_for_margin_decision: 20
+temporal_metric:
+  name: project_temporal_f1
+  iou_threshold: 0.5
+  matching: maximum_cardinality_one_to_one
+  official_wgo_replication: false
+  raw_predictions_remain_unchanged: true

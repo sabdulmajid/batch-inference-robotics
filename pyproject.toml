@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "batch-inference-robotics"
+version = "0.1.0"
+description = "Resumable native-input offline FLORA inference"
+requires-python = ">=3.11"
+dependencies = ["PyYAML==6.0.3"]
+
+[project.optional-dependencies]
+test = ["pytest==8.4.2", "Pillow>=11,<13", "av==16.0.1", "numpy<3"]
+
+[project.scripts]
+bir = "bir.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

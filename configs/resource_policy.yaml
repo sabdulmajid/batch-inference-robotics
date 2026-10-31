@@ -36,7 +36,10 @@ cpu:
   count_failed_and_idle_allocations: true
 storage:
   max_new_persistent_project_gib: 250
-  minimum_free_headroom_fraction: 0.20
+  # User approved this project-sized headroom check on 2026-10-31.
+  # Apply it to the full remaining planned footprint, including pending writes.
+  headroom_scope: remaining_planned_new_project_bytes
+  minimum_available_to_planned_new_bytes_ratio: 1.20
   default_tmpdisk_mib: 20480
   max_tmpdisk_mib: 204800
   home_large_caches_allowed: false

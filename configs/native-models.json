@@ -1,0 +1,10 @@
+{
+  "source": {"repo": "https://github.com/NVIDIA/Flora.git", "revision": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"},
+  "tempseg": {"repo": "nvidia/Flora-TempSeg", "revision": "114a1076f70eb53f4a58ac045505db3087e79347", "adapter_sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"},
+  "tempseg_base": {"repo": "Qwen/Qwen3.5-9B", "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"},
+  "captioner": {"repo": "nvidia/Flora-Captioner", "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6"},
+  "native_contract": "flora-native-placement-v1",
+  "captioner_headroom_gib": 4,
+  "microbatch_size": 1,
+  "microbatch_status": "larger batches require measured GPU verification"
+}

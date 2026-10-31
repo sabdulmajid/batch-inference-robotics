@@ -66,7 +66,7 @@ Use shared GPU memory requests when the complete workload safely fits and the sk
 
 Use the skill to discover an authorized persistent project directory and check live permissions, quota, and free space. Keep small configuration files in home; redirect large model, package, and build caches to the verified project storage.
 
-Enforce the 250 GiB new-project-storage ceiling and at least 20% free headroom. Estimate model snapshots, environments, datasets, outputs, and temporary copies before downloading. Reuse valid pinned task-owned assets; coordinate downloads with locks.
+Enforce the 250 GiB new-project-storage ceiling. Available filesystem space must cover at least 120% of all remaining planned new writes, including pending downloads. The user approved this project-sized check on 2026-10-31 in place of a whole-filesystem 20%-free threshold. Estimate model snapshots, environments, datasets, outputs, and temporary copies before downloading. Reuse valid pinned task-owned assets; coordinate downloads with locks.
 
 Use an isolated project environment and pin actual compatible Python/framework/CUDA-related versions. Keep HOME unchanged. Preserve scheduler device restrictions when using an environment or rootless container. System drivers, global environments, shared caches, and other agents' files remain outside this task.
 

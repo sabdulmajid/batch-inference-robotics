@@ -1,0 +1,17 @@
+name: CPU contracts
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e '.[test]'
+      - run: |
+          git clone https://github.com/NVIDIA/Flora.git third_party/Flora
+          git -C third_party/Flora checkout --detach 129a2ada74c526ee4692f3d1b111bea6ca19d5b7
+      - run: pytest -q

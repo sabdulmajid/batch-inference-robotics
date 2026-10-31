@@ -1,54 +1,71 @@
-# Batch Inference for Robotics
+# Batch inference for robotics
 
-A research project to execute NVIDIA FLORA annotation efficiently, then test whether selective visual-compute allocation improves the quality–cost trade-off.
+This project runs offline video annotation with NVIDIA FLORA TempSeg and
+Captioner. Give it a JSONL manifest of videos. It keeps a model loaded across
+work items, saves segmentation before captioning, and resumes completed work.
+For example, a researcher can annotate several short manipulation videos and
+resume after a worker stops without repeating completed segments.
 
-**Status: planning pack only. No project GPU runs, speedups, or quality results have been established.**
+**Status:** implementation and local CPU checks are available. Remote environment
+and asset preparation is in progress. Native GPU inference, speedup, and adaptive
+quality are not yet validated. See [current status](docs/STATUS.md).
 
-## Start here
+## Local checks
 
-1. Read [AGENTS.md](AGENTS.md).
-2. Give the head agent [the orchestrator brief](docs/ORCHESTRATOR_PROMPT.md) and invoke the locally installed `$watcloud` skill.
-3. Use that skill for WATcloud operations, and follow [the project plan](docs/PROJECT_PLAN.md), [project compute overlay](docs/WATCLOUD_RUNBOOK.md), and [resource policy](configs/resource_policy.yaml).
-4. Keep [STATUS.md](docs/STATUS.md) current with evidence and remaining work.
+Use Python 3.12 for the native environment. Python 3.11 or later supports the
+orchestration package.
 
-The local launch message identifies the installed skill. Read its actual instructions and relevant references before remote work. The skill supplies account, SSH, scheduler, and storage procedures; this repository supplies the project scope, resource caps, and verification gates. Live account and scheduler state determines actual availability.
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -e '.[test]'
+git clone https://github.com/NVIDIA/Flora.git third_party/Flora
+git -C third_party/Flora checkout --detach 129a2ada74c526ee4692f3d1b111bea6ca19d5b7
+pytest -q
+bir source-check --source third_party/Flora
+```
 
-Keep the personal skill, resolved connection settings, and raw access evidence in private local storage. This public repository does not duplicate them.
+Tests include real synthetic-video decoding and native frame planning. They do
+not establish model inference or annotation quality.
 
-## Intended outcome
+## Video manifest and native run
 
-- A CLI accepting video jobs and producing timestamped FLORA annotations.
-- A faithful, hardware-compatible reference path and an optimized native path.
-- Persistent execution, bounded video decoding/caching, and compatible request batching where measured memory permits.
-- An experimental compact/native caption router evaluated against fixed budgets.
-- Reproducible run manifests, per-example measurements, correctness checks, and an honest final report.
-- A small local annotation/result viewer only after the inference and evaluation gates work.
+Paths are relative to the manifest file. Keep real videos and raw outputs in
+private project storage. `human` uses one camera. Other native profile names are
+`yam`, `dex`, and `tianji`; multi-camera profiles remain subject to upstream
+synchronization checks and separate GPU validation.
 
-No model training, physical robot, public hosted service, or multi-node inference is required for the first release.
+```json
+{"id":"episode-001","video":"videos/episode-001.mp4","profile":"human"}
+```
 
-## Hardware reality
+```bash
+bir inspect --manifest jobs.jsonl --source third_party/Flora
+bir run --manifest jobs.jsonl --source third_party/Flora \
+  --run-dir runs/native --condition optimized
+```
 
-The supplied cluster inventory consists of 24 GiB or smaller GPUs. A 27B model's BF16 parameter storage alone is approximately 50.3 GiB; one or two 24 GiB cards cannot hold it faithfully. Three or four cards on one node are candidates, subject to actual topology, scheduler availability, placement, and measured runtime memory.
+Repeat the same run command to resume. Use a different run directory for each
+benchmark condition: `reference`, `persistent`, or `optimized`. `reference`
+loads a new session per episode. `persistent` retains each model for its stage.
+`optimized` also enables bounded decoded-frame reuse and CPU input preparation.
+Only batch size one is enabled until real GPU measurements establish a safe
+larger batch.
 
-The reference Captioner loader also reserves 12 GiB per visible GPU. A documented placement-only adaptation is therefore part of the feasibility work. It must preserve checkpoint identity, numerical precision, preprocessing, and generation behavior.
+The native environment requires the separate pinned dependencies in
+[configs/requirements-native.txt](configs/requirements-native.txt). Set
+`HF_HOME` and `FLORA_MODEL_CACHE` to verified persistent project storage before
+model work. [Reproduction instructions](docs/REPRODUCTION.md) describe the full
+sequence and measurement boundaries.
 
-Start with one-GPU TempSeg feasibility, then prove Captioner placement and a small complete annotation run. Initially process the stages in phases rather than assuming simultaneous model residency.
+## Contracts and limits
 
-## Scope and honesty
+- [Native fidelity and placement](docs/NATIVE_CONTRACT.md)
+- [Evaluation design](docs/EVALUATION.md)
+- [Resource policy](configs/resource_policy.yaml)
+- [Project plan](docs/PROJECT_PLAN.md)
+- [WATcloud project overlay](docs/WATCLOUD_RUNBOOK.md)
 
-The primary deliverable is an optimized engine using native inference inputs. The adaptive experiment may produce a positive, negative, or inconclusive result. A hardware limitation is a reported limitation, never a fabricated passing result.
-
-The conservative defaults authorize one project GPU allocation at a time, up to four same-node GPUs only when justified for faithful model placement, and 24 aggregate allocated GPU-hours. These are project defaults, not WATcloud policy. See the resource policy for all limits.
-
-FLORA code and weights carry NVIDIA's noncommercial research/evaluation terms. Preserve upstream notices and keep dependencies and redistribution rights explicit. Model weights, datasets, private configuration, and raw infrastructure logs do not belong in Git.
-
-## Sources
-
-The planning snapshot inspected FLORA commit **129a2ada74c526ee4692f3d1b111bea6ca19d5b7** on 2026-10-31. Revalidate source behavior when implementing; record the exact revision used.
-
-- [FLORA repository](https://github.com/NVIDIA/Flora)
-- [FLORA paper](https://arxiv.org/html/2610.31779v1)
-- [WATcloud SLURM](https://cloud.watonomous.ca/docs/compute-cluster/slurm)
-- [WATcloud user manual](https://cloud.watonomous.ca/docs/compute-cluster/user-manual)
-- [WGO-Bench](https://huggingface.co/datasets/macrodata/WGO-Bench)
-
+FLORA source and weights are for non-commercial research and evaluation.
+See [third-party notices](THIRD_PARTY_NOTICES.md) and
+[the NVIDIA license](LICENSE-NVIDIA). This project does not control a robot.
