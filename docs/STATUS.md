@@ -76,31 +76,37 @@ project policy choice, not a cluster quota change.
   projection is 117.693 minutes, above the frozen 90-minute limit. No final
   inference ran. Targets and rules remain unchanged; quality is inconclusive.
   See [the adaptive results and limits](ADAPTIVE_RESULTS.md).
-- One bounded GPU batch calibration is reserved. It permits at most five
-  generation calls and no retries. Native batch size one remains the default.
+- The bounded batch calibration completed three generation calls. Both batch
+  captions matched native singles and Gate C. Peak reserved memory left only
+  0.37–0.46 GiB per GPU, below the predeclared 2 GiB reserve. Stress and collector
+  tests were skipped; no batch admission was written. Native batch size one
+  remains the default. See [the calibration result](BATCH_CALIBRATION.md#gpu-calibration-result).
+- The protected final reproduction is running. It uses fresh state for all
+  three original native episodes, followed by an isolated cache-only resume.
 
 ## Resource state
 
-- GPU-hours used/reserved: 7.503056 / 2.0 of 24, including failed allocations.
+- GPU-hours used/reserved: 7.641389 / 2.25 of 24, including failed allocations.
   The stopped benchmark used 0.639167 GPU-hours. The diagnosis used another
   0.554167 GPU-hours, and the successful reload used 0.763333 GPU-hours.
   The successful full benchmark used another 3.5 GPU-hours.
   Adaptive development used 0.715833 GPU-hours.
+  Batch calibration used 0.138333 GPU-hours.
   All completed allocation outcomes are reconciled.
-- GPU submissions and reservations: 10 of 16.
+- GPU submissions and reservations: 11 of 16.
 - CPU-only core-hours used/reserved: 3.007778 / 0 of 32.
-- Final reproduction allowance: 2.25 GPU-hours and one submission slot, based
-  on the completed native pilot.
+- The final reproduction uses its protected 2.25 GPU-hour allowance and one
+  submission slot. These are included in the reserved total and 11 slots above,
+  not additional costs. The bound is based on the completed native pilot.
 - Measured remote persistent footprint: 128.933 GiB. Task-owned local caches
   and environments add about 1.179 GiB. Both fit the 250 GiB project cap.
 - A durable coordinator marker and private operational ledger are established.
 
 ## Next actions
 
-Complete the single bounded batch calibration. GPU batching requires measured
-headroom and native batch-one agreement; a negative admission is valid. Complete
-the protected fresh native reproduction and resume check. Then reconcile all
-resources, independently review the delivery, and publish the final report.
+Verify the protected fresh native reproduction and resume check. Then reconcile
+all resources, independently review the delivery, and publish the final report.
+No further optional experiment is planned.
 
 Private records retain exact job IDs, connection settings, output paths, skill
 hashes, and scheduler output. Public reports contain sanitized measurements.

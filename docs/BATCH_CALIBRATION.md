@@ -1,6 +1,6 @@
 # Bounded native caption batch calibration
 
-This optional experiment checks whether two compatible native Captioner requests can share a model call. It uses only the frozen development video. It does not use final quality inputs or change the format-only adaptive gate. No GPU calibration result exists yet.
+This optional experiment checks whether two compatible native Captioner requests can share a model call. It uses only the frozen development video. It does not use final quality inputs or change the format-only adaptive gate. The bounded GPU probe completed. Native caption agreement passed, but memory admission failed. The engine remains at batch size one.
 
 The coordinator must complete Gate C and preserve the measured final reproduction reserve before submitting this experiment. The script does not submit, cancel, or retry jobs. It rejects scheduler restarts and uses prepared assets in offline mode.
 
@@ -78,5 +78,34 @@ those two intervals preserved ordered tensors, prompts, frames, and timestamps.
 The retained input and combined tensors use 793,540,128 bytes. The two local CPU
 workflows took 111.740 seconds in total. See the
 [sanitized preparation report](../reports/caption-batch-cpu-preparation.json).
-This establishes input compatibility only. GPU generation and memory admission
-remain unverified.
+This establishes input compatibility only for that larger CPU pair. The actual
+GPU probe below used the separately verified smaller pair.
+
+## GPU calibration result
+
+The single bounded allocation completed in 166 seconds on three RTX 3090 GPUs.
+It used 0.138333 GPU-hours, including preparation, loading, cleanup, and idle
+allocation time. The unchanged runtime was `d2701b0`.
+
+The probe used signed native TempSeg intervals 10 and 13 from `homer_41`, with
+4,344 input tokens per request. It made three generation calls: two native
+singles and one native batch. Both batch captions exactly matched the singles
+and original Gate C outputs. Frame, timestamp, prompt, input-tensor, model,
+dtype, and GPU-placement checks passed. The rows completed after 14 and 16
+generated tokens.
+
+| Logical GPU | Batch peak reserved memory | Capacity above that peak | Required reserve |
+| --- | ---: | ---: | ---: |
+| 0 | 23.1875 GiB | 0.3713 GiB | 2 GiB |
+| 1 | 23.0977 GiB | 0.4611 GiB | 2 GiB |
+| 2 | 23.1328 GiB | 0.4260 GiB | 2 GiB |
+
+All three devices failed the predeclared memory reserve. No out-of-memory
+failure occurred. The script correctly skipped the 512-token stress test and
+collector demonstration. It wrote no admission. The margin was not lowered,
+and no optional sweep followed.
+
+This is evidence of short-output native agreement for one compatible pair.
+It does not validate the full output-length memory envelope or production
+batching. Isolated generation pass times exclude the rest of the workflow and
+do not establish engine throughput. See [the sanitized measurement](../reports/caption-batch-calibration.json).

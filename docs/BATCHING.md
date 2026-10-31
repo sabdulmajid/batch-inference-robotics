@@ -2,7 +2,7 @@
 
 The optional batching utility combines compatible, already prepared Captioner requests. It retains every native input tensor and routes each generated caption back to its episode and event. For example, two requests with equal token lengths and equal video grids can share one model generation call.
 
-**Batching is not enabled in the engine or CLI.** The current native path remains batch size one. CPU tests passed, but no real Captioner batch has passed GPU memory, output-agreement, or performance checks. No measured admission record is included.
+**Batching is not enabled in the engine or CLI.** The current native path remains batch size one. A real two-request Captioner batch matched both native single-request captions, but it failed the predeclared 2 GiB memory reserve on all three GPUs. No measured admission record is included. See [the bounded calibration result](BATCH_CALIBRATION.md#gpu-calibration-result).
 
 ## Input contract
 

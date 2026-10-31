@@ -1,0 +1,190 @@
+{
+  "admission": {
+    "collector_demonstration": "not run; no measured admission",
+    "default_engine_batch_size": 1,
+    "full_512_token_stress": "not run; native batch failed the predeclared headroom check",
+    "production_batching_enabled": false,
+    "reason": "Every GPU had less than the required 2 GiB capacity remaining after measured peak reserved memory.",
+    "written": false
+  },
+  "configuration": {
+    "batch_safety_headroom_gib": 2,
+    "batch_size": 2,
+    "cpu_count": 4,
+    "episode_id": "homer_41",
+    "gpu_count": 3,
+    "gpu_model": "NVIDIA GeForce RTX 3090",
+    "input_tokens_per_request": 4344,
+    "interval_provenance": "signed native TempSeg predictions, not adaptive reference intervals",
+    "maximum_generation_calls": 5,
+    "native_output_limit": 512,
+    "requested_job_minutes": 40,
+    "requested_ram_gib": 128,
+    "retry_limit": 0,
+    "same_node": true,
+    "signed_segment_indices": [
+      10,
+      13
+    ],
+    "weight_placement_headroom_gib": 4
+  },
+  "date": "2026-10-31",
+  "limits": [
+    "This result establishes two-row native agreement only for the recorded shape and configuration.",
+    "Short native completions do not establish the full 512-token memory envelope.",
+    "The native single and batch generation pass timers exclude capture, model loading, collation, cleanup and allocation idle time; they are not an admitted engine throughput benchmark.",
+    "The predeclared margin was not reduced after the result. No smaller-pair, larger-GPU or allocator sweep was run.",
+    "All failed admission and idle allocation time is counted once in the parent GPU cost."
+  ],
+  "observed": {
+    "all_parameters_and_nonempty_buffers_on_cuda": true,
+    "allocated_gpu_hours": 0.13833333333333334,
+    "capture_seconds": 47.79480890976265,
+    "cleanup_seconds": 0.3958511520177126,
+    "collation_seconds": 0.1272703199647367,
+    "generated_token_count_includes_eos": true,
+    "model_weight_or_generation_changes": false,
+    "native_batch_generated_tokens": [
+      14,
+      16
+    ],
+    "native_batch_memory": [
+      {
+        "headroom_passed": false,
+        "logical_device": 0,
+        "peak_allocated_bytes": 22589280768,
+        "peak_reserved_bytes": 24897388544,
+        "remaining_capacity_after_peak_reserved_bytes": 398655488,
+        "required_headroom_bytes": 2147483648,
+        "total_bytes": 25296044032
+      },
+      {
+        "headroom_passed": false,
+        "logical_device": 1,
+        "peak_allocated_bytes": 24097692160,
+        "peak_reserved_bytes": 24800919552,
+        "remaining_capacity_after_peak_reserved_bytes": 495124480,
+        "required_headroom_bytes": 2147483648,
+        "total_bytes": 25296044032
+      },
+      {
+        "headroom_passed": false,
+        "logical_device": 2,
+        "peak_allocated_bytes": 23941616640,
+        "peak_reserved_bytes": 24838668288,
+        "remaining_capacity_after_peak_reserved_bytes": 457375744,
+        "required_headroom_bytes": 2147483648,
+        "total_bytes": 25296044032
+      }
+    ],
+    "native_batch_requests": 2,
+    "native_caption_agreement": true,
+    "native_completed_rows": 2,
+    "native_generation_calls": 3,
+    "native_single_requests": 2,
+    "out_of_memory_failure": false,
+    "parameter_dtypes": {
+      "torch.bfloat16": 1088,
+      "torch.float32": 96
+    },
+    "passes": [
+      {
+        "category": "native_model_load",
+        "gpu_memory": [
+          {
+            "logical_device": 0,
+            "peak_allocated_bytes": 16763983872,
+            "peak_reserved_bytes": 17335058432
+          },
+          {
+            "logical_device": 1,
+            "peak_allocated_bytes": 19387980288,
+            "peak_reserved_bytes": 19746783232
+          },
+          {
+            "logical_device": 2,
+            "peak_allocated_bytes": 24360223744,
+            "peak_reserved_bytes": 24379392000
+          }
+        ],
+        "status": "complete",
+        "wall_seconds": 87.19134682882577
+      },
+      {
+        "category": "native_single_0",
+        "gpu_memory": [
+          {
+            "logical_device": 0,
+            "peak_allocated_bytes": 19503437824,
+            "peak_reserved_bytes": 20023607296
+          },
+          {
+            "logical_device": 1,
+            "peak_allocated_bytes": 21569244160,
+            "peak_reserved_bytes": 21856518144
+          },
+          {
+            "logical_device": 2,
+            "peak_allocated_bytes": 21610995200,
+            "peak_reserved_bytes": 21984444416
+          }
+        ],
+        "status": "complete",
+        "wall_seconds": 7.1371648530475795
+      },
+      {
+        "category": "native_single_1",
+        "gpu_memory": [
+          {
+            "logical_device": 0,
+            "peak_allocated_bytes": 19503142912,
+            "peak_reserved_bytes": 20023607296
+          },
+          {
+            "logical_device": 1,
+            "peak_allocated_bytes": 21569457152,
+            "peak_reserved_bytes": 21856518144
+          },
+          {
+            "logical_device": 2,
+            "peak_allocated_bytes": 21611309568,
+            "peak_reserved_bytes": 21984444416
+          }
+        ],
+        "status": "complete",
+        "wall_seconds": 6.868600961286575
+      },
+      {
+        "category": "native_batch_two",
+        "gpu_memory": [
+          {
+            "logical_device": 0,
+            "peak_allocated_bytes": 22589280768,
+            "peak_reserved_bytes": 24897388544
+          },
+          {
+            "logical_device": 1,
+            "peak_allocated_bytes": 24097692160,
+            "peak_reserved_bytes": 24800919552
+          },
+          {
+            "logical_device": 2,
+            "peak_allocated_bytes": 23941616640,
+            "peak_reserved_bytes": 24838668288
+          }
+        ],
+        "status": "complete",
+        "wall_seconds": 12.132417636923492
+      }
+    ],
+    "scheduler_elapsed_seconds": 166,
+    "scheduler_exit_code": "0:0",
+    "scheduler_status": "COMPLETED",
+    "workflow_seconds": 164.8020137627609
+  },
+  "private_calibration_receipt_sha256": "648b6250229715a6d174bffd9c4e0b0f7e80eca49190a2ca8208647189a3645f",
+  "runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+  "schema_version": "bir_caption_batch_calibration_report_v1",
+  "script_sha256": "1333a7652d837cebec36197041a1aae9155845950a0048d143b78e064f747779",
+  "status": "native_pair_agreement_passed_memory_admission_rejected"
+}
