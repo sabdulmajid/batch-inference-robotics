@@ -7,11 +7,13 @@ A research project to execute NVIDIA FLORA annotation efficiently, then test whe
 ## Start here
 
 1. Read [AGENTS.md](AGENTS.md).
-2. Give the head agent [the orchestrator brief](docs/ORCHESTRATOR_PROMPT.md), together with the private connection details from the launch message.
-3. Follow [the project plan](docs/PROJECT_PLAN.md), [WATcloud runbook](docs/WATCLOUD_RUNBOOK.md), and [resource policy](configs/resource_policy.yaml).
+2. Give the head agent [the orchestrator brief](docs/ORCHESTRATOR_PROMPT.md) and invoke the locally installed `$watcloud` skill.
+3. Use that skill for WATcloud operations, and follow [the project plan](docs/PROJECT_PLAN.md), [project compute overlay](docs/WATCLOUD_RUNBOOK.md), and [resource policy](configs/resource_policy.yaml).
 4. Keep [STATUS.md](docs/STATUS.md) current with evidence and remaining work.
 
-The local launch message supplies machine-specific SSH settings. Store those in ignored local configuration, not this public repository.
+The local launch message identifies the installed skill. Read its actual instructions and relevant references before remote work. The skill supplies account, SSH, scheduler, and storage procedures; this repository supplies the project scope, resource caps, and verification gates. Live account and scheduler state determines actual availability.
+
+Keep the personal skill, resolved connection settings, and raw access evidence in private local storage. This public repository does not duplicate them.
 
 ## Intended outcome
 

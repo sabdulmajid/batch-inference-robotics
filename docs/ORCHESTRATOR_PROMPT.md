@@ -1,6 +1,6 @@
 # Head orchestrator brief
 
-Use this brief with the user's launch message, which supplies the local checkout and private WATcloud connection settings.
+Use this brief with the user's launch message, which supplies the local checkout and identifies the installed `$watcloud` skill.
 
 ## Your job
 
@@ -14,7 +14,22 @@ The user authorizes routine project-local implementation, isolated dependency se
 
 Inspect repository status, remotes, branches, existing instructions, and uncommitted files. Safely bring in the planning pack if the local checkout predates it. Never reset/discard unrelated changes or force-push.
 
-Read AGENTS.md, docs/PROJECT_PLAN.md, docs/WATCLOUD_RUNBOOK.md, configs/resource_policy.yaml, and docs/STATUS.md. Treat the supplied planning snapshot as a starting point and verify consequential facts against the pinned upstream code and current cluster.
+Read AGENTS.md, docs/PROJECT_PLAN.md, docs/WATCLOUD_RUNBOOK.md, configs/resource_policy.yaml, and docs/STATUS.md. Invoke and read the installed `$watcloud` skill and relevant referenced files before remote work; automatic selection does not replace reading its instructions.
+
+The user's local launch message identifies the skill path. If the path is stale, discover the installed skill by name. If it is genuinely unavailable, continue independent local work and report the missing prerequisite accurately; do not claim it was reviewed.
+
+Use the following division of responsibility:
+- The user's launch instruction defines the requested work and already-granted authorization.
+- `$watcloud` supplies operational procedures and private account/access context.
+- The project plan and AGENTS.md define scope, native fidelity, evaluation, coordination, and completion.
+- configs/resource_policy.yaml defines the finite project resource envelope.
+- Live scheduler, account, filesystem, and host-tool checks establish actual permissions and availability.
+
+Keep all applicable restrictions. Distinguish stale evidence and recommended defaults from binding rules; do not increase a project cap or weaken a fidelity gate to resolve a conflict. Routine actions covered by the launch authorization do not require another confirmation because a generic guide mentions approval.
+
+Treat dated access checks, GPU inventory, and old expiry notices as historical evidence. An old expiry notice alone is not evidence of current failure; verify the authorized SSH route and current SLURM association. A current authentication, host-key, or authorization failure must be diagnosed without bypassing controls.
+
+Treat the supplied planning snapshot as a starting point and verify consequential facts against pinned upstream code and the current cluster. Record the skill version/hash and relevant access-check results privately for reproducibility.
 
 Use the exact source/model revisions you record. The inspected upstream source commit is 129a2ada74c526ee4692f3d1b111bea6ca19d5b7. Revisions of downloaded weights/processors must be pinned separately.
 
@@ -47,7 +62,7 @@ Initially process stages in phases across a bounded corpus, keeping each model r
 
 ## Work sequence
 
-1. Establish private config, scheduler/storage access, pinned environments, one submission coordinator, and a persistent resource ledger.
+1. Read `$watcloud`, establish private config, verify scheduler/storage access, pin environments, and establish one submission coordinator with a persistent resource ledger.
 2. Run a small framework operation in SLURM; run actual native TempSeg; validate actual Captioner placement.
 3. Complete at most three small end-to-end episodes with native inputs and inspect the outputs.
 4. Implement persistence, bounded frame reuse, preparation overlap, microbatching, stable routing, and restartability around existing FLORA planning/stitching.
@@ -61,7 +76,7 @@ You may improve sequencing and implementation choices when evidence warrants it.
 
 Delegate model/placement/batching, video/scheduler/recovery, and evaluation/accounting/review. You own shared contracts and integration. Use isolated worktrees/branches or explicit file ownership; do not let agents overwrite each other's changes.
 
-Exactly one coordinator submits, cancels, and retries cluster jobs. Every agent shares the same ledger and caps. Agents request experiments through a manifest with expected inputs, outputs, and budget. Only the integrator updates the delivery branch.
+Exactly one coordinator submits, cancels, and retries cluster jobs. Every agent shares the same ledger and caps. Provide every remote-work agent with the applicable skill instructions; the skill's availability does not grant independent submission authority. Agents request experiments through a manifest with expected inputs, outputs, and budget. Only the integrator updates the delivery branch.
 
 No more than one pending or running GPU allocation for this project. Detect existing task jobs before submitting, and reconcile an ambiguous submission response instead of duplicating it. Preserve all unrelated jobs belonging to the shared account.
 
@@ -91,7 +106,7 @@ Use paired episode-level uncertainty when justified. If the data cannot support 
 
 ## Persistence and public output
 
-Keep source, configs, tests, manifests, sanitized measurements, reports, and reproduction documentation in this GitHub repository. Keep private settings, raw infrastructure logs, absolute private paths, weights, videos, environments, and full operational ledgers in ignored/persistent task-owned storage.
+Keep source, configs, tests, manifests, sanitized measurements, reports, and reproduction documentation in this GitHub repository. Keep the personal skill and its account-specific references, private settings, raw infrastructure logs, absolute private paths, weights, videos, environments, and full operational ledgers in ignored/persistent task-owned storage. The skill remains outside this public repository; do not publish its contents or create a competing copy.
 
 Commit reviewed work incrementally with meaningful messages. Push normally. Honor branch protections and concurrent work; use a reviewable branch/draft PR when direct integration is unavailable. Never force-push or change repository visibility.
 
@@ -105,5 +120,5 @@ Do not ask the user to choose routine libraries, implement fixes, run already-au
 
 Finish with a self-contained report linking the delivered commits/files, actual hardware and resource use, verified commands, supported configurations, measured results, adaptive verdict, and remaining limitations. Stop optional experimentation after the defined work is adequately verified.
 
-Begin by inspecting the local checkout and reconciling the planning pack, then execute the project.
+Begin by inspecting the local checkout, reconciling the planning pack, and reading `$watcloud`; then execute the project.
 

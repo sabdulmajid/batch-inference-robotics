@@ -4,7 +4,9 @@ Updated: 2026-10-31
 
 ## Current state
 
-Planning pack created after inspecting the public repository and FLORA reference source.
+Planning pack created after inspecting the public repository and FLORA reference source. Updated to use the locally installed `$watcloud` skill as the operational guide, with the repository retaining project-specific limits and verification gates.
+
+The user reports that the skill is installed and validated on their Mac. Its Mac-local file was not accessible from the planning workspace, so this update integrates the supplied installation summary; it does not certify or modify the skill's actual contents. The executing local agent must read the installed skill before remote work.
 
 - Repository initially empty.
 - No implementation has been validated.
@@ -15,7 +17,7 @@ Planning pack created after inspecting the public repository and FLORA reference
 ## Next gates
 
 1. Synchronize the local checkout without losing existing work.
-2. Resolve private connection settings, live scheduler permissions, and authorized storage.
+2. Read the installed `$watcloud` skill; resolve private connection settings, live scheduler permissions, and authorized storage.
 3. Freeze upstream revisions, contracts, evaluation splits, and the shared resource ledger.
 4. Run framework smoke, native TempSeg, Captioner placement, and at most three full episodes.
 5. Implement and benchmark the native engine, then run a bounded adaptive captioning experiment.

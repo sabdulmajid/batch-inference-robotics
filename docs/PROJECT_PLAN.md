@@ -52,7 +52,9 @@ Layer placement is not tensor parallelism. Do not assume a GPU count is a suppor
 
 Inspect the local checkout, existing instructions, status, branches, remotes, and uncommitted work. Integrate the planning commit safely. Discover available host tools and use the existing Git/SSH credentials.
 
-Verify account, QOS, partitions, live GRES, existing jobs, candidate node resources, and project storage. Create an isolated project environment and private operational configuration. Establish one submission coordinator and a durable run/budget ledger before any GPU job.
+Read the installed `$watcloud` skill and its relevant references before remote work. Use it as the operational guide, with docs/WATCLOUD_RUNBOOK.md as the project-specific overlay. Keep private skill contents and connection settings outside the public repository. Historical access/expiry evidence informs diagnosis; verify current access through the authorized route.
+
+Verify account, QOS, partitions, live GRES, existing jobs, candidate node resources, and project storage. Create an isolated project environment and private operational configuration. Establish one submission coordinator and a durable run/budget ledger before any GPU job. The skill does not expand configs/resource_policy.yaml or relax the native/evaluation gates.
 
 Prepare large assets and dependencies through appropriate scheduled CPU work so a multi-GPU allocation is not consumed waiting for downloads or package compilation. Download one pinned copy per needed model and use locks to avoid duplicate agent downloads.
 

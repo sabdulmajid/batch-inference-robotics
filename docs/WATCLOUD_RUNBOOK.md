@@ -1,173 +1,122 @@
-# WATcloud operating runbook
+# WATcloud project compute overlay
 
-This document is public and intentionally uses configuration variables for account-specific connection values. The user's launch message supplies the private settings. Store them only in an ignored local configuration with owner-only permissions.
+Use the locally installed `$watcloud` skill as the operational guide for this project. It owns the account/access context, SSH route, scheduler procedures, storage conventions, environment setup, and monitoring instructions. Read the actual skill and relevant referenced material before remote work.
 
-## 1. Authorization and connection
+This document adds project-specific coordination, spending, model-placement, and verification requirements. It intentionally omits private connection values and a duplicate cluster inventory.
 
-Use the verified project account and existing Mac SSH configuration. The launch message supplies the jump alias, key path, login hosts, username, SLURM account, and QOS.
+## 1. Resolve guidance and verify access
 
-Inspect the effective SSH configuration before diagnosing a timeout. Preserve host-key verification. Do not overwrite SSH configuration, remove known-host entries, copy private keys, enable credential forwarding, or try unrelated credentials.
+The user's launch message identifies the installed skill. If that path is stale, discover the installed `watcloud` skill by name. Keep the skill and its account-specific references outside this public repository. Resolve required settings into ignored, task-owned local configuration and record the skill version/hash privately.
 
-The known working pattern is:
-~~~bash
-ssh -J "$BIR_SSH_JUMP" -i "$BIR_SSH_KEY" "$BIR_SSH_USER@$BIR_LOGIN_HOST"
-~~~
+Use these sources for their respective purposes:
 
-The fallback login host may be used through the same authorized route. Direct-connection failure is not evidence that the account is invalid. An unexplained host-key change or unavailable required credential is a genuine blocker; do not bypass it.
+| Source | Responsibility |
+| --- | --- |
+| User's launch instruction | Scope and already-granted authorization |
+| Installed `$watcloud` skill | Operational procedure and private account/access context |
+| docs/PROJECT_PLAN.md and AGENTS.md | Engineering, fidelity, evaluation, coordination, and completion |
+| configs/resource_policy.yaml | Project compute, storage, concurrency, and experiment caps |
+| Live account, scheduler, filesystem, and host tools | Current permissions, availability, and enforceable restrictions |
 
-The user reported access verified on 2026-10-31. Recheck live state before allocating resources.
+The skill does not expand the project resource envelope. Honor actual site/account restrictions and stricter existing authorized limits. Distinguish a recommended default, a dated fact, and a binding restriction before treating guidance as a conflict. Routine in-scope jobs are covered by the launch authorization; do not repeatedly request permission already granted.
 
-## 2. Read current scheduler state
+Historical access tests, inventory, and expiry notices are diagnostic context. An old expiry notice alone does not establish a current access failure. Verify the existing authorized SSH route and current account/SLURM association as directed by the skill. Preserve host-key verification, local private keys, scheduler device restrictions, and unrelated account activity.
 
-Run lightweight checks on the login server, using the actual resolved username:
-~~~bash
-id -un
-sacctmgr -n -P show assoc where users="$BIR_SSH_USER" format=Cluster,Account,User,Partition,QOS
-sinfo -N -o '%N|%P|%t|%G'
-scontrol show partitions -o
-squeue -u "$BIR_SSH_USER"
-~~~
+A current authentication/authorization failure, unexplained host-key change, or genuinely missing skill is a prerequisite problem to diagnose accurately. Complete unaffected local work and report what remains blocked; never invent access or bypass controls.
 
-Inspect relevant candidate nodes with scontrol show node NODE_NAME. Existing jobs can belong to other agents sharing the account. Inventory and partition maxima are not an allocation or a guarantee of availability.
+## 2. Sole coordinator and budget ledger
 
-The user-supplied snapshot is:
-- RTX 4090: one 24 GiB GPU.
-- RTX 3090: six 24 GiB GPUs across the cluster.
-- RTX 2080 Ti: three 11 GiB GPUs.
-- GTX 1080: one 8 GiB GPU.
-- compute partition maximum: 24 hours.
-- compute_dense partition maximum: seven days.
-
-These are historical input facts, not values to force into a submission. Read current rules. Never force DOWN/DRAIN nodes or infer rules from partition names.
-
-## 3. Sole coordinator and budget ledger
-
-One coordinator owns all sbatch/scancel actions. Maintain one pending/running project GPU allocation across every agent and worktree. Subagents propose runs in a shared experiment manifest instead of submitting independently.
+One coordinator owns all project sbatch/scancel actions, including heavy CPU preparation. Maintain one pending/running project GPU allocation and at most one pending/running CPU-only preparation job across every agent and worktree. Give remote-work agents the applicable skill instructions, but keep submission authority with the coordinator.
 
 Before submission, record:
+
 - Unique project run ID and project-specific job name/comment.
 - Code commit, source/model revisions, environment fingerprint, configuration hash.
-- Inputs, output expectations, profile, and benchmark condition.
+- Inputs, expected outputs, native/experimental profile, and benchmark condition.
 - Requested nodes, GPUs/shards, CPUs, host RAM, temporary disk, and wall time.
 - Budget reservation and persistent output/log locations.
 
-Reserve GPU count multiplied by requested wall hours against the remaining 24-hour project GPU budget before submitting. Conservatively charge a shard allocation as one physical device for this budget. Reconcile actual allocated elapsed time after completion. Pending jobs do not consume GPU time, but keep their reservation until resolved.
+Use configs/resource_policy.yaml for every limit. The current project envelope includes 24 aggregate allocated GPU-hours, at most four same-node GPUs per job when justified, 16 GPU submissions, and a two-hour maximum for later jobs. These are project caps, not cluster entitlements.
 
-Failed and idle allocations consume budget. Do not double-count SLURM job-step rows or generic and typed GPU TRES. Before every CPU-only submission, reserve requested CPUs multiplied by requested wall hours against the separate core-hour cap, including failures and idle time. Permit at most one pending or running heavy CPU-only job across all agents.
+Reserve GPU count multiplied by requested wall hours before submitting. Conservatively charge a shard allocation as one physical device for this budget. Pending jobs retain their reservation until resolved. Reconcile actual allocated elapsed time after completion, including failed and idle allocations.
 
-Before optional experiments, reserve the measured cost and required submission slots for final reproduction and evidence collection. New experiments must fit after outstanding reservations and this release reserve; shorten optional evaluation when necessary.
+Reserve CPU-only requested cores multiplied by requested wall hours against the separate core-hour cap. Avoid double-counting job-step rows or generic and typed GPU TRES when reconciling actual allocations.
 
-On a lost SSH response after submission, search using the unique project run name/comment and ledger before retrying. Never assume the submission failed. A local lock alone is insufficient if another orchestrator may operate remotely: use a durable task-owned submission lease/lock and reconciled scheduler state.
+Before optional experiments, reserve the measured cost and submission slots needed for final reproduction and evidence collection. Shorten optional evaluation if needed to preserve that reserve.
 
-## 4. Resource selection
+On a lost SSH response after submission, reconcile the unique project run name/comment and ledger with scheduler state before retrying. Use a durable task-owned submission lease/lock if another orchestrator could operate remotely; a local worktree lock alone is insufficient.
 
-Use SLURM for GPU work and heavy CPU work. Login nodes are for inspection, small edits, and submission.
+A shared Unix username does not establish job ownership. Cancel only exact task-created job IDs recorded in the ledger.
 
-A shared request example is:
-~~~text
---gres=shard:rtx_3090:4096,tmpdisk:20480
-~~~
-Counts are MiB. A shard must fit on one GPU, and its VRAM request is not enforced. Measure peak use and request adequate headroom.
+## 3. Resource selection for FLORA
 
-A whole-GPU example is:
-~~~text
---gres=gpu:rtx_3090:1,tmpdisk:20480
-~~~
-Do not request shard and gpu for the same allocation. Whole GPUs are appropriate when the memory-intensive native workload needs them or when isolated performance measurements justify them.
+Follow the skill for live node, partition, GRES, account, and QOS discovery. Use current allocation/state information; inventory totals are not free GPUs. Select the smallest justified request supported by live rules and measured application needs.
 
-Explicitly set CPU count, system RAM, temporary disk, runtime, account, QOS, partition, and job name. The --mem option is system RAM, not VRAM. Request --nodes=1 for the initial model-parallel Captioner experiments.
+The planning hardware snapshot consists of GPUs with 24 GiB or less. Verify it before use. Native TempSeg is a candidate for one 3090/4090, subject to runtime measurement. Native Captioner 27B needs approximately 50.3 GiB for BF16 parameters alone, plus runtime overhead. One or two 24 GiB devices cannot hold that faithful model.
 
-Prefer one 3090/4090 for TempSeg feasibility. For faithful Captioner, estimate actual checkpoint bytes and request a justified three/four same-node allocation. The project ceiling explicitly allows up to four GPUs for this purpose, not as a default for every task.
+For Captioner, inspect actual checkpoint sizes and same-node topology. Three GPUs are conditional; up to four are allowed when justified. This ceiling is not a default allocation for every task. Multiple GPU memories do not combine without explicit application-supported placement.
 
-Do not use the smaller GPUs for the native BF16 baseline without independently proving support and recording any numerical change. Do not silently quantize/offload to fit.
+The released Captioner loader's per-device reserve may prevent placement even on four cards. Use the documented placement-only adapter described in the project plan. Preserve parameter identity/dtypes, native input construction, generation settings, and all-GPU inference residency. Quantization, CPU/disk weight offload, fewer temporal frames, or model substitution does not satisfy the native gate.
 
-Preserve SLURM's device restrictions. Inside containers, verify both visibility and actual allocation; never replace the scheduler mask with all host GPU indices.
+Begin with staged TempSeg and Captioner execution. Do not assume both models can remain resident together. Layer placement does not establish tensor-parallel support.
 
-## 5. Storage and environments
+Use shared GPU memory requests when the complete workload safely fits and the skill's rules permit them. The native models will generally need whole devices; performance isolation may also justify a whole-device request. Never mix shard and whole-GPU requests for the same allocation. Preserve the scheduler's granted device set; worker/container isolation may narrow it, never broaden it.
 
-Keep small configuration files in home. The user supplied a default home quota of 20 GiB; inspect actual usage:
-~~~bash
-getfattr -n ceph.quota "$HOME"
-getfattr -n ceph.dir.rbytes "$HOME"
-~~~
+## 4. Storage and environment
 
-Discover an authorized writable project directory on an appropriate /mnt/wato-drive* mount. Check ownership/permission, free space, quota, and expected contents. Do not recursively scan or change permissions on unrelated directories.
+Use the skill to discover an authorized persistent project directory and check live permissions, quota, and free space. Keep small configuration files in home; redirect large model, package, and build caches to the verified project storage.
 
-Before model downloads, estimate snapshots, environments, datasets, outputs, and at least 20% headroom. Enforce the 250 GiB new-project-storage ceiling. The annotation workflow may need roughly 150 GiB for model/cache assets; inspect exact revisions and reuse valid task-owned assets rather than downloading duplicates.
+Enforce the 250 GiB new-project-storage ceiling and at least 20% free headroom. Estimate model snapshots, environments, datasets, outputs, and temporary copies before downloading. Reuse valid pinned task-owned assets; coordinate downloads with locks.
 
-Set project-specific model, package, and build caches there, including HF_HOME and FLORA_MODEL_CACHE. Keep HOME unchanged. Use locks around shared downloads.
+Use an isolated project environment and pin actual compatible Python/framework/CUDA-related versions. Keep HOME unchanged. Preserve scheduler device restrictions when using an environment or rootless container. System drivers, global environments, shared caches, and other agents' files remain outside this task.
 
-Use an isolated environment; pin the actual compatible Python/framework/CUDA-related package versions. Do not install drivers, use sudo, alter global Python/Conda environments, or edit shell startup files.
+Use SLURM for checkpoint loading, inference, substantial decoding/preprocessing, package compilation, and substantial asset preparation. Prepare large assets before allocating expensive GPUs. Keep login-server work light.
 
-Rootless Docker is an option inside an allocation:
-~~~bash
-slurm-start-dockerd.sh
-~~~
-Its image/storage costs must fit the requested temporary disk. Do not start privileged containers or expose unallocated GPUs.
+Treat job-local temporary storage as disposable. Request enough temporary disk for the chosen environment and workload, then persist required results, logs, and completion metadata before job termination.
 
-Treat /tmp as disposable. Persist required outputs, run/configuration records, application memory telemetry, and logs before job end. Stage model files to temporary disk only when requested capacity and measured I/O benefits justify it.
+## 5. Validate requests and prove the application
 
-## 6. Validate and execute
+Generate project-specific batch scripts using the skill's current instructions. Use literal resolved #SBATCH values, explicit resource limits, persistent log paths, a reproducible environment, and the exact application command. Create log directories before submission.
 
-Generate a project-specific batch script with literal resolved #SBATCH values. Shell variables inside #SBATCH directives are not expanded. Validate the generated script and create persistent log directories first.
+Validate each changed resource request with sbatch --test-only. This is a scheduler validation, not an application test or reservation. Submit a short real test only after validating the request and recording its budget reservation.
 
-Include explicit account, QOS, partition, node/GPU request, CPU, host RAM, temporary disk, wall limit, job name, output/error paths, reproducible environment, and exact application command.
+Disable automatic requeue with --no-requeue where supported. Inspect SLURM_RESTART_COUNT in the wrapper. An unexpected restarted execution exits with an explicit incomplete status before model work; the coordinator reconciles prior attempt time and reserves any permitted retry. Site-driven restarts still count toward resource use.
 
-Disable automatic requeue with --no-requeue where supported. Inspect SLURM_RESTART_COUNT in the job wrapper. An unexpected restarted execution exits with an explicit incomplete status before model work; it must not consume another unreserved execution. The coordinator reconciles all prior attempt time and reserves any permitted retry. Site-driven restarts still count toward aggregate resource use.
+Propagate application failures to the job exit status. Save partial records without marking unfinished work complete.
 
-Use robust shell error handling, ensure application failures propagate to the job exit status, and save partial records without falsely marking completion.
+Progress through these gates:
 
-~~~bash
-sbatch --test-only job.sbatch
-sbatch --parsable job.sbatch
-~~~
+1. At most 15 minutes for an actual small operation in the project's GPU framework; check numerical output and GPU execution.
+2. Bounded native TempSeg and Captioner-placement probes; initial native probe limits are at most 60 minutes.
+3. At most three short complete native episodes through decoding, TempSeg, stitching, Captioner, and serialized annotations.
+4. Verify resume/retry behavior and output identity.
+5. Use measured memory, elapsed time, and per-episode cost to select any larger workload.
 
-The first command checks scheduling syntax/resource admissibility. It neither reserves resources nor validates application correctness.
+A visible GPU, successful submission, framework operation, or TempSeg-only output does not satisfy the complete annotation gate. Record the precise gate passed.
 
-Inside the granted allocation:
-1. Record nvidia-smi/device/driver/framework information.
-2. Run an actual framework operation and check its result.
-3. For a FLORA gate, load the actual pinned model and run the intended native request.
-4. Measure GPU memory in the application and per-device telemetry, not only with a pre-run snapshot.
-5. Save expected output artifacts and completion metadata.
+Measure peak GPU memory per device in the application and suitable device telemetry. MaxRSS is host RAM. Verify actual model residency and expected output artifacts, not only pre-run GPU listings.
 
-A segmentation-only pass must be labeled as such. A full end-to-end gate requires actual captions and verified serialization.
+## 6. Monitoring, retries, and completion
 
-Start with the 15-minute framework smoke, then bounded native probes. Use measurements to project cost before any larger run. The resource policy limits each job to two hours and the complete project to its aggregate budget. Partition maxima do not override these limits.
+Use the skill's scheduler inspection and completion commands with project-specific job IDs. Poll at the interval in configs/resource_policy.yaml rather than allowing every agent to poll independently.
 
-## 7. Monitoring, failures, and cleanup
+Verify final state, exit code, allocation records, application outputs, and completion markers. A timeout, OOM, unsupported kernel, or malformed result needs diagnosis before another submission.
 
-Use one coordinator and reasonable polling, approximately every two minutes, with nonblocking host mechanisms where available:
-~~~bash
-squeue -j JOB_ID
-scontrol show job JOB_ID
-~~~
+The transient-retry cap applies to transport, worker, or I/O failures. It does not change the pinned FLORA segmentation boundary-repair algorithm or its native repair-window limits; all such work still counts toward cost. A deterministic failure requires a concrete changed hypothesis, not an unchanged repeated run.
 
-After termination:
-~~~bash
-sacct -j JOB_ID --format=JobID,JobName,State,ExitCode,Elapsed,MaxRSS,AllocTRES
-~~~
+At completion, release unnecessary task allocations, reconcile budgets and ownership records, preserve evidence, and publish sanitized summaries. Record hardware type/count, elapsed time, peak memory, quality/performance measurements, artifact identifiers, reproduction commands, and remaining limitations.
 
-Inspect allocation records and steps carefully. MaxRSS measures host memory, not GPU memory. Verify the application outputs and completion markers as well as final state/exit code.
+Keep raw account/node details, job IDs, private absolute paths, SSH settings, and complete operational logs in ignored task-owned storage. Public reports should contain the measurements and provenance needed to assess the result without copying the personal skill or private infrastructure records.
 
-A timeout, OOM, unsupported kernel, or malformed result needs diagnosis before another submission. Permit at most one diagnosed transient retry per work item for transport, worker, or I/O failures. This cap does not change FLORA's pinned native segmentation boundary-repair policy or repair-window limits; that work still counts toward cost. A deterministic failure requires a concrete changed hypothesis; an unchanged repeat is not an experiment.
+## 7. Stop conditions
 
-Cancel only exact job IDs created for this task and recorded in the ledger. Never cancel by username/account, run broad pkill, reset GPUs, delete shared caches, change scheduling priorities unfairly, or touch another agent's checkpoints.
+Stop new expensive work if it would exceed the project envelope, required access/storage cannot be validated, faithful native inference cannot fit safely, or the software stack cannot execute it within the constraints.
 
-At completion, release unnecessary task allocations, reconcile the ledger, preserve evidence, and publish only sanitized summaries. Record what ran, hardware type/count, elapsed time, peak memory, quality/performance results, artifact identifiers, and remaining limitations.
+Continue useful independent implementation, tests, documentation, and feasible already-authorized work. Report the exact blocked gate and the smallest remaining requirement. Preserve native fidelity and truthful result labels.
 
-## 8. Stop conditions
+For routine implementation and bounded jobs already authorized by the launch instruction, proceed without another permission request. A genuine account, security, budget, or policy block must remain visible.
 
-Stop new expensive work when the resource cap would be exceeded, access cannot be validated, required storage is unavailable, native inference cannot fit safely, or the relevant software stack cannot execute it.
+## References
 
-Continue useful independent implementation, tests, documentation, and already-feasible experiments. Report the exact blocked gate and smallest remaining requirement. Do not silently weaken the native baseline, buy new compute, create new credentials, or claim missing measurements.
-
-## Official references
-
-- https://cloud.watonomous.ca/docs/compute-cluster/slurm
-- https://cloud.watonomous.ca/docs/compute-cluster/user-manual
-- https://cloud.watonomous.ca/docs/compute-cluster/quotas
-- https://cloud.watonomous.ca/machines
-- https://slurm.schedmd.com/sbatch.html
-- https://slurm.schedmd.com/sacct.html
+The installed `$watcloud` skill is the operational starting point. Consult its referenced official documentation when current rules or procedures require verification. The project plan records the separate FLORA source/model evidence and scientific contract.
 

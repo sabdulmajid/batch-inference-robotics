@@ -30,7 +30,13 @@ Independent references establish annotation quality; native-output agreement est
 
 ## Compute and storage
 
-Read docs/WATCLOUD_RUNBOOK.md before remote work. Use the user's existing SSH route and scheduler permissions. Keep private keys local and preserve host-key verification.
+Read the locally installed `$watcloud` skill and its relevant referenced material before remote work. Resolve the exact skill path from the user's launch message or installed-skill discovery. Use it for the existing SSH route, account, scheduler, storage, environment, and monitoring procedures. Keep private keys local and preserve host-key verification.
+
+Read docs/WATCLOUD_RUNBOOK.md as the project-specific overlay and configs/resource_policy.yaml as the project spending envelope. The skill does not expand these caps. Apply actual site/account restrictions and any stricter existing authorized limits. Distinguish a recommendation, a dated fact, and a binding restriction when reconciling guidance; the user's existing authorization covers routine in-scope jobs and must not trigger repeated confirmation.
+
+Verify current access through the skill's authorized route and live scheduler/account checks. Dated inventory, prior access tests, and old expiry notices are historical evidence, not a substitute for current verification. If the skill cannot be found, continue local work and report the missing prerequisite accurately before remote execution.
+
+Give every subagent assigned remote work the applicable skill instructions and project constraints. The single coordinator retains exclusive submission/cancellation/retry ownership.
 
 Keep login-server work light. Use SLURM for inference, checkpoint loading, large preprocessing, package compilation, and substantial data operations. Large caches and artifacts go to a verified, authorized persistent project directory; home and job-local temporary storage are not substitutes.
 
@@ -40,7 +46,7 @@ Validate a batch request, then run a small actual application test, then size an
 
 ## Repository and release
 
-The repository is public. Keep real connection settings, private absolute paths, raw cluster/account logs, tokens, private keys, datasets, model weights, and environments out of commits. Use .local/ and other ignored task directories for these.
+The repository is public. Keep the personal skill and its account-specific references, real connection settings, private absolute paths, raw cluster/account logs, tokens, private keys, datasets, model weights, and environments out of commits. Use .local/ and other ignored task directories for these.
 
 Keep upstream source pinned and intact, with integrity and license checks. Prefer adapters around native code. Do not relabel covered upstream code as permissively licensed.
 
