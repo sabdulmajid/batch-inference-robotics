@@ -1,0 +1,90 @@
+{
+  "schema_version": "bir_native_tempseg_measurement_v1",
+  "status": "complete",
+  "source_commit": "496e15a6083ff950e4de6f54f9229dcf2543e678",
+  "native_upstream_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7",
+  "condition": "optimized",
+  "request_batch_size": 1,
+  "profile": "single_view_Human",
+  "captioner_or_end_to_end_validated": false,
+  "allocated_gpu_count": 1,
+  "allocation_final_state": "COMPLETED",
+  "allocation_exit_code": "0:0",
+  "allocation_elapsed_seconds": 395,
+  "allocation_gpu_hours": 0.10972222222222222,
+  "probe_wall_seconds": 392.1412103138864,
+  "cli_workflow_wall_seconds": 367.3520413003862,
+  "engine_wall_seconds": 367.10009282594547,
+  "gpu_memory": [
+    {
+      "allocated_at_end_bytes": 9568256,
+      "logical_device": 0,
+      "name": "NVIDIA GeForce RTX 3090",
+      "peak_allocated_bytes": 19706209792,
+      "peak_reserved_bytes": 19801309184,
+      "total_memory_bytes": 25296044032
+    }
+  ],
+  "environment": {
+    "accelerate": "1.12.0",
+    "av": "16.0.1",
+    "huggingface-hub": "1.33.0",
+    "peft": "0.18.1",
+    "safetensors": "0.7.0",
+    "torch": "2.11.0+cu128",
+    "torchvision": "0.26.0+cu128",
+    "transformers": "5.8.1"
+  },
+  "episodes": [
+    {
+      "episode_id": "homer_52",
+      "request_id": "ab39c44ac1d9c08f2827982de7b3ffa7b516b5b5e08a3564ebe3e2d23e360855",
+      "source_duration_s": 37.985378,
+      "segments": 10,
+      "temporal_windows": 8,
+      "fresh_execution": true,
+      "stage_wall_seconds": 185.9953445228748,
+      "signed_checkpoint_verified": true,
+      "model_load_counts": {
+        "captioner": 0,
+        "tempseg": 1
+      },
+      "all_parameters_and_buffers_on_cuda": true
+    },
+    {
+      "episode_id": "homer_50",
+      "request_id": "46d0c426c84402ed3482007ba0187951fbd28697936b0b9cdacd2ae16bdf123d",
+      "source_duration_s": 46.481711,
+      "segments": 20,
+      "temporal_windows": 4,
+      "fresh_execution": true,
+      "stage_wall_seconds": 44.84826437709853,
+      "signed_checkpoint_verified": true,
+      "model_load_counts": {
+        "captioner": 0,
+        "tempseg": 1
+      },
+      "all_parameters_and_buffers_on_cuda": true
+    },
+    {
+      "episode_id": "homer_41",
+      "request_id": "512e098a952f9052a21d501a2a2fdfaa933cdc38906f229085928ca6da41b71f",
+      "source_duration_s": 54.3,
+      "segments": 15,
+      "temporal_windows": 8,
+      "fresh_execution": true,
+      "stage_wall_seconds": 124.8003320642747,
+      "signed_checkpoint_verified": true,
+      "model_load_counts": {
+        "captioner": 0,
+        "tempseg": 1
+      },
+      "all_parameters_and_buffers_on_cuda": true
+    }
+  ],
+  "model_load_count": 1,
+  "unique_source_seconds": 138.767089,
+  "annotation_quality_assessed": false,
+  "includes_failed_prior_attempt": false,
+  "prior_failure_record": "reports/tempseg-initial-failure.json"
+}

@@ -22,28 +22,31 @@ project policy choice, not a cluster quota change.
   and the isolated Linux environment are present.
 - Framework GPU test passed on one RTX 3090 using PyTorch 2.11.0+cu128.
   The numerical BF16 result was correct. The allocation completed in 41 seconds.
-- The first TempSeg allocation completed model generation but failed when
-  serializing set-valued loader diagnostics. All three work items remain failed;
-  no complete annotations were exported. A deterministic serialization fix passed
-  the actual Transformers loading-info and checkpoint resume tests. Peak GPU allocation was 18.353 GiB on one RTX 3090.
-- Captioner and complete native annotation remain unvalidated.
+- Native TempSeg passed on three development episodes after the diagnostic
+  serialization fix. The job completed in 395 seconds, used one RTX 3090,
+  and retained one model across 45 generated segments. All checkpoint
+  signatures passed verification. Peak GPU allocation was 18.353 GiB.
+- The earlier failed allocation is retained and counted. See
+  [the successful measurement](../reports/native-tempseg.json) and
+  [the earlier failure](../reports/tempseg-initial-failure.json).
+- Captioner is submitted for three same-node RTX 3090 GPUs. Complete native
+  annotation remains unvalidated until that job and its artifacts pass.
 - No performance or adaptive quality result exists.
 
 ## Resource state
 
-- GPU-hours used/reserved: 0.157500 / 0 of 24, including the failed allocation.
-- GPU submissions: 2 of 16.
-- CPU-only core-hours used/reserved: 2.752222 / 0 of 32.
+- GPU-hours used/reserved: 0.267222 / 3 of 24, including the failed allocation.
+- GPU submissions: 4 of 16.
+- CPU-only core-hours used/reserved: 2.990000 / 0 of 32.
 - Measured persistent footprint: 128.775 GiB of the 250 GiB cap.
 - A durable coordinator marker and private operational ledger are established.
 
 ## Next actions
 
-Fix and test diagnostic serialization, then rerun fresh native TempSeg.
-Complete a faithful Captioner placement probe on at least three same-node
-24 GiB GPUs. Checkpoint headers estimate 50.956 GiB of native weights before
-activations and caches; runtime fit is not yet established. The framework smoke passed;
-see [its sanitized record](../reports/framework-smoke.json).
+Verify Captioner placement, residency, complete outputs, and final scheduler
+status. Captioner will continue the signed TempSeg checkpoints from the same
+code revision and input manifest. Checkpoint headers estimate 50.956 GiB of
+native weights before activations and caches. Runtime fit remains unproved.
 Complete at most three full episodes before any larger benchmark.
 
 Private records retain exact job IDs, connection settings, output paths, skill
