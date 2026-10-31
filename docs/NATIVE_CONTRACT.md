@@ -79,6 +79,8 @@ Separate GPU gates remain required: a framework operation; native TempSeg; faith
 
 `scripts/native_probe.py` runs the same contract and state store as `bir run`. It accepts at most three manifest episodes. Use the same `--state-dir` and `--condition` for a segmentation allocation followed by a Captioner allocation. Use a distinct `--output-dir` for each allocation. The probe records private topology, package versions, source validation, final status, and peak memory for every visible GPU.
 
+A complete `--stages all` run exports final caption files and keeps both stage payloads in SQLite. `scripts/verify_native_resume.py` accepts this format and the separate-stage format. It requires complete stored stages, validates existing exports against their checkpoint payloads, and runs the unchanged CLI on an isolated database copy with GPUs hidden. Separate segment exports are optional. The original files and request identities must remain unchanged.
+
 A successful resume is labeled as a cache retrieval when no new stage executes. An empty annotation cannot pass the native-caption gate. That gate requires a fresh caption stage, nonempty complete captions, and saved Captioner residency verification. Separate-stage runs preserve the TempSeg loader checks inside the segmentation checkpoint.
 
 Both probes reject nonzero `SLURM_RESTART_COUNT` before model work. The coordinator must reconcile a restarted allocation before another attempt. The probes do not submit, cancel, or retry scheduler jobs.

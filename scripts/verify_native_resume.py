@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Verify CPU-only cache resume in an isolated copy of a completed native run.
 
-Run in a coordinator-owned CPU allocation. Keep all output files private. This
+Run in a coordinator-owned SLURM allocation. The resume subprocess hides GPUs.
+Keep all output files private. This
 utility does not submit jobs, change request identity, or edit original evidence.
 """
 from __future__ import annotations
@@ -44,6 +45,8 @@ def database_snapshot(path):
             payload = row.pop('payload_json')
             if payload is not None and hashlib.sha256(payload.encode()).hexdigest() != row['payload_sha256']:
                 raise ValueError('A stored checkpoint payload checksum changed')
+            if row['state'] == 'complete' and (payload is None or not isinstance(json.loads(payload), dict)):
+                raise ValueError('A complete checkpoint must contain a result object')
             attempts.append(row)
     return dict(requests=requests, attempts=attempts)
 
@@ -68,7 +71,7 @@ def run(args):
         state = state.resolve(strict=True)
         reject_restarted_execution()
         if not os.environ.get('SLURM_JOB_ID'):
-            raise RuntimeError('Resume verification requires a coordinator-owned CPU allocation')
+            raise RuntimeError('Resume verification requires a coordinator-owned SLURM allocation')
         if not 0 < args.timeout_seconds <= 240:
             raise ValueError('Resume subprocess timeout must be at most 240 seconds')
         code = args.code_root.resolve(strict=True)
@@ -107,18 +110,33 @@ def run(args):
         with _run_lock(state):
             before = database_snapshot(state / 'run.sqlite')
             original_hashes = artifact_hashes(state)
+            metadata_sha256 = file_sha256(state / 'run-metadata.json')
             if {r['request_id'] for r in before['requests']} != ids:
                 raise ValueError('Stored request identities differ from the resume manifest')
+            expected_requests = {job.request_id: job for job in jobs}
             for request in before['requests']:
                 if hashlib.sha256(request['identity_json'].encode()).hexdigest() != request['request_id']:
                     raise ValueError('Stored request identity checksum changed')
+                job = expected_requests[request['request_id']]
+                if request['episode_id'] != job.id or json.loads(request['identity_json']) != job.identity():
+                    raise ValueError('Stored request content differs from the resume manifest')
+            expected_exports = {}
             for request in ids:
                 for stage in ('segment', 'caption'):
                     attempts = [r for r in before['attempts'] if r['request_id'] == request and r['stage'] == stage]
                     if not attempts or attempts[-1]['state'] != 'complete':
                         raise ValueError('Every original stage must already be complete')
-                    if request + '.' + stage + '.json' not in original_hashes:
-                        raise ValueError('Every original stage must have its saved annotation')
+                    filename = request + '.' + stage + '.json'
+                    expected_exports[filename] = attempts[-1]['payload_sha256']
+                    # An all-stage CLI run exports captions only. Its complete
+                    # signed segmentation payload remains in the atomic store.
+                    if stage == 'caption' and filename not in original_hashes:
+                        raise ValueError('Every original caption must have its saved annotation')
+            for filename in original_hashes:
+                if (filename not in expected_exports or
+                        hashlib.sha256(canonical_json(read(state / 'annotations' / filename)).encode()).hexdigest()
+                        != expected_exports[filename]):
+                    raise ValueError('An annotation export differs from its stored checkpoint payload')
             clone.mkdir()
             shutil.copytree(state / 'annotations', clone / 'annotations')
             shutil.copyfile(state / 'run-metadata.json', clone / 'run-metadata.json')
@@ -129,7 +147,7 @@ def run(args):
                     src.backup(dst)
             fresh_summary_sha256 = file_sha256(state / 'summary.json')
         atomic_json(output / 'before.json', dict(database=before, annotation_sha256=original_hashes,
-                    metadata_sha256=file_sha256(state / 'run-metadata.json'), summary_sha256=fresh_summary_sha256))
+                    metadata_sha256=metadata_sha256, summary_sha256=fresh_summary_sha256))
         command = [str(python), '-m', 'bir.cli', 'run', '--source', str(source), '--manifest', str(manifest),
             '--model-lock', str(model_lock), '--captioner-headroom-gib', str(contract['captioner_headroom_gib']),
             '--batch-size', '1', '--condition', 'optimized', '--stages', 'all', '--run-dir', str(clone)]
@@ -153,12 +171,13 @@ def run(args):
         resumed_hashes = artifact_hashes(clone)
         atomic_json(output / 'after.json', dict(database=after, annotation_sha256=resumed_hashes))
         if (after != before or resumed_hashes != original_hashes or
-                read(clone / 'run-metadata.json') != metadata or
+                file_sha256(clone / 'run-metadata.json') != metadata_sha256 or
                 {(r['request_id'], r['stage']) for r in summary['records']} !=
                 {(identity, stage) for identity in ids for stage in ('segment', 'caption')}):
             raise ValueError('Cache resume changed an attempt, artifact, or request/stage identity')
         if (database_snapshot(state / 'run.sqlite') != before or artifact_hashes(state) != original_hashes or
-                file_sha256(state / 'summary.json') != fresh_summary_sha256 or read(state / 'run-metadata.json') != metadata):
+                file_sha256(state / 'summary.json') != fresh_summary_sha256 or
+                file_sha256(state / 'run-metadata.json') != metadata_sha256):
             raise ValueError('Original inference evidence changed during verification')
         report.update(status='complete', resumed_stages=summary['resumed_stages'], fresh_stage_attempts=0,
                       fresh_inference=False,
