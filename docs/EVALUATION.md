@@ -165,11 +165,49 @@ because other users can consume shared storage.
 
 ## Tests
 
+Compare fresh run directories after the actual GPU gates:
+
+```sh
+python scripts/compare_native.py runs/reference runs/persistent \
+  --left-log .local/reference.log --right-log .local/persistent.log \
+  --output reports/reference-persistent.json
+python scripts/compare_native.py runs/reference runs/optimized \
+  --left-log .local/reference.log --right-log .local/optimized.log \
+  --output reports/reference-optimized.json
+```
+
+Each directory must contain its CLI `summary.json` and exported annotations.
+The default comparison requires fresh complete segmentation and captioning for
+every episode. Use `--stage segment` or `--stage caption` only for an explicitly
+named partial comparison. Cached retrieval, missing episodes, duplicate episode
+results, and attempts resumed from an earlier timing interval invalidate the
+fresh benchmark. Failed attempts inside the same run remain in the timing and
+cost counts.
+
+The report compares source/model bindings, profiles, durations, segment times,
+statuses, captions, temporal windows and frame plans, camera geometry, caption
+blocks, and prompt hashes. It reports changed field counts and hashes without
+copying private paths or raw log content. Timing and placement values are
+excluded from output agreement. Optional runtime logs compare processor tensor
+digests as a multiset grouped by model stage. The original log format has no
+episode ID on generation lines, so this is a corpus-level tensor check. It does
+not prove per-episode tensor routing. Without both logs, tensor agreement stays
+unverified even if the exported annotations agree.
+
+Use `--accounting` only with complete, attributable allocation records in the
+JSON format shown by `--help`. Include failed and idle attempts. The script
+rejects the same allocation key in both conditions. If conditions share one
+allocation without complete measured attribution, omit the accounting input.
+GPU-hour throughput then remains null. Wall time is still reported, with its
+boundary. Hardware, environment, and placement controls must be verified before
+the wall-time ratio is advertised as an optimization result.
+
 From the repository root:
 
 ```sh
 PYTHONPATH=src python -m unittest discover -s tests -p 'test_resource_ledger.py' -v
 PYTHONPATH=src python -m unittest discover -s tests -p 'test_evaluation.py' -v
+PYTHONPATH=src python -m unittest discover -s tests -p 'test_compare_native.py' -v
 ```
 
 These tests exercise concurrency, ambiguous submissions, exact job ownership,

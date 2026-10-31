@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 dependencies = ["PyYAML==6.0.3"]
 
 [project.optional-dependencies]
-test = ["pytest==8.4.2", "Pillow>=11,<13", "av==16.0.1", "numpy<3"]
+test = ["pytest==8.4.2", "Pillow>=11,<13", "av==16.0.1", "numpy<3", "pyarrow==21.0.0"]
 
 [project.scripts]
 bir = "bir.cli:main"
