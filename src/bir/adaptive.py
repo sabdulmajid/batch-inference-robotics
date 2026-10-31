@@ -12,6 +12,7 @@ import importlib.metadata
 import json
 import math
 import time
+from unittest.mock import patch
 
 TRANSFORMERS_VERSION = '5.8.1'
 COMPACT_TOTAL_PIXELS = 40 * 131072
@@ -235,3 +236,131 @@ def run_compact_then_native(compact_call, native_call, *, synchronize=None,
             'chosen_pass': name if valid else None, 'attempts': attempts, 'gate': decision,
             'application_work_seconds': sum(x['wall_seconds'] for x in attempts),
             'quality_assessed': False}
+
+
+def run_reference_interval(backend, prepared, interval, *, episode_id,
+                           reference_index, policy, freeze_sha256,
+                           synchronize=None):
+    """Run one explicit fixed-reference caption experiment, without TempSeg.
+
+    The caller must measure shared preparation and load the verified native
+    Captioner before calling this function. The native pipeline still owns
+    frame selection, context, clocks, prompts, generation, and parsing.
+    Only the compact pass receives the spatial processor proxy.
+    """
+    if policy not in ('native', 'compact', 'adaptive'):
+        raise ValueError('Unknown fixed-reference caption policy')
+    if prepared.profile not in ('Human', 'Human actions') or set(prepared.videos) != {'main'}:
+        raise ValueError('This frozen experiment supports human single-view inputs only')
+    if not isinstance(episode_id, str) or not episode_id:
+        raise ValueError('A stable episode identifier is required')
+    if type(reference_index) is not int or reference_index < 0:
+        raise ValueError('A zero-based reference interval index is required')
+    if not isinstance(freeze_sha256, str) or len(freeze_sha256) != 64 or any(c not in '0123456789abcdef' for c in freeze_sha256):
+        raise ValueError('The experiment requires a SHA256 of its frozen contract')
+    start, end = interval['start_s'], interval['end_s']
+    if any(type(v) not in (int, float) or not math.isfinite(v) for v in (start, end)) or not (
+            0 <= start < end <= prepared.metadata['duration_s'] + 0.001):
+        raise ValueError('Reference interval is outside the source video clock')
+    if backend.session.kind != 'captioner' or backend.session.native.model is None:
+        raise RuntimeError('Load and time the verified native Captioner before interval policies')
+    if synchronize is None:
+        import torch
+        if not torch.cuda.is_available():
+            raise RuntimeError('CUDA is required for the fixed-reference experiment')
+        def synchronize():
+            for device in range(torch.cuda.device_count()):
+                torch.cuda.synchronize(device)
+    record = {'schema_version': 'bir_reference_caption_v1', 'episode_id': episode_id,
+              'reference_index': reference_index, 'policy': policy, 'freeze_sha256': freeze_sha256,
+              'start_s': start, 'end_s': end, 'status': 'failed', 'caption': None,
+              'interval_provenance': 'fixed_independent_reference_interval',
+              'input_sha256': dict(prepared.metadata['input_sha256']),
+              'attempts': [], 'gate': None, 'spatial_audits': [],
+              'caption_input_audits': [], 'generation_events': [],
+              'quality_assessed': False, 'request_batch_size': 1}
+    # This is an explicitly supplied reference interval, never a claimed
+    # TempSeg prediction or a substitute for the native end-to-end gate.
+    segments = [{'start_s': start, 'end_s': end,
+                 'metadata': {'segmentation_provenance': 'fixed_independent_reference_interval'}}]
+    active_pass = None
+    native_event = backend.models.runtime_event
+    def capture(event, **values):
+        if event in ('generation_start', 'generation_end'):
+            record['generation_events'].append({'pass': active_pass, 'event': event, **values})
+        native_event(event, **values)
+
+    class SpatialSession:
+        def __init__(self, category):
+            self.processor = None
+            self.category = category
+
+        def load(self, kind):
+            if kind != 'captioner':
+                raise RuntimeError('The spatial experiment cannot load another model stage')
+            model, processor = backend.session.load(kind)
+            if self.processor is None:
+                def receipt(audit):
+                    record['spatial_audits'].append({'pass': self.category, **audit})
+                self.processor = CaptionSpatialProcessor(processor, audit_sink=receipt)
+            return model, self.processor
+
+    def invoke(category, compact):
+        nonlocal active_pass
+        active_pass = category
+        begun = time.perf_counter()
+        attempt = {'category': category, 'status': 'running'}
+        record['attempts'].append(attempt)
+        try:
+            synchronize()
+            session = SpatialSession(category) if compact else backend.session
+            rows, audit = backend.pipeline.caption_single(prepared.videos, segments, prepared.profile,
+                session, prepared.job.get('instruction', ''), backend.progress)
+            record['caption_input_audits'].append({'pass': category, 'records': audit})
+            if len(rows) != 1:
+                raise RuntimeError('The native pipeline changed fixed-reference output cardinality')
+            row = rows[0]
+            if row['start_s'] != start or row['end_s'] != end:
+                raise RuntimeError('The native pipeline changed the fixed reference interval')
+            if row['status'] != 'complete':
+                attempt.update(status=row['status'], text=None)
+            elif fallback_decision(row.get('caption'))['fallback']:
+                attempt.update(status='invalid_output', text=None)
+            else:
+                attempt.update(status='complete', text=row['caption'])
+        except Exception as error:
+            # The upstream helper uses the same exception for context overflow
+            # and incomplete text. Only the exact incomplete-output case is a
+            # format-gate signal. An OOM or context failure never triggers rerun.
+            incomplete = isinstance(error, backend.models.InputErrorForModel) and str(error) == (
+                'The model did not return a complete output for this input.')
+            attempt.update(status='invalid_output' if incomplete else 'failed', text=None,
+                           error_type=type(error).__name__, error=str(error))
+        finally:
+            try:
+                synchronize()
+            except Exception as error:
+                attempt.update(status='failed', synchronization_error_type=type(error).__name__,
+                               synchronization_error=str(error))
+            attempt['wall_seconds'] = time.perf_counter() - begun
+        return attempt
+
+    begun = time.perf_counter()
+    with backend._execution(), patch.object(backend.models, 'runtime_event', side_effect=capture):
+        chosen = invoke('native' if policy == 'native' else 'compact', compact=policy != 'native')
+        if policy == 'adaptive' and chosen['status'] in ('complete', 'invalid_output'):
+            gate_start = time.perf_counter()
+            record['gate'] = fallback_decision(chosen['text'], generation_complete=chosen['status'] == 'complete')
+            record['attempts'].append({'category': 'gate', 'status': 'complete',
+                                       'wall_seconds': time.perf_counter() - gate_start})
+            if record['gate']['fallback']:
+                chosen = invoke('native_fallback', compact=False)
+        record['status'] = chosen['status'] if chosen['status'] != 'invalid_output' else 'failed'
+        if chosen['status'] == 'complete':
+            record['caption'] = chosen['text']
+            record['chosen_pass'] = chosen['category']
+        else:
+            record['chosen_pass'] = None
+    record['policy_wall_seconds'] = time.perf_counter() - begun
+    record['application_work_seconds'] = sum(attempt['wall_seconds'] for attempt in record['attempts'])
+    return record

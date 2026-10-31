@@ -86,5 +86,37 @@
   "unique_source_seconds": 138.767089,
   "annotation_quality_assessed": false,
   "includes_failed_prior_attempt": false,
-  "prior_failure_record": "reports/tempseg-initial-failure.json"
+  "prior_failure_record": "reports/tempseg-initial-failure.json",
+  "native_parameter_verification": {
+    "adapter": {
+      "adapter_sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3",
+      "all_saved_values_exact_before_and_after_placement": true,
+      "elements": 86556672,
+      "holders_fp32_before_assignment": true,
+      "merged": false,
+      "source_dtypes": {
+        "torch.float32": 496
+      },
+      "tensors": 496
+    },
+    "gated_delta_net": {
+      "all_runtime_fp32": true,
+      "all_values_equal_saved_checkpoint": true,
+      "checked_after_final_device_placement": true,
+      "source_dtypes": {
+        "torch.bfloat16": 24,
+        "torch.float32": 24
+      },
+      "status": "PASS_NATIVE_GDN_FP32_CHECKPOINT_VALUES",
+      "tensors": 48
+    },
+    "base_loading_info": {
+      "error_msgs": [],
+      "mismatched_keys": [],
+      "missing_keys": [],
+      "unexpected_keys": []
+    },
+    "adapter_persistent_dtype": "torch.float32",
+    "input_output_generation_policy_changed": false
+  }
 }

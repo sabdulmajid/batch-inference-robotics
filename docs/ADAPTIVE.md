@@ -2,7 +2,7 @@
 
 This module tests a smaller spatial budget for Captioner while retaining every selected source frame and its timestamp. For example, a 40-frame target can use fewer visual tokens while a short context block stays unchanged. This is an experimental path. It does not replace the native reference.
 
-The experiment is not integrated into the native CLI. Complete the native end-to-end gate before integration or GPU evaluation. No quality or GPU performance result exists yet.
+The experiment has a separate fixed-reference interval API. The native CLI default remains unchanged. Complete the native end-to-end gate before GPU evaluation. No quality or GPU performance result exists yet.
 
 ## The exact processor control
 
@@ -34,7 +34,7 @@ Audit records separate the native grid predicted from geometry from the actual c
 
 ## CPU validation
 
-Seven tests passed in an isolated CPU environment. The processor test used the actual Transformers 5.8.1 classes and tokenizer/processor files from Captioner revision `fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6`. No model weights were downloaded for this test.
+Twelve tests passed in an isolated CPU environment. The processor test used the actual Transformers 5.8.1 classes and tokenizer/processor files from Captioner revision `fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6`. No model weights were downloaded for this test. Fixed-reference routing and fallback tests use generation stubs. They do not validate model inference.
 
 The test had two 512 × 512 RGB blocks: four context frames and 40 target frames. Both used explicit 8 FPS source clocks.
 
@@ -51,9 +51,15 @@ The test environment used Python 3.13, torch 2.11.0, torchvision 0.26.0, Transfo
 PYTHONPATH=src python -m unittest discover -s tests -p 'test_adaptive.py' -v
 ```
 
-## Integration after the native gate
+## Fixed-reference integration
 
-The intended hook is the processor returned by the persistent Captioner session. Wrap it with `CaptionSpatialProcessor` only for a named compact experiment. Leave the TempSeg processor and native reference untouched. The proxy delegates `apply_chat_template`, tokenizer access, and other attributes to the same processor. The existing caption planner then supplies the same blocks and clocks.
+`run_reference_interval` accepts a prepared human single-view episode, an explicit reference interval, its stable index, a frozen-contract SHA256, and one policy: `native`, `compact`, or `adaptive`. The caller must load and time the verified native Captioner first. The function calls the unchanged upstream `caption_single` planner for that interval. A short session proxy returns `CaptionSpatialProcessor` only for a compact pass. The original persistent session, native processor, and model remain unchanged. The proxy delegates `apply_chat_template`, tokenizer access, and other attributes to the same processor.
+
+Reference intervals are labeled `fixed_independent_reference_interval`. They are not TempSeg predictions and cannot establish the complete native engine gate. The unchanged planner selects context from the original full video. No source clip is substituted. Unsupported intervals retain explicit status and remain in the evaluation denominator.
+
+Each result records episode ID, reference index, exact interval, policy, source hashes, freeze hash, caption status, all attempted passes, the format gate, spatial receipts, native input-plan audits, and generation events. The generation events include actual input and generated token counts. `policy_wall_seconds` covers the full synchronized interval path, including decoding, image transport, processor/hash work, generation, gate, and fallback. Shared model loading and episode validation must be recorded separately by the caller. Attempt times describe nested parts of the policy path; do not add their sum to the full policy time.
+
+The function uses a process lock and restores its temporary runtime-log hook after each policy. Every original runtime event still reaches the private log. Native batch admission rejects the spatial proxy class, so a compact experiment cannot reuse a native microbatch memory admission.
 
 Use a new run contract and state directory for each experiment. Record the preset, gate rule, source/model revisions, and fixed intervals. Freeze the development/test manifests, evaluator, margin, and routing rule before the final run. Update the evaluation configuration to describe the total-block budget; its earlier uniform `compact_area_fraction` proposal is not the implemented setting.
 

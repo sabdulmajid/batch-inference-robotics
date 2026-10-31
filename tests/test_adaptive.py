@@ -2,10 +2,14 @@ import importlib.util
 import json
 from pathlib import Path
 import unittest
+import types
+from contextlib import nullcontext
+from unittest.mock import patch
 
 from bir.adaptive import (CaptionSpatialProcessor, COMPACT_TOTAL_PIXELS,
                           InvalidCompactOutput, SpatialPreset,
-                          fallback_decision, run_compact_then_native)
+                          fallback_decision, run_compact_then_native, run_reference_interval)
+from bir.native import PreparedEpisode
 
 ASSETS = Path(__file__).resolve().parents[1] / '.local' / 'adaptive-processor'
 HAS_PROCESSOR = (importlib.util.find_spec('transformers') is not None and
@@ -49,6 +53,112 @@ class AdaptiveGateTests(unittest.TestCase):
         self.assertTrue(fallback_decision('caption', generation_complete=False)['fallback'])
         self.assertTrue(fallback_decision('  ')['fallback'])
         with self.assertRaises(ValueError): SpatialPreset(max_total_pixels_per_block=-1)
+
+
+class ReferenceIntervalTests(unittest.TestCase):
+    def setUp(self):
+        self.native_processor = lambda: None
+        self.model = object()
+        self.calls, self.events = [], []
+        class InputErrorForModel(RuntimeError): pass
+        self.models = types.SimpleNamespace(InputErrorForModel=InputErrorForModel,
+            runtime_event=lambda event, **values: self.events.append((event, values)))
+        self.session = types.SimpleNamespace(kind='captioner', native=types.SimpleNamespace(model=self.model),
+            load=lambda kind: (self.model, self.native_processor))
+        self.error = None
+        self.output_status = 'complete'
+        def caption_single(videos, segments, profile, session, instruction, progress):
+            model, processor = session.load('captioner')
+            self.assertIs(model, self.model)
+            compact = processor is not self.native_processor
+            self.calls.append((compact, segments, videos, instruction))
+            processor()
+            self.models.runtime_event('generation_start', input_tokens=8, output_limit=512,
+                                      input_tensor_digest='input-hash')
+            if self.error is not None and compact:
+                raise self.error
+            self.models.runtime_event('generation_end', generated_tokens=3, complete=True)
+            row = dict(start_s=segments[0]['start_s'], end_s=segments[0]['end_s'],
+                       status=self.output_status, caption='Move the cup.')
+            return [row], [{'event_id': 'event_0000', 'blocks': ['native-block']}]
+        self.backend = types.SimpleNamespace(session=self.session, models=self.models,
+            pipeline=types.SimpleNamespace(caption_single=caption_single), progress=lambda: None,
+            _execution=nullcontext)
+        self.prepared = PreparedEpisode({'instruction': 'original instruction'}, {'main': object()},
+            'Human', {'duration_s': 10, 'input_sha256': {'main': 'source-hash'}})
+        class Proxy:
+            def __init__(self, processor, *, audit_sink): self.sink = audit_sink
+            def __call__(self): self.sink({'frame_and_clock_sha256_before': 'same',
+                                          'frame_and_clock_sha256_after': 'same'})
+        self.proxy_patch = patch('bir.adaptive.CaptionSpatialProcessor', Proxy)
+        self.proxy_patch.start()
+        self.addCleanup(self.proxy_patch.stop)
+
+    def run_policy(self, policy):
+        self.syncs = []
+        return run_reference_interval(self.backend, self.prepared, {'start_s': 2.0, 'end_s': 5.0},
+            episode_id='episode', reference_index=3, policy=policy, freeze_sha256='a' * 64,
+            synchronize=lambda: self.syncs.append(True))
+
+    def test_native_default_preserves_processor_and_reference_identity(self):
+        result = self.run_policy('native')
+        self.assertEqual(result['status'], 'complete')
+        self.assertEqual(result['interval_provenance'], 'fixed_independent_reference_interval')
+        self.assertEqual(result['reference_index'], 3)
+        self.assertEqual(result['spatial_audits'], [])
+        self.assertFalse(self.calls[0][0])
+        self.assertIs(self.calls[0][2], self.prepared.videos)
+        self.assertEqual(self.calls[0][3], 'original instruction')
+        self.assertEqual(len(self.syncs), 2)
+        self.assertEqual(result['generation_events'][1]['generated_tokens'], 3)
+        self.assertEqual(len(self.events), 2)  # original runtime logging remains active
+        self.assertGreaterEqual(result['policy_wall_seconds'], result['application_work_seconds'])
+        json.dumps(result, allow_nan=False)
+
+    def test_compact_valid_and_adaptive_keep_one_native_model(self):
+        for policy in ('compact', 'adaptive'):
+            with self.subTest(policy=policy):
+                self.calls.clear()
+                result = self.run_policy(policy)
+                self.assertEqual(result['chosen_pass'], 'compact')
+                self.assertEqual(len(self.calls), 1)
+                self.assertTrue(self.calls[0][0])
+                self.assertEqual(result['spatial_audits'][0]['pass'], 'compact')
+                self.assertIs(self.session.native.model, self.model)
+                self.assertIs(self.session.load('captioner')[1], self.native_processor)
+                self.assertEqual(result['gate'] is not None, policy == 'adaptive')
+
+    def test_only_incomplete_native_output_triggers_adaptive_fallback(self):
+        self.error = self.models.InputErrorForModel('The model did not return a complete output for this input.')
+        result = self.run_policy('adaptive')
+        self.assertEqual(result['chosen_pass'], 'native_fallback')
+        self.assertEqual([item['category'] for item in result['attempts']], ['compact', 'gate', 'native_fallback'])
+        self.assertEqual([item[0] for item in self.calls], [True, False])
+        self.assertEqual(self.calls[0][1], self.calls[1][1])
+        self.assertEqual(len(self.syncs), 4)
+        self.assertGreaterEqual(result['policy_wall_seconds'], result['application_work_seconds'])
+
+    def test_context_failure_and_unsupported_intervals_do_not_trigger_fallback(self):
+        for error in (RuntimeError('out of memory'),
+                      self.models.InputErrorForModel('The selected video exceeds the native model context budget.')):
+            self.calls.clear()
+            self.error = error
+            result = self.run_policy('adaptive')
+            self.assertEqual(result['status'], 'failed')
+            self.assertEqual(len(self.calls), 1)
+            self.assertIsNone(result['gate'])
+        self.error = None
+        self.output_status = 'unsupported_target_frames'
+        result = self.run_policy('adaptive')
+        self.assertEqual(result['status'], 'unsupported_target_frames')
+        self.assertIsNone(result['gate'])
+        self.assertIsNone(result['caption'])
+
+    def test_preloaded_model_and_supported_profile_required(self):
+        self.session.kind = None
+        with self.assertRaisesRegex(RuntimeError, 'Load and time'):
+            self.run_policy('native')
+        self.assertEqual(self.calls, [])
 
 
 @unittest.skipUnless(HAS_PROCESSOR, 'requires exact processor packages and pinned local tokenizer assets')

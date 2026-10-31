@@ -1,10 +1,17 @@
-# Protocol proposal. Freeze exact dataset splits and evaluator before final runs.
-version: 1
-status: not_run
-frozen: false
-split_manifest: null
-split_group: episode_and_scene_when_available
-maximum_adaptive_development_revisions: 1
+# Frozen before final predictions. Running this protocol still requires Gate C
+# and a measured cost projection that preserves the final reproduction reserve.
+version: 2
+status: protocol_frozen_not_run
+frozen: true
+split_manifest: manifests/adaptive-freeze.json
+split_group: manual_task_family_review_plus_original_group_ids
+development_ids: [homer_41]
+final_ids: [homer_56, homer_60]
+reviewed_task_groups:
+  homer_41: bottle_placement
+  homer_56: cloth_folding
+  homer_60: shelving_books
+maximum_adaptive_development_revisions: 0
 native_fidelity:
   claim: compatibility_only
   checks:
@@ -29,18 +36,44 @@ adaptive:
   status: not_run
   change: caption_spatial_pixel_area_only
   temporal_frame_selection: unchanged
-  compact_area_fraction: 0.5
+  preset: compact_block_5242880
+  max_total_pixels_per_temporal_block: 5242880
+  native_shortest_edge: 4096
+  native_longest_edge: 25165824
+  spatial_alignment_pixels: 32
+  uniform_area_fraction_claim: false
   preserve_aspect_ratio_and_processor_alignment: true
-  fallback_initial_rule: native_on_invalid_compact_parse
+  fallback_initial_rule: native_only_on_incomplete_generation_or_empty_caption
+  oom_or_other_runtime_failure_triggers_fallback: false
   accepted_compact_audit_required: true
   runtime_native_output_is_not_a_gate_feature: true
-  comparator: best_fixed_budget_selected_on_development_only
+  comparator: lowest_cost_fixed_policy_with_observed_development_loss_at_most_0.01_vs_native
+  comparator_tie_break: native
+  comparison_policies: [native, compact, adaptive]
+  reference_intervals: all_frozen_dataset_intervals_in_original_order
+  temporal_segmentation: not_rerun_for_isolated_caption_experiment
+  policy_order: rotate_native_compact_adaptive_by_reference_index
   cost_components: [decoding, segmentation, compact, gate, native_fallback, audit, failures, retries]
-  matched_cost_random_fallback: only_if_budget_fits_after_release_reserve
+  matched_cost_random_fallback: omitted_from_this_finite_pilot
+  maximum_experiment_gpu_hours: 8
+  maximum_experiment_gpu_submissions: 2
+  development_job_minutes_ceiling: 30
+  final_job_minutes_ceiling: 90
+  final_cost_projection_headroom: 1.5
+  final_submission_requires_measured_development_cost_and_release_reserve: true
 quality:
   independent_targets: required
-  evaluator: null
-  evaluator_status: must_be_selected_and_frozen_before_final_evaluation
+  evaluator: two_blinded_codex_ai_reference_event_reviews
+  evaluator_status: rubric_frozen_reviews_not_run
+  metric: AI_reference_event_agreement
+  rubric_version: bir_reference_event_rubric_v1
+  positive_requires: both_reviewers_accept_action_object_result_and_no_reference_contradiction
+  absent_reference_detail: not_applicable
+  uncertain_review_score: 0.0
+  unsupported_extra_claims: flagged_separately_not_proven_visually_false
+  visual_factual_correctness_claim: false
+  reviewers_see_condition: false
+  reviewer_model_identity: record_actual_identifier_or_explicitly_unavailable
   ai_review_must_be_labeled: true
   exact_caption_string_match_is_quality: false
   absolute_loss_margin: 0.01
@@ -51,6 +84,10 @@ quality:
   bootstrap_seed: 20261031
   bootstrap_resamples: 10000
   minimum_episodes_for_margin_decision: 20
+  final_independent_groups: 2
+  final_quality_margin_verdict: forced_inconclusive_for_this_pilot
+  fixed_reference_interval_count_development: 7
+  fixed_reference_interval_count_final: 27
 temporal_metric:
   name: project_temporal_f1
   iou_threshold: 0.5

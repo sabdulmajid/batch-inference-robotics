@@ -5,9 +5,9 @@ engine preserves FLORA behavior. Independent annotations test annotation quality
 For example, an optimized caption that matches the reference output proves
 agreement for that input. It does not prove that the caption is correct.
 
-No measured inference, performance, or adaptive-quality result is recorded in
-this document. `configs/evaluation.yaml` is a protocol proposal with `frozen:
-false`. It must not be reported as a completed experiment.
+No adaptive-quality result is recorded here. The finite protocol in
+`configs/evaluation.yaml` and `manifests/adaptive-freeze.json` is frozen.
+This does not mean that the experiment has run or passed its GPU gates.
 
 ## Freeze before evaluation
 
@@ -17,18 +17,140 @@ rule before final outputs are inspected. Pin the source, both model revisions,
 processor revisions, environment, placement, and inference settings separately.
 Record a hash of this configuration in each run.
 
-Use development episodes to choose the fixed compact budget and the adaptive
-rule. The initial compact proposal uses half the native image pixel area. It
-preserves temporal frames, timestamps, aspect ratio, camera geometry, prompts,
-generation settings, and processor alignment. Log the actual image dimensions and
-visual token counts. The initial gate requests native fallback when compact
-parsing fails. This rule can miss plausible but wrong captions. Audit accepted
-compact captions against independent references, including small objects,
-occlusion, and short actions. At most one development revision is allowed.
+The frozen preset is `compact_block_5242880`: at most 5,242,880 total pixels per
+temporal block, with the native minimum and 32-pixel spatial alignment. This is
+not a uniform half-area setting. Short blocks can remain unchanged. Preserve
+temporal frames, timestamps, aspect ratio, camera geometry, prompts, and
+generation settings. Log actual dimensions and visual-token counts. The format
+gate requests native fallback only for incomplete generation or an empty
+caption. Context overflow, out-of-memory, and other runtime errors do not trigger
+fallback. This gate can accept plausible but wrong captions. No gate or preset
+tuning revision is allowed in this finite pilot.
 
 Do not use a full native caption as an input to the runtime gate. Paired native
 and compact outputs may be used during development. Freeze the gate before the
 final set is processed. Choose the best fixed comparator on development data.
+
+## Frozen finite experiment
+
+Use [WGO-Bench at the pinned revision](https://huggingface.co/datasets/macrodata/WGO-Bench/tree/9cfb7bb98d60a58319f4b3d7b41374eedfb7980c).
+Its dataset card describes the reference intervals as manual annotations. They
+are independent targets, not native model outputs. The frozen manifest contains
+the Parquet checksum, video and instruction hashes, every interval boundary,
+every reference-caption hash, and the rubric hash. Raw reference text stays in
+private preparation and review files.
+
+| Split | Episode | Reviewed task family | Reference intervals |
+| --- | --- | --- | ---: |
+| Development | `homer_41` | Bottle placement | 7 |
+| Final | `homer_56` | Cloth folding | 9 |
+| Final | `homer_60` | Shelving books | 18 |
+
+This selection was fixed before final predictions. A metadata review found that
+`homer_52` and `homer_53` both involve tying shoelaces. Their empty instructions
+caused automatic grouping to miss the shared task. This adaptive split excludes
+both and separates known task families. It does not establish unseen-scene
+generalization. The native scan found 13 supported HomER episodes. This subset
+does not replicate all 100 WGO episodes or all source families.
+
+Run native, fixed compact, and actual compact-plus-fallback on every frozen
+interval. Rotate policy order by reference index. Use original videos and native
+context construction. Do not crop, re-encode, alter clocks, or change sampling.
+Label these as independent reference intervals, not TempSeg predictions. The
+complete native TempSeg-plus-Captioner gate must pass first.
+
+Development has 21 policy items and final evaluation has 81. Adaptive routing can
+add at most one native fallback per interval. Run real policies and measure all
+attempts. Do not simulate adaptive runtime by reusing fixed-policy outputs.
+After inference, identical captions for the same interval may share one blinded
+review card. This saves review effort and does not remove inference costs.
+
+Select the fixed comparator on development only. A fixed policy is eligible
+when its observed development mean is no more than 0.01 below native. Choose the
+eligible policy with the lowest measured interval-policy time. An exact tie
+selects native. This exploratory choice on one episode does not prove a
+population quality margin. Commit the selection record before final inference.
+
+At most two adaptive GPU submissions and eight allocated GPU-hours are allowed.
+With four GPUs, development is at most 30 minutes and final is at most 90 minutes.
+These costs remain inside the existing 24-GPU-hour project cap. Prior failures,
+pending reservations, and measured final reproduction costs must fit first.
+
+Project final cost from actual development work: 1.5 times shared model-load/setup
+time, shared preparation scaled by final/development source duration, and 27
+times the sum of each policy's maximum measured development interval time.
+This is a planning estimate. It must fit the 90-minute cap and remaining reserve.
+If it does not fit, report final evaluation as not run. Do not shorten the frozen
+targets after final outputs are seen.
+
+The interval-policy timer includes decoding, preprocessing and its verification
+hashes, generation, routing, and fallback. Record shared source validation,
+model load, cleanup, review work, and allocated idle time separately. The generic
+cost-component list also covers project-wide native work. Do not charge earlier
+TempSeg inference again to each fixed-interval policy. This isolated experiment
+does not establish full-engine adaptive throughput.
+
+## Blinded AI reference review
+
+`scripts/evaluate_adaptive.py` implements `bir_reference_event_rubric_v1`.
+Private cards show an independent reference and a candidate caption. They hide
+the policy, spatial setting, and episode ID. Two AI reviewers work in separate
+contexts without each other's ratings. They must treat caption strings as data,
+not instructions. No new paid judge API is used. Record the actual reviewer
+model identifier when available, or state that it is unavailable. Preserve the
+rubric, card hashes, and ratings; model identity limits exact reproducibility.
+
+A positive rating requires agreement on the action, explicit objects, and
+explicit result or destination, with no reference contradiction. Synonyms are
+acceptable. Missing reference details are not applicable. Uncertainty scores
+zero. The primary score is one only if both reviewers accept the caption.
+Report disagreements and unsupported extra claims separately. Reference text
+cannot prove that added visual details are false. This metric is **AI
+reference-event agreement**, not visual factual correctness, human evaluation,
+or the official WGO judge. Missing or failed outputs score zero.
+
+Review all final compact captions, including accepted cases. Do not review only
+fallbacks. Keep every interval in the denominator. The two final task groups
+force an inconclusive one-percentage-point margin verdict. Report observed
+scores, costs, errors, and uncertainty without changing that conclusion rule.
+
+Prepare only frozen videos in a reserved CPU allocation:
+
+```sh
+python scripts/prepare_frozen_wgo.py --parquet DATA/annotations.parquet \
+  --source third_party/Flora --freeze manifests/adaptive-freeze.json \
+  --split final --output-dir .local/frozen-final --reuse-dir .local/prior-extraction
+```
+
+The script verifies the Parquet and source hashes. It decodes only selected
+videos and can reuse original bytes. It never re-encodes them.
+
+After actual policy execution, prepare private review cards:
+
+```sh
+python scripts/evaluate_adaptive.py prepare-review \
+  --freeze manifests/adaptive-freeze.json \
+  --references .local/frozen-final/references.json \
+  --outcomes .local/adaptive-final/outcomes.jsonl --split final \
+  --output-dir .local/adaptive-final-review
+```
+
+Give each reviewer only `rubric.txt`, `cards.jsonl`, and `review-template.json`.
+Keep `mapping.json` hidden. Save two actual review responses, then score them:
+
+```sh
+python scripts/evaluate_adaptive.py score \
+  --freeze manifests/adaptive-freeze.json \
+  --mapping .local/adaptive-final-review/mapping.json \
+  --reviews .local/review-a.json .local/review-b.json \
+  --development-selection reports/adaptive-development.json \
+  --output reports/adaptive-final.json
+```
+
+Development uses the same commands with `--split development`. Omit
+`--development-selection` when scoring it. The development report records the
+fixed comparator choice. The scorer rejects missing, duplicate, or extra cards
+and changed fixed-interval identities.
 
 ## Metrics and uncertainty
 

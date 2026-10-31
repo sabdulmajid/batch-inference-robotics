@@ -1,0 +1,387 @@
+{
+  "dataset": {
+    "parquet_sha256": "24c6c23447753385b9cea0d17f17d7a8aa74131d800d9bc9ab74d7669d7404ab",
+    "repository": "macrodata/WGO-Bench",
+    "revision": "9cfb7bb98d60a58319f4b3d7b41374eedfb7980c"
+  },
+  "episodes": [
+    {
+      "duration_s": 54.3,
+      "episode_id": "homer_41",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "native_profile": "human",
+      "original_group_id": "a28c6d96888dc1add625c49db8cbac797bf2997ffd033e92e2dd5726619089ee",
+      "reviewed_task_group": "bottle_placement",
+      "source_sha256": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12",
+      "split": "development",
+      "targets": [
+        {
+          "end_s": 8.643,
+          "reference_caption_sha256": "62d1aee29d11651547c96c904fd0b985531bb3c594d8f06fb9ef08453c1a4c3d",
+          "reference_index": 0,
+          "start_s": 5.42
+        },
+        {
+          "end_s": 14.244,
+          "reference_caption_sha256": "9aafc8493805e317df9c449171b75519dc8d5904d099f474f2775ccef1539c02",
+          "reference_index": 1,
+          "start_s": 8.682
+        },
+        {
+          "end_s": 20.238,
+          "reference_caption_sha256": "1929ead3d872af9e090cc0d760543aa2af7f2a8bcadbbc920c5b84a2f4a5ae87",
+          "reference_index": 2,
+          "start_s": 14.244
+        },
+        {
+          "end_s": 25.472,
+          "reference_caption_sha256": "00803dd733468ab5526fc453772b47e84fcaccd582e7e47e2b35432a0a5b3242",
+          "reference_index": 3,
+          "start_s": 20.238
+        },
+        {
+          "end_s": 33.671,
+          "reference_caption_sha256": "a5acb485e1266035d271c8de2fd321b5fbda3256fc41973eaac8be173c335154",
+          "reference_index": 4,
+          "start_s": 25.472
+        },
+        {
+          "end_s": 44.418,
+          "reference_caption_sha256": "d89e67700716cee98d3e019bfb7338340b5d5657601d26c01dd0f6d00958ef93",
+          "reference_index": 5,
+          "start_s": 33.671
+        },
+        {
+          "end_s": 49.899,
+          "reference_caption_sha256": "17e1363ef758144d95838ce3bb1029decaf569c740a952e2d264c1e4679446d1",
+          "reference_index": 6,
+          "start_s": 44.418
+        }
+      ],
+      "targets_sha256": "28d487dabaca1ea5d88824f67c7fc7d105933cab85890a190dbd9324a2e36bcb"
+    },
+    {
+      "duration_s": 55.166667,
+      "episode_id": "homer_56",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "native_profile": "human",
+      "original_group_id": "689488f1e0b203adf007ad22d82788a701a364cca99e9e3ae95f7555aa8cba85",
+      "reviewed_task_group": "cloth_folding",
+      "source_sha256": "efe59e48dd492ad1cea6b0976ab829092f530f587747803bf5cb5c72967e32ac",
+      "split": "final",
+      "targets": [
+        {
+          "end_s": 3.704,
+          "reference_caption_sha256": "0dd60df40fae9bdf328653686688a105a2c33882fd72d95419f98ff15442d9a0",
+          "reference_index": 0,
+          "start_s": 0.599
+        },
+        {
+          "end_s": 6.684,
+          "reference_caption_sha256": "319f0a5adaeb526c29bde05cd6b40e678b2a51b9fd897802cd9956071ba21ced",
+          "reference_index": 1,
+          "start_s": 3.704
+        },
+        {
+          "end_s": 12.66,
+          "reference_caption_sha256": "744d4462262026f47b7262db939442d7764001b16c3c7d4de52eddb5ef5461c4",
+          "reference_index": 2,
+          "start_s": 6.684
+        },
+        {
+          "end_s": 16.636,
+          "reference_caption_sha256": "4a88e6b94fa9df7656039888de3aa86a77b0e957b1f1b1b1e99bcac95de8ba3b",
+          "reference_index": 3,
+          "start_s": 12.66
+        },
+        {
+          "end_s": 20.731,
+          "reference_caption_sha256": "f8912c6fe74687cb089563afecd62cef52e1d4a3d8ab7689604f99cacc9fc728",
+          "reference_index": 4,
+          "start_s": 16.636
+        },
+        {
+          "end_s": 26.862,
+          "reference_caption_sha256": "4a60eae61f1d0d287619abe1e706de0e9b20ef6f28de74d7a4ed0faab4f4dda8",
+          "reference_index": 5,
+          "start_s": 20.731
+        },
+        {
+          "end_s": 43.768,
+          "reference_caption_sha256": "725e33fa4e35e0fd5c50ef091881b0f1efe0e427cb373a72286d750cae706932",
+          "reference_index": 6,
+          "start_s": 26.862
+        },
+        {
+          "end_s": 50.123,
+          "reference_caption_sha256": "87468e5ddfaa54552fde0a7556fda387a6b55ebfca691c780a146ae8a67c2232",
+          "reference_index": 7,
+          "start_s": 43.768
+        },
+        {
+          "end_s": 53.345,
+          "reference_caption_sha256": "6c173ca0730413323b1e9d12e3010712840c48cfcba82b52bff33c6bfbb3d43c",
+          "reference_index": 8,
+          "start_s": 50.123
+        }
+      ],
+      "targets_sha256": "19805101734e9e3e68e1b8d043389437718bbba6db7cb7a664dc51ce9f664215"
+    },
+    {
+      "duration_s": 71.233333,
+      "episode_id": "homer_60",
+      "instruction_sha256": "c781f086cf64336f7bb4d88b30a14c711091b16fa1f2520a7d8828d06677f10c",
+      "native_profile": "human",
+      "original_group_id": "1b2be41577e156240aee707f0186174cad8201387149497bf6f6300e39150e26",
+      "reviewed_task_group": "shelving_books",
+      "source_sha256": "1ac4c9233d978f1217d1d9c8138fedf819abe615cf0896d316324b054be33c5e",
+      "split": "final",
+      "targets": [
+        {
+          "end_s": 1.814,
+          "reference_caption_sha256": "568068e561ddfddeb1e096fceaa11bd71d1b3d15514f5867b2b438f72e43f61e",
+          "reference_index": 0,
+          "start_s": 0.0
+        },
+        {
+          "end_s": 5.623,
+          "reference_caption_sha256": "cb2b6b1f2b93c933fc2664754b55e181949aec1563978d7bb90fb7e245190b35",
+          "reference_index": 1,
+          "start_s": 1.814
+        },
+        {
+          "end_s": 8.502,
+          "reference_caption_sha256": "0eccc5634de7e914cb6c2371606e200bb4efc7f93a02cb60cd428e70b1801c20",
+          "reference_index": 2,
+          "start_s": 5.623
+        },
+        {
+          "end_s": 13.955,
+          "reference_caption_sha256": "84dfb82c7087f6986376d65cacc82103601fe6876b8f53722b06c96d6ad89afb",
+          "reference_index": 3,
+          "start_s": 8.502
+        },
+        {
+          "end_s": 17.051,
+          "reference_caption_sha256": "0eccc5634de7e914cb6c2371606e200bb4efc7f93a02cb60cd428e70b1801c20",
+          "reference_index": 4,
+          "start_s": 13.955
+        },
+        {
+          "end_s": 21.19,
+          "reference_caption_sha256": "84dfb82c7087f6986376d65cacc82103601fe6876b8f53722b06c96d6ad89afb",
+          "reference_index": 5,
+          "start_s": 17.051
+        },
+        {
+          "end_s": 25.702,
+          "reference_caption_sha256": "0eccc5634de7e914cb6c2371606e200bb4efc7f93a02cb60cd428e70b1801c20",
+          "reference_index": 6,
+          "start_s": 21.19
+        },
+        {
+          "end_s": 31.205,
+          "reference_caption_sha256": "84dfb82c7087f6986376d65cacc82103601fe6876b8f53722b06c96d6ad89afb",
+          "reference_index": 7,
+          "start_s": 25.702
+        },
+        {
+          "end_s": 33.762,
+          "reference_caption_sha256": "7bb1ba36add05bb64b20d2251e19624cd07c5d4650a2aa1eadd764c32b378830",
+          "reference_index": 8,
+          "start_s": 31.205
+        },
+        {
+          "end_s": 40.874,
+          "reference_caption_sha256": "99319d60646a58fc5423342dbc775613a28ec4ab3dc88b816f1ad748b86233d1",
+          "reference_index": 9,
+          "start_s": 33.762
+        },
+        {
+          "end_s": 43.074,
+          "reference_caption_sha256": "a17a66fe9dbf150d20699bdaad942e67adb83cd3ebc9d14454e49843cfbe26bd",
+          "reference_index": 10,
+          "start_s": 40.874
+        },
+        {
+          "end_s": 45.709,
+          "reference_caption_sha256": "b76e1bb58283709a3e2e7cf13499459de418b98757334b4281b574596a56b8b9",
+          "reference_index": 11,
+          "start_s": 43.074
+        },
+        {
+          "end_s": 47.788,
+          "reference_caption_sha256": "a17a66fe9dbf150d20699bdaad942e67adb83cd3ebc9d14454e49843cfbe26bd",
+          "reference_index": 12,
+          "start_s": 45.709
+        },
+        {
+          "end_s": 50.542,
+          "reference_caption_sha256": "b76e1bb58283709a3e2e7cf13499459de418b98757334b4281b574596a56b8b9",
+          "reference_index": 13,
+          "start_s": 47.788
+        },
+        {
+          "end_s": 52.651,
+          "reference_caption_sha256": "a17a66fe9dbf150d20699bdaad942e67adb83cd3ebc9d14454e49843cfbe26bd",
+          "reference_index": 14,
+          "start_s": 50.542
+        },
+        {
+          "end_s": 55.03,
+          "reference_caption_sha256": "b76e1bb58283709a3e2e7cf13499459de418b98757334b4281b574596a56b8b9",
+          "reference_index": 15,
+          "start_s": 52.651
+        },
+        {
+          "end_s": 57.686,
+          "reference_caption_sha256": "cbd416f5d1277d4c17450e7dd55a78f0db154919bfff277e9e28fbcd9fac7785",
+          "reference_index": 16,
+          "start_s": 55.03
+        },
+        {
+          "end_s": 67.808,
+          "reference_caption_sha256": "cb2b6b1f2b93c933fc2664754b55e181949aec1563978d7bb90fb7e245190b35",
+          "reference_index": 17,
+          "start_s": 57.686
+        }
+      ],
+      "targets_sha256": "708505c32e4b8134a10221f947af2915b2f4fe4600542b2a602806ff759471f4"
+    }
+  ],
+  "freeze_sha256": "5f2990337b9ba7a411b9a4ab33f48b1880707c5cae44e2115269a37b4adaeaa0",
+  "grouping_decision": "Manual task review corrects empty-instruction grouping: shoelace episodes 52/53 are excluded from this adaptive split; development bottles, final cloth and books",
+  "known_limits": [
+    "Only two final task groups; the one-percentage-point quality margin remains inconclusive",
+    "Task grouping does not establish unseen-scene generalization",
+    "AI text agreement does not establish visual factual correctness"
+  ],
+  "protocol": {
+    "adaptive": {
+      "accepted_compact_audit_required": true,
+      "change": "caption_spatial_pixel_area_only",
+      "comparator": "lowest_cost_fixed_policy_with_observed_development_loss_at_most_0.01_vs_native",
+      "comparator_tie_break": "native",
+      "comparison_policies": [
+        "native",
+        "compact",
+        "adaptive"
+      ],
+      "cost_components": [
+        "decoding",
+        "segmentation",
+        "compact",
+        "gate",
+        "native_fallback",
+        "audit",
+        "failures",
+        "retries"
+      ],
+      "development_job_minutes_ceiling": 30,
+      "fallback_initial_rule": "native_only_on_incomplete_generation_or_empty_caption",
+      "final_cost_projection_headroom": 1.5,
+      "final_job_minutes_ceiling": 90,
+      "final_submission_requires_measured_development_cost_and_release_reserve": true,
+      "matched_cost_random_fallback": "omitted_from_this_finite_pilot",
+      "max_total_pixels_per_temporal_block": 5242880,
+      "maximum_experiment_gpu_hours": 8,
+      "maximum_experiment_gpu_submissions": 2,
+      "native_longest_edge": 25165824,
+      "native_shortest_edge": 4096,
+      "oom_or_other_runtime_failure_triggers_fallback": false,
+      "policy_order": "rotate_native_compact_adaptive_by_reference_index",
+      "preserve_aspect_ratio_and_processor_alignment": true,
+      "preset": "compact_block_5242880",
+      "reference_intervals": "all_frozen_dataset_intervals_in_original_order",
+      "runtime_native_output_is_not_a_gate_feature": true,
+      "spatial_alignment_pixels": 32,
+      "status": "not_run",
+      "temporal_frame_selection": "unchanged",
+      "temporal_segmentation": "not_rerun_for_isolated_caption_experiment",
+      "uniform_area_fraction_claim": false
+    },
+    "development_ids": [
+      "homer_41"
+    ],
+    "final_ids": [
+      "homer_56",
+      "homer_60"
+    ],
+    "frozen": true,
+    "maximum_adaptive_development_revisions": 0,
+    "native_fidelity": {
+      "checks": [
+        "source_frame_ids_and_timestamps",
+        "camera_geometry_and_color_preparation",
+        "prompts_and_processor_inputs",
+        "model_parameter_values_and_dtypes",
+        "gpu_parameter_and_buffer_residency",
+        "generation_settings_and_parsing",
+        "stable_request_routing_and_stitching"
+      ],
+      "claim": "compatibility_only"
+    },
+    "quality": {
+      "absent_reference_detail": "not_applicable",
+      "absolute_loss_margin": 0.01,
+      "aggregation": "mean_of_episode_scores_including_failed_episodes",
+      "ai_review_must_be_labeled": true,
+      "bootstrap_resamples": 10000,
+      "bootstrap_seed": 20261031,
+      "confidence_level": 0.95,
+      "evaluator": "two_blinded_codex_ai_reference_event_reviews",
+      "evaluator_status": "rubric_frozen_reviews_not_run",
+      "exact_caption_string_match_is_quality": false,
+      "failure_score": 0.0,
+      "final_independent_groups": 2,
+      "final_quality_margin_verdict": "forced_inconclusive_for_this_pilot",
+      "fixed_reference_interval_count_development": 7,
+      "fixed_reference_interval_count_final": 27,
+      "independent_targets": "required",
+      "metric": "AI_reference_event_agreement",
+      "minimum_episodes_for_margin_decision": 20,
+      "positive_requires": "both_reviewers_accept_action_object_result_and_no_reference_contradiction",
+      "reviewer_model_identity": "record_actual_identifier_or_explicitly_unavailable",
+      "reviewers_see_condition": false,
+      "rubric_version": "bir_reference_event_rubric_v1",
+      "uncertain_review_score": 0.0,
+      "uncertainty": "paired_episode_percentile_bootstrap",
+      "unsupported_extra_claims": "flagged_separately_not_proven_visually_false",
+      "visual_factual_correctness_claim": false
+    },
+    "reviewed_task_groups": {
+      "homer_41": "bottle_placement",
+      "homer_56": "cloth_folding",
+      "homer_60": "shelving_books"
+    },
+    "split_group": "manual_task_family_review_plus_original_group_ids",
+    "split_manifest": "manifests/adaptive-freeze.json",
+    "status": "protocol_frozen_not_run",
+    "systems_conditions": [
+      "placement_adapted_reference",
+      "persistent_native",
+      "optimized_native"
+    ],
+    "temporal_metric": {
+      "iou_threshold": 0.5,
+      "matching": "maximum_cardinality_one_to_one",
+      "name": "project_temporal_f1",
+      "official_wgo_replication": false,
+      "raw_predictions_remain_unchanged": true
+    },
+    "timing": {
+      "cached_final_results_are_fresh_inference": false,
+      "compare_on_identical_hardware_placement_inputs_and_revisions": true,
+      "include_failed_and_idle_allocations": true,
+      "separate_startup_and_steady_state": true,
+      "synchronized_cameras_count_as_one_episode_duration": true
+    },
+    "version": 2
+  },
+  "protocol_sha256": "03b345ac4127ee667ecd2657053eec487812edaf9451015a2febcf3244051aa0",
+  "rubric_sha256": "4cc162fdae0f4c44ff9d9492d7544f4eaca7a9c1219aac8aebc631b76254a810",
+  "rubric_version": "bir_reference_event_rubric_v1",
+  "schema_version": "bir_adaptive_freeze_v1",
+  "selection_basis": "Validated source properties and independent reference metadata only; no final model predictions",
+  "status": "frozen_before_final_predictions"
+}
