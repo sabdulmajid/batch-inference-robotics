@@ -331,6 +331,7 @@ def runtime_fingerprint(model, processor, batch, *, topology_fingerprint, native
     import torch
     from pathlib import Path
     from .native import UPSTREAM_COMMIT, MODEL_REVISIONS
+    from .batching_contract import runtime_source_hashes
     if not isinstance(native_binding, VerifiedNativeBinding):
         raise BatchAdmissionError('A verified native-session binding is required')
     if native_binding.model_object_id != id(model) or native_binding.processor_object_id != id(processor):
@@ -354,6 +355,14 @@ def runtime_fingerprint(model, processor, batch, *, topology_fingerprint, native
                           'eos_token_id': tokenizer.eos_token_id, 'pad_token_id': tokenizer.pad_token_id}
     config = model.config.to_dict()
     config.pop('_name_or_path', None)
+    devices = []
+    for i in range(torch.cuda.device_count()):
+        properties = torch.cuda.get_device_properties(i)
+        uuid = getattr(properties, 'uuid', None)
+        if not uuid:
+            raise BatchAdmissionError('Current physical UUID mapping is required for every visible CUDA device')
+        devices.append({'name': torch.cuda.get_device_name(i), 'total_bytes': properties.total_memory,
+                        'capability': list(torch.cuda.get_device_capability(i)), 'uuid': str(uuid)})
     details = {'torch': torch.__version__, 'cuda': torch.version.cuda,
                'transformers': importlib.metadata.version('transformers'),
                'topology_fingerprint': topology_fingerprint, 'model_class': model.__class__.__name__,
@@ -361,6 +370,7 @@ def runtime_fingerprint(model, processor, batch, *, topology_fingerprint, native
                'model_generation_config_sha256': _digest(model.generation_config.to_dict()),
                'tokenizer_sha256': tokenizer_sha, 'processor_sha256': _digest(processor_settings),
                'batching_code_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+               'native_runtime_source_sha256': runtime_source_hashes(),
                'native_binding': {'source_revision': native_binding.source_revision,
                                   'model_revision': native_binding.model_revision,
                                   'processor_revision': native_binding.processor_revision,
@@ -371,10 +381,7 @@ def runtime_fingerprint(model, processor, batch, *, topology_fingerprint, native
                'parameter_layout_sha256': _digest([(name, list(value.shape), str(value.dtype), str(value.device))
                                                    for name, value in model.named_parameters()]),
                'placement': {k: str(v) for k, v in getattr(model, 'hf_device_map', {}).items()},
-               'devices': [{'name': torch.cuda.get_device_name(i),
-                            'total_bytes': torch.cuda.get_device_properties(i).total_memory,
-                            'capability': list(torch.cuda.get_device_capability(i))}
-                           for i in range(torch.cuda.device_count())]}
+               'devices': devices}
     return _digest(details), details
 
 
