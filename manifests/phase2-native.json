@@ -1,0 +1,208 @@
+{
+  "blocks": [
+    {
+      "block": 0,
+      "episode_ids": [
+        "homer_59",
+        "homer_60",
+        "homer_48",
+        "homer_38",
+        "homer_40"
+      ],
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "source_seconds": 340.191467
+    },
+    {
+      "block": 1,
+      "episode_ids": [
+        "homer_39",
+        "homer_56",
+        "homer_33",
+        "homer_53",
+        "homer_29",
+        "homer_37"
+      ],
+      "order": [
+        "candidate",
+        "baseline"
+      ],
+      "source_seconds": 386.706466
+    }
+  ],
+  "dataset": {
+    "parquet_sha256": "24c6c23447753385b9cea0d17f17d7a8aa74131d800d9bc9ab74d7669d7404ab",
+    "repository": "macrodata/WGO-Bench",
+    "revision": "9cfb7bb98d60a58319f4b3d7b41374eedfb7980c"
+  },
+  "episodes": [
+    {
+      "duration_s": 84.933333,
+      "episode_id": "homer_29",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "13d82b8b9c7db4f1690286e78f9ba3e5054166a26445c2acaa8315b96401aad2",
+      "source_size": [
+        848,
+        480
+      ],
+      "task": "chopping"
+    },
+    {
+      "duration_s": 72.233333,
+      "episode_id": "homer_33",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "c27a72aa1f474e19ef4e738453bf75ef53604969e2dcaeea0af5d106810a2690",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "chopping"
+    },
+    {
+      "duration_s": 66.133333,
+      "episode_id": "homer_37",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "ea38b0dea9b82eba99d82ace8a2805ba392b142c066a8b32ca32579a46b777d3",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "chopping"
+    },
+    {
+      "duration_s": 90.7944,
+      "episode_id": "homer_38",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "8d19bd3533bce158f090170998931f453819e7097d4b86e52675c0c50e3087e5",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "table_setting"
+    },
+    {
+      "duration_s": 61.126067,
+      "episode_id": "homer_39",
+      "independent_references_valid": false,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "741548fcaa4cba5978e7a4f2161184c6ac7f24c1a6d2a3b786749656610b3db8",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "surface_cleaning"
+    },
+    {
+      "duration_s": 61.5078,
+      "episode_id": "homer_40",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "03464dd8252760ca75cc6d7e765bb423b2008107442c7d5f09b2694c92c278f6",
+      "source_size": [
+        1280,
+        720
+      ],
+      "task": "surface_cleaning"
+    },
+    {
+      "duration_s": 55.989267,
+      "episode_id": "homer_48",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "6361b50ff7059dc50ea88d653ee5ab938eaf7ac79818fd3ff1860994e4dd2e2c",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "container_stacking"
+    },
+    {
+      "duration_s": 47.113733,
+      "episode_id": "homer_53",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "9ec88216cd45ae6c6af7a685cc0d928ffc801fe979b37db9b4559a4a82b08203",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "shoelaces"
+    },
+    {
+      "duration_s": 55.166667,
+      "episode_id": "homer_56",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "efe59e48dd492ad1cea6b0976ab829092f530f587747803bf5cb5c72967e32ac",
+      "source_size": [
+        848,
+        480
+      ],
+      "task": "cloth_handling"
+    },
+    {
+      "duration_s": 60.666667,
+      "episode_id": "homer_59",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "648363543fec631de11d605d82492ad4087c553b04fb40ed027ca6986324738d",
+      "source_size": [
+        2560,
+        1440
+      ],
+      "task": "shelf_retrieval"
+    },
+    {
+      "duration_s": 71.233333,
+      "episode_id": "homer_60",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "1ac4c9233d978f1217d1d9c8138fedf819abe615cf0896d316324b054be33c5e",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "shelf_placement"
+    }
+  ],
+  "excluded_development_episode_ids": [
+    "homer_41",
+    "homer_50",
+    "homer_52"
+  ],
+  "known_supported_episodes": 14,
+  "schema_version": "bir_phase2_selection_v1",
+  "scope_limit": "Eleven unseen episodes fall below the 12\u201320 target because the pinned validated pool has fourteen supported episodes, three used for development. Each block stays below the old eight-job metadata capacity; a separate CPU regression covers that limit.",
+  "selected_episodes": 11,
+  "selection_rule": "All eleven previously unpredicted supported episodes. Assign episodes largest-duration first to the shorter block, breaking ties by block index, with capacities five/six. Each block requires three task labels and uses fixed hash order. Task labels come from source instructions and source-video metadata, not predictions. Both engines receive the same explicit empty instruction.",
+  "selection_sha256": "3a283c389e765afe4cf0abe232a36c0f47dc205f8f1af86a5e884c3418278eb8",
+  "source_seconds": 726.897933
+}
