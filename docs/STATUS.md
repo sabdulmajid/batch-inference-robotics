@@ -20,10 +20,13 @@ human single-view caption preparation and prepares one next request during
 generation. A real two-request CPU check measured 17.688 s for the original
 path and 7.535 s for direct preparation, with exact processor tensors and
 frame/clock/prompt agreement. This is not an end-to-end GPU speedup result.
-The GPU compatibility pilot and broader comparison remain pending. A scheduled
-CPU check is comparing all 45 development caption requests using the exact
-native processor, including concurrent tokenizer access. It loads no weights
-and performs no inference. The reviewed candidate is `87fff61`; CI passed.
+The GPU compatibility pilot is submitted; the broader comparison remains pending.
+The scheduled CPU check passed all 45 development caption requests using the exact
+native processor, including concurrent tokenizer access. All tensor digests also
+match the prior actual GPU Captioner inputs in order. The check loaded no weights
+and performed no inference. It used 1,008 allocated seconds on four CPU cores.
+See [the preparation evidence](../reports/phase2-preparation-check.json).
+The reviewed candidate is `87fff61`; CI passed.
 
 A bounded metadata spill cache repairs the eight-entry reuse limit. Runtime
 dependency versions now enter the execution identity. The lightweight
@@ -35,11 +38,12 @@ evidence remains unchanged. Follow [the finite protocol](PHASE2_PROTOCOL.md);
 the budget does not reset. One pending profile submission was cancelled before
 allocation after a manifest relocation error was found. It used zero GPU time
 but consumed one submission. Profiling and the pilot will share one corrected
-allocation. Four GPU submissions remain, including protected reproduction.
-Current phase-two accounting: 8.773056 aggregate GPU-hours used, 12 GPU
-submissions used, 3.154444 CPU-only core-hours used, and 2 CPU-only core-hours
-reserved for the active input check. Protect 1.5 GPU-hours and one submission
-for fresh workflow reproduction. No phase-two GPU inference has run yet.
+allocation. Three GPU submissions remain after the pilot submission, including
+protected reproduction.
+Current phase-two accounting: 8.773056 aggregate GPU-hours used and 2.25 reserved.
+Thirteen of sixteen GPU submissions are used. CPU-only use is 4.274444 core-hours, with no active CPU
+reservation. Protect 1.5 GPU-hours and one submission for fresh workflow
+reproduction. No phase-two GPU inference has run yet.
 
 ## Delivered baseline
 

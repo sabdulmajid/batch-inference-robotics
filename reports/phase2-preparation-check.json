@@ -1,0 +1,104 @@
+{
+  "schema_version": "bir_phase2_preparation_check_v1",
+  "status": "passed",
+  "candidate_commit": "87fff61d812b2e9cd9954fec5e25d4c953eeb330",
+  "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7",
+  "scope": "Original three development episodes; all45 native TempSeg-predicted caption intervals; human single-view inputs.",
+  "modes": [
+    "original PNG transport",
+    "direct serial RGB preparation",
+    "direct RGB preparation with one future and concurrent tokenizer stress"
+  ],
+  "exact_native_processor_constructor": true,
+  "checked_requests": 45,
+  "reference_input_tensors": "All45 input digests also equal the prior actual optimized GPU Captioner input digests in order.",
+  "model_weights_loaded": false,
+  "model_generation_calls": 0,
+  "episodes": [
+    {
+      "episode_id": "homer_52",
+      "source_sha256": {
+        "main": "998f86d8a6443d44a8367f2a10377ebdd84404ff80810b99a5fa792de74f8f6e"
+      },
+      "requests": 10,
+      "exact_input_tensors_all_modes": true,
+      "exact_frame_clock_prompt_audit_all_modes": true,
+      "ordered_input_digests_sha256": "33ff57197d1864c4e8dc63b07b530bb578c0f670ab9b167917505daf7152d99e"
+    },
+    {
+      "episode_id": "homer_50",
+      "source_sha256": {
+        "main": "aa65a465999a9d3198839e71bfc8569b78a51cb0ee63e5661b829d3a44f7e359"
+      },
+      "requests": 20,
+      "exact_input_tensors_all_modes": true,
+      "exact_frame_clock_prompt_audit_all_modes": true,
+      "ordered_input_digests_sha256": "97d320705318a7e12a01131e731169c19088dcf4274cb7f3c4b1016ed7145c30"
+    },
+    {
+      "episode_id": "homer_41",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "requests": 15,
+      "exact_input_tensors_all_modes": true,
+      "exact_frame_clock_prompt_audit_all_modes": true,
+      "ordered_input_digests_sha256": "b0e5c86dc8e3e5d7ea110ac4f2b7915bdac01b30a78d7fda5862a4fa2a3e712c"
+    }
+  ],
+  "environment": {
+    "Pillow": "12.3.0",
+    "av": "16.0.1",
+    "numpy": "2.5.4",
+    "tokenizers": "0.22.2",
+    "torch": "2.11.0+cu128",
+    "transformers": "5.8.1"
+  },
+  "processor_files_sha256": {
+    "MODEL_PROVENANCE.json": "b1979e729def7828c8d7600692ba17a3913bdac6ddd152c22bfcabd3f0ad924e",
+    "chat_template.jinja": "d28ca68768ac2ce0ad42eaaf54d5bac4f8a298f7d017f5a04f3866094c65a839",
+    "config.json": "81ac7cb6c4b9d01e4232891cd9c0cd041f7e3270b342f7641eb7043a345e98af",
+    "generation_config.json": "fb58199b78abc0e3c284d170ecddf488501ca9fe91d9e435d6801f85b1a50ff0",
+    "model.safetensors.index.json": "07bf5bc06f86a364da4422c25e6a979c8457136a4645399904d90af2e9703142",
+    "processor_config.json": "e4922da7a64698c34f0c16ee78b55b43709b77a9e48da6ae07eda4bf7e6e236d",
+    "tokenizer.json": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523",
+    "tokenizer_config.json": "b4c4e0a37983a58c329c8c4e25d59f3305fd344815f4ecb8c66a99323a254cf8"
+  },
+  "runtime_code_sha256": {
+    "__init__.py": "27e1bcab1a81b8c88d83eeec543a316e853dccfe5329e87b4c0cf8e614c90aa0",
+    "adaptive.py": "b8fb13cd1cd615959b5bb0ed4de04bc50d93d9f1e850feabf7c8ec1f5f0082a3",
+    "batching.py": "6efb4e39cf52d52e485813a3658b6093e69ce9971e5dc3d56fca72a2ae4adb97",
+    "batching_contract.py": "fc8cb87b936f94b5d63e08021a733ae0a4c3c3bd58d1dbc4018548abd1867fe3",
+    "caption_batching.py": "5ffb7bbac6681e5ba41b21d4939335afebc48334962aab5fa24010b952e28ec5",
+    "cli.py": "9e6223e33b391acf68ae410797b64f0973f8a97430d6fdaf144001dc07856d56",
+    "engine.py": "53666d2217eb70285685c8a17e226dd5a4869aa78d363d4ca2595c3ba651b9f6",
+    "evaluation.py": "61593c9a763354d0717c5118148d73736d15315b20879e53b54824dae0656d7d",
+    "frame_cache.py": "ced64e426ee64c3609113da5d3f33802c9704a5d744fcb1733cc72ec1cefc635",
+    "manifest.py": "8116c0a56459a6ff25ed77948d0508739ba8dba493bdc28d516375273e45d275",
+    "metadata_cache.py": "dc9c543b341e1d3b4bcf7c0542d8f2fa0b9754db6387342bf18a31ababeb3c06",
+    "native.py": "95320f05c21a73343734c71b88b1fcc70cf38da65b8b053837cdbce92c198f1e",
+    "native_preparation.py": "f886a729a1f91bc947a7dc9311c4e9cef439b2cb28c385f6dff815bed0e0766a",
+    "native_profile.py": "17f7522c005bbc96d00f341d85a687531289daa77ac6328c9a8c0f23fb5b93cb",
+    "placement.py": "616b9f5d991ffe4e7d02be8a1fb09a9e1b2a55de5891628e9efb0caeb33c9b82",
+    "resource_ledger.py": "9ab2cb6e5793cac6e26f15e38c637a53bdd449c43e5c35f651e00135fd016753",
+    "review.py": "fac11faee2087a2abb35c539c8b12886c3c519e25993dd1978b6a5cd2820793c",
+    "runtime_identity.py": "92544836dcd602acfe8c455c2fe4ee4dc91514b220a4a37601118daf064e5f2a",
+    "store.py": "6bfd446d07b33be0f900360a4923f3739a711093388d1166bab953c0670b7222",
+    "workflow.py": "e334d3ae5555440aa124983489c4c4354c81e5c5a6b2a715c7528c92ecc08ab4"
+  },
+  "scheduler": {
+    "final_state": "COMPLETED",
+    "exit_code": "0:0",
+    "allocated_seconds": 1008,
+    "allocated_cpus": 4,
+    "allocated_gpus": 0,
+    "cpu_core_hours": 1.12
+  },
+  "test_wall_seconds": 978.8080261163414,
+  "raw_evidence_sha256": "b7b0f8b85982b028ba41fd54df1f2123732d21c7ac118dd12f179dc6b6495a5f",
+  "limitations": [
+    "CPU preparation equivalence does not establish full native GPU inference or end-to-end speedup.",
+    "The test includes tokenizer stress and repeated captures; test wall time is not a performance comparison.",
+    "Model-predicted intervals are not independent reference labels."
+  ]
+}
