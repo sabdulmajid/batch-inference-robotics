@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-31
+Updated: 2026-11-01 UTC
 
 ## Active next phase
 
@@ -20,16 +20,26 @@ human single-view caption preparation and prepares one next request during
 generation. A real two-request CPU check measured 17.688 s for the original
 path and 7.535 s for direct preparation, with exact processor tensors and
 frame/clock/prompt agreement. This is not an end-to-end GPU speedup result.
-The GPU compatibility pilot and broader comparison remain pending.
+The GPU compatibility pilot and broader comparison remain pending. A scheduled
+CPU check is comparing all 45 development caption requests using the exact
+native processor, including concurrent tokenizer access. It loads no weights
+and performs no inference. The reviewed candidate is `87fff61`; CI passed.
 
 A bounded metadata spill cache repairs the eight-entry reuse limit. Runtime
 dependency versions now enter the execution identity. The lightweight
-annotation/review/export workflow is under verification. Existing phase-one
+annotation/review/export workflow passed local browser playback, correction,
+HTTP, and export checks on real precomputed output. An independent review and
+actual CLI tests cover isolated CPU resume verification; the fresh GPU workflow
+reproduction remains pending. Existing phase-one
 evidence remains unchanged. Follow [the finite protocol](PHASE2_PROTOCOL.md);
 the budget does not reset. One pending profile submission was cancelled before
 allocation after a manifest relocation error was found. It used zero GPU time
 but consumed one submission. Profiling and the pilot will share one corrected
 allocation. Four GPU submissions remain, including protected reproduction.
+Current phase-two accounting: 8.773056 aggregate GPU-hours used, 12 GPU
+submissions used, 3.154444 CPU-only core-hours used, and 2 CPU-only core-hours
+reserved for the active input check. Protect 1.5 GPU-hours and one submission
+for fresh workflow reproduction. No phase-two GPU inference has run yet.
 
 ## Delivered baseline
 
@@ -119,7 +129,7 @@ project policy choice, not a cluster quota change.
   remained unchanged. Independent engine and native reviews passed.
   See [the reproduction evidence](../reports/final-reproduction.json).
 
-## Resource state
+## Delivered phase-one resource closure (historical)
 
 - GPU-hours used/reserved: 8.773056 / 0 of 24, including failed allocations.
   The stopped benchmark used 0.639167 GPU-hours. The diagnosis used another
