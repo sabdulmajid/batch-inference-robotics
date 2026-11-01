@@ -1,0 +1,196 @@
+{
+  "schema_version": "bir_phase2_native_pilot_v1",
+  "status": "verified",
+  "baseline_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+  "candidate_commit": "87fff61d812b2e9cd9954fec5e25d4c953eeb330",
+  "episode_ids": [
+    "homer_52",
+    "homer_50",
+    "homer_41"
+  ],
+  "source_seconds": 138.767089,
+  "complete_captions": 45,
+  "native_model_inputs": 65,
+  "fresh_stage_attempts": 6,
+  "resumed_stages": 0,
+  "compatible": true,
+  "ordered_input_tensors_equal": true,
+  "actual_native_placement_equal": true,
+  "batch_size": 1,
+  "hardware": {
+    "cuda_runtime": "12.8",
+    "devices": [
+      {
+        "capability": [
+          8,
+          6
+        ],
+        "logical_device": 0,
+        "name": "NVIDIA GeForce RTX 3090",
+        "total_memory_bytes": 25296044032
+      },
+      {
+        "capability": [
+          8,
+          6
+        ],
+        "logical_device": 1,
+        "name": "NVIDIA GeForce RTX 3090",
+        "total_memory_bytes": 25296044032
+      },
+      {
+        "capability": [
+          8,
+          6
+        ],
+        "logical_device": 2,
+        "name": "NVIDIA GeForce RTX 3090",
+        "total_memory_bytes": 25296044032
+      }
+    ]
+  },
+  "environment": {
+    "accelerate": "1.12.0",
+    "av": "16.0.1",
+    "huggingface-hub": "1.33.0",
+    "peft": "0.18.1",
+    "safetensors": "0.7.0",
+    "torch": "2.11.0+cu128",
+    "torchvision": "0.26.0+cu128",
+    "transformers": "5.8.1"
+  },
+  "subprocess_wall_seconds": 836.6773611842655,
+  "full_cold_model_load_seconds": 134.40053468896076,
+  "native_runtime_events": {
+    "stages": {
+      "captioner": {
+        "generation_call_count": 45,
+        "generation_event_seconds": 411.001,
+        "model_load_count": 1,
+        "model_parameter_load_verification_event_count": 1,
+        "model_parameter_load_verification_event_seconds": 85.565,
+        "model_ready_count": 1,
+        "session_load_event_count": 1,
+        "session_load_event_seconds": 86.6662572636269,
+        "session_load_failed_event_count": 0
+      },
+      "tempseg": {
+        "generation_call_count": 20,
+        "generation_event_seconds": 134.962,
+        "model_load_count": 1,
+        "model_parameter_load_verification_event_count": 1,
+        "model_parameter_load_verification_event_seconds": 46.558,
+        "model_ready_count": 1,
+        "session_load_event_count": 1,
+        "session_load_event_seconds": 47.73427742533386,
+        "session_load_failed_event_count": 0
+      }
+    },
+    "timing_boundary": "Upstream model_parameters_verified is cumulative from native load start through parameter verification and excludes processor finalization. model_ready is counted only. Adapter session-load events include the full cold load, processor, audit/residency checks, synchronization, and failed-call work. Generation excludes preparation, input hashing, and device transfer. These overlapping event boundaries must not be added to wall time."
+  },
+  "gpu_memory": [
+    {
+      "logical_device": 0,
+      "peak_allocated_bytes": 22448639488,
+      "peak_reserved_bytes": 24928845824
+    },
+    {
+      "logical_device": 1,
+      "peak_allocated_bytes": 23959430144,
+      "peak_reserved_bytes": 24905777152
+    },
+    {
+      "logical_device": 2,
+      "peak_allocated_bytes": 24360223744,
+      "peak_reserved_bytes": 24800919552
+    }
+  ],
+  "source_metadata_preparation_calls": 3,
+  "metadata_reuse_hits": 3,
+  "profile": {
+    "episode_id": "homer_41",
+    "condition": "previous optimized",
+    "complete_captions": 15,
+    "tool": "Python cProfile",
+    "probe_elapsed_seconds": 932.4826046861708,
+    "selected_functions": [
+      {
+        "function": "_save",
+        "calls": 613,
+        "self_seconds": 0.074626063,
+        "cumulative_seconds": 187.955428213,
+        "module": "PngImagePlugin.py"
+      },
+      {
+        "function": "load",
+        "calls": 3198,
+        "self_seconds": 0.339916806,
+        "cumulative_seconds": 30.328502459000003,
+        "module": "ImageFile.py"
+      },
+      {
+        "function": "resize",
+        "calls": 1736,
+        "self_seconds": 0.08403864100000001,
+        "cumulative_seconds": 18.952365969000002,
+        "module": "Image.py"
+      }
+    ],
+    "interpretation": "Lossless PNG encoding/readback is substantial repeated work. Accelerated human Captioner bypasses that transport and overlaps next-request CPU preparation with unchanged model generation.",
+    "limitations": [
+      "Main-thread function timings can include nested work and waits; do not add cumulative times.",
+      "Profiling changes runtime; this run does not supply a performance comparison or final cost rate."
+    ],
+    "generation_calls_by_stage": {
+      "tempseg": 8,
+      "captioner": 15
+    },
+    "gpu_memory": [
+      {
+        "allocated_at_end_bytes": 9568256,
+        "logical_device": 0,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 22459346944,
+        "peak_reserved_bytes": 24928845824,
+        "total_memory_bytes": 25296044032
+      },
+      {
+        "allocated_at_end_bytes": 8519680,
+        "logical_device": 1,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 23957324288,
+        "peak_reserved_bytes": 24838668288,
+        "total_memory_bytes": 25296044032
+      },
+      {
+        "allocated_at_end_bytes": 8519680,
+        "logical_device": 2,
+        "name": "NVIDIA GeForce RTX 3090",
+        "peak_allocated_bytes": 24360223744,
+        "peak_reserved_bytes": 24758976512,
+        "total_memory_bytes": 25296044032
+      }
+    ]
+  },
+  "scheduler": {
+    "final_state": "COMPLETED",
+    "exit_code": "0:0",
+    "allocated_seconds": 1774,
+    "allocated_gpus": 3,
+    "allocated_cpus": 4,
+    "allocated_gpu_hours": 1.4783333333333333,
+    "total_model_generation_calls": 88,
+    "accounting_scope": "One parent allocation includes baseline profiling, candidate pilot, setup, and idle time; counted once."
+  },
+  "evidence_sha256": {
+    "candidate_pair": "586eded9ac8ea6030cc6b75dd2b9fc749cadbc167ebd6d8da484781fa0f49761",
+    "baseline_profile": "0b070b0c40f044e7b6d15a3074c04ed5bff6531cd1bc906c764ab02a17541dbb",
+    "profile_functions": "2b34a743889c37ddcc3c3c4854231fec3f24a368cdce10447dff1e50a88fb213",
+    "cost_evidence": "845d46b3291ac00a23150ea843989397c035cf3e6b33489ac32c49719d9c461a"
+  },
+  "limitations": [
+    "No matched phase-two end-to-end speedup result yet. Historical baseline timing sizes later allocations only.",
+    "Agreement establishes native compatibility, not visually correct labels.",
+    "Three development episodes do not establish general throughput or long-video capacity."
+  ]
+}

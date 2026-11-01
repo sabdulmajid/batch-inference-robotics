@@ -20,7 +20,12 @@ human single-view caption preparation and prepares one next request during
 generation. A real two-request CPU check measured 17.688 s for the original
 path and 7.535 s for direct preparation, with exact processor tensors and
 frame/clock/prompt agreement. This is not an end-to-end GPU speedup result.
-The GPU compatibility pilot is submitted; the broader comparison remains pending.
+The GPU compatibility pilot passed: all 45 captions and 65 ordered native model
+inputs match the accepted optimized baseline. The accelerated three-episode
+subprocess took 836.677 seconds with one load per model and batch size one.
+This is not a matched speedup comparison. The profiled baseline recorded about
+188 seconds in PNG saving on one development episode, supporting the selected
+transport optimization. See [the pilot evidence](../reports/phase2-native-pilot.json).
 The scheduled CPU check passed all 45 development caption requests using the exact
 native processor, including concurrent tokenizer access. All tensor digests also
 match the prior actual GPU Captioner inputs in order. The check loaded no weights
@@ -40,10 +45,16 @@ allocation after a manifest relocation error was found. It used zero GPU time
 but consumed one submission. Profiling and the pilot will share one corrected
 allocation. Three GPU submissions remain after the pilot submission, including
 protected reproduction.
-Current phase-two accounting: 8.773056 aggregate GPU-hours used and 2.25 reserved.
-Thirteen of sixteen GPU submissions are used. CPU-only use is 4.274444 core-hours, with no active CPU
-reservation. Protect 1.5 GPU-hours and one submission for fresh workflow
-reproduction. No phase-two GPU inference has run yet.
+The [frozen execution plan](../manifests/phase2-execution.json) admits both
+unchanged blocks at 116 minutes each on three GPUs. Their requested 11.6 GPU-hours
+plus 1.5 protected reproduction hours fit the 13.748611 hours remaining. All three
+remaining submission slots are assigned. No broader inference has run yet.
+The selection and success target remain unchanged.
+
+Current aggregate accounting: 10.251389 GPU-hours used, including the pilot's
+1.478333 GPU-hours. Thirteen of sixteen GPU submissions are used. CPU-only use
+is 4.274444 core-hours. No allocation remains active at this checkpoint. The
+two admitted comparisons and protected reproduction are next.
 
 ## Delivered baseline
 

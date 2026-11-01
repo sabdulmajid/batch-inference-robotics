@@ -1,0 +1,333 @@
+{
+  "admission": {
+    "admitted": true,
+    "available_gpu_hours": 13.74861111111111,
+    "available_submission_slots": 3,
+    "blocks": [
+      {
+        "block": 0,
+        "estimated_pair_seconds": 6927.8771440602695,
+        "requested_minutes": 116,
+        "reserved_gpu_hours": 5.8
+      },
+      {
+        "block": 1,
+        "estimated_pair_seconds": 6921.58507617518,
+        "requested_minutes": 116,
+        "reserved_gpu_hours": 5.8
+      }
+    ],
+    "comparison_reserved_gpu_hours": 11.6,
+    "controller_allowance_seconds_per_block": 120,
+    "estimate_not_measurement": true,
+    "headroom_factor": 1.2,
+    "protected_reproduction_gpu_hours": 1.5,
+    "protected_reproduction_slots": 1,
+    "rates_seconds_per_source_second": {
+      "baseline": 9.572851432602125,
+      "candidate": 6.029364507201455
+    },
+    "rule": "Both frozen blocks must fit their 120-minute limits and the remaining ledger budget with reproduction protected. No shortening or removal after final predictions."
+  },
+  "baseline_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+  "baseline_git_verified_at_freeze": true,
+  "blocks": [
+    {
+      "block": 0,
+      "episode_ids": [
+        "homer_59",
+        "homer_60",
+        "homer_29",
+        "homer_48",
+        "homer_38"
+      ],
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "source_seconds": 363.617
+    },
+    {
+      "block": 1,
+      "episode_ids": [
+        "homer_39",
+        "homer_56",
+        "homer_33",
+        "homer_53",
+        "homer_37",
+        "homer_40"
+      ],
+      "order": [
+        "candidate",
+        "baseline"
+      ],
+      "source_seconds": 363.280933
+    }
+  ],
+  "code_sha256": {
+    "baseline": {
+      "__init__.py": "9d91b31d9bf94bea129c09d09a568e7af0f762b5a6363fdef3ee46cc9b3e2454",
+      "adaptive.py": "b8fb13cd1cd615959b5bb0ed4de04bc50d93d9f1e850feabf7c8ec1f5f0082a3",
+      "batching.py": "6efb4e39cf52d52e485813a3658b6093e69ce9971e5dc3d56fca72a2ae4adb97",
+      "batching_contract.py": "fc8cb87b936f94b5d63e08021a733ae0a4c3c3bd58d1dbc4018548abd1867fe3",
+      "caption_batching.py": "5ffb7bbac6681e5ba41b21d4939335afebc48334962aab5fa24010b952e28ec5",
+      "cli.py": "88a8352107d2667e3097c3e4984d909c6f7e471cd32f584e798337e82153f957",
+      "engine.py": "b675b4bbfe87e3e49a8533f5f66df9f6f0639cf96de3a980a65aa1976efff13d",
+      "evaluation.py": "61593c9a763354d0717c5118148d73736d15315b20879e53b54824dae0656d7d",
+      "frame_cache.py": "ced64e426ee64c3609113da5d3f33802c9704a5d744fcb1733cc72ec1cefc635",
+      "manifest.py": "8116c0a56459a6ff25ed77948d0508739ba8dba493bdc28d516375273e45d275",
+      "native.py": "d5680c947252efb4304ffadec42a8496e4393cdc079c021eb97440734d040998",
+      "placement.py": "616b9f5d991ffe4e7d02be8a1fb09a9e1b2a55de5891628e9efb0caeb33c9b82",
+      "resource_ledger.py": "9ab2cb6e5793cac6e26f15e38c637a53bdd449c43e5c35f651e00135fd016753",
+      "store.py": "6bfd446d07b33be0f900360a4923f3739a711093388d1166bab953c0670b7222"
+    },
+    "candidate": {
+      "__init__.py": "27e1bcab1a81b8c88d83eeec543a316e853dccfe5329e87b4c0cf8e614c90aa0",
+      "adaptive.py": "b8fb13cd1cd615959b5bb0ed4de04bc50d93d9f1e850feabf7c8ec1f5f0082a3",
+      "batching.py": "6efb4e39cf52d52e485813a3658b6093e69ce9971e5dc3d56fca72a2ae4adb97",
+      "batching_contract.py": "fc8cb87b936f94b5d63e08021a733ae0a4c3c3bd58d1dbc4018548abd1867fe3",
+      "caption_batching.py": "5ffb7bbac6681e5ba41b21d4939335afebc48334962aab5fa24010b952e28ec5",
+      "cli.py": "9e6223e33b391acf68ae410797b64f0973f8a97430d6fdaf144001dc07856d56",
+      "engine.py": "53666d2217eb70285685c8a17e226dd5a4869aa78d363d4ca2595c3ba651b9f6",
+      "evaluation.py": "61593c9a763354d0717c5118148d73736d15315b20879e53b54824dae0656d7d",
+      "frame_cache.py": "ced64e426ee64c3609113da5d3f33802c9704a5d744fcb1733cc72ec1cefc635",
+      "manifest.py": "8116c0a56459a6ff25ed77948d0508739ba8dba493bdc28d516375273e45d275",
+      "metadata_cache.py": "dc9c543b341e1d3b4bcf7c0542d8f2fa0b9754db6387342bf18a31ababeb3c06",
+      "native.py": "95320f05c21a73343734c71b88b1fcc70cf38da65b8b053837cdbce92c198f1e",
+      "native_preparation.py": "f886a729a1f91bc947a7dc9311c4e9cef439b2cb28c385f6dff815bed0e0766a",
+      "native_profile.py": "17f7522c005bbc96d00f341d85a687531289daa77ac6328c9a8c0f23fb5b93cb",
+      "placement.py": "616b9f5d991ffe4e7d02be8a1fb09a9e1b2a55de5891628e9efb0caeb33c9b82",
+      "resource_ledger.py": "9ab2cb6e5793cac6e26f15e38c637a53bdd449c43e5c35f651e00135fd016753",
+      "review.py": "fac11faee2087a2abb35c539c8b12886c3c519e25993dd1978b6a5cd2820793c",
+      "runtime_identity.py": "92544836dcd602acfe8c455c2fe4ee4dc91514b220a4a37601118daf064e5f2a",
+      "store.py": "6bfd446d07b33be0f900360a4923f3739a711093388d1166bab953c0670b7222",
+      "workflow.py": "e334d3ae5555440aa124983489c4c4354c81e5c5a6b2a715c7528c92ecc08ab4"
+    }
+  },
+  "conditions": {
+    "baseline": "optimized",
+    "candidate": "accelerated"
+  },
+  "cost_evidence_limit": "Historical unprofiled v1 and a fresh unprofiled candidate pilot size the allocation. Their wrapper boundaries can differ; the 1.2 headroom and controller allowance are estimates. Final performance uses the identical common paired worker only. The separate cProfile run is excluded from these rates.",
+  "episodes": [
+    {
+      "duration_s": 84.933333,
+      "episode_id": "homer_29",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "13d82b8b9c7db4f1690286e78f9ba3e5054166a26445c2acaa8315b96401aad2",
+      "source_size": [
+        848,
+        480
+      ],
+      "task": "chopping"
+    },
+    {
+      "duration_s": 72.233333,
+      "episode_id": "homer_33",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "c27a72aa1f474e19ef4e738453bf75ef53604969e2dcaeea0af5d106810a2690",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "chopping"
+    },
+    {
+      "duration_s": 66.133333,
+      "episode_id": "homer_37",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "ea38b0dea9b82eba99d82ace8a2805ba392b142c066a8b32ca32579a46b777d3",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "chopping"
+    },
+    {
+      "duration_s": 90.7944,
+      "episode_id": "homer_38",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "8d19bd3533bce158f090170998931f453819e7097d4b86e52675c0c50e3087e5",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "table_setting"
+    },
+    {
+      "duration_s": 61.126067,
+      "episode_id": "homer_39",
+      "independent_references_valid": false,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "741548fcaa4cba5978e7a4f2161184c6ac7f24c1a6d2a3b786749656610b3db8",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "surface_cleaning"
+    },
+    {
+      "duration_s": 61.5078,
+      "episode_id": "homer_40",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "03464dd8252760ca75cc6d7e765bb423b2008107442c7d5f09b2694c92c278f6",
+      "source_size": [
+        1280,
+        720
+      ],
+      "task": "surface_cleaning"
+    },
+    {
+      "duration_s": 55.989267,
+      "episode_id": "homer_48",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "6361b50ff7059dc50ea88d653ee5ab938eaf7ac79818fd3ff1860994e4dd2e2c",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "container_stacking"
+    },
+    {
+      "duration_s": 47.113733,
+      "episode_id": "homer_53",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "9ec88216cd45ae6c6af7a685cc0d928ffc801fe979b37db9b4559a4a82b08203",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "shoelaces"
+    },
+    {
+      "duration_s": 55.166667,
+      "episode_id": "homer_56",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "efe59e48dd492ad1cea6b0976ab829092f530f587747803bf5cb5c72967e32ac",
+      "source_size": [
+        848,
+        480
+      ],
+      "task": "cloth_handling"
+    },
+    {
+      "duration_s": 60.666667,
+      "episode_id": "homer_59",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "648363543fec631de11d605d82492ad4087c553b04fb40ed027ca6986324738d",
+      "source_size": [
+        2560,
+        1440
+      ],
+      "task": "shelf_retrieval"
+    },
+    {
+      "duration_s": 71.233333,
+      "episode_id": "homer_60",
+      "independent_references_valid": true,
+      "instruction": "",
+      "instruction_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "profile": "human",
+      "source_sha256": "1ac4c9233d978f1217d1d9c8138fedf819abe615cf0896d316324b054be33c5e",
+      "source_size": [
+        1920,
+        1080
+      ],
+      "task": "shelf_placement"
+    }
+  ],
+  "hardware": {
+    "batch_size": 1,
+    "captioner_headroom_gib": 4,
+    "cpus": 4,
+    "gpus": 3,
+    "host_ram_gib": 128
+  },
+  "harness_sha256": {
+    "compare_native.py": "57d4c7d2ff685a5df0ae1e7cb8681b058850f5600fc586589ecd946ba16f7f0e",
+    "native_benchmark.py": "606cdd7097c5d777b186689f390cea5ca8fc521033955c1269fdf0a933afa5c5",
+    "phase2_benchmark.py": "112160c059db4f9eb008193b3f549ad181672a38dca7fa17bed91281f3956af9"
+  },
+  "instrumentation": "Same external worker; full native input digests and value checks on; optional profiler off. Baseline receives candidate-equivalent episode/stage/source/ordinal markers from the external harness; immutable engine files remain unchanged.",
+  "model_lock_sha256": "f1ebf77e03400d1487351a87c07cbf750d3405db6fa4b1850d5d5047010ec9df",
+  "phase": "final",
+  "pilot_execution_parity": {
+    "environment": {
+      "accelerate": "1.12.0",
+      "av": "16.0.1",
+      "huggingface-hub": "1.33.0",
+      "peft": "0.18.1",
+      "safetensors": "0.7.0",
+      "torch": "2.11.0+cu128",
+      "torchvision": "0.26.0+cu128",
+      "transformers": "5.8.1"
+    },
+    "hardware": {
+      "cuda_runtime": "12.8",
+      "devices": [
+        {
+          "capability": [
+            8,
+            6
+          ],
+          "logical_device": 0,
+          "name": "NVIDIA GeForce RTX 3090",
+          "total_memory_bytes": 25296044032
+        },
+        {
+          "capability": [
+            8,
+            6
+          ],
+          "logical_device": 1,
+          "name": "NVIDIA GeForce RTX 3090",
+          "total_memory_bytes": 25296044032
+        },
+        {
+          "capability": [
+            8,
+            6
+          ],
+          "logical_device": 2,
+          "name": "NVIDIA GeForce RTX 3090",
+          "total_memory_bytes": 25296044032
+        }
+      ]
+    },
+    "placement_sha256": "344e6bdaaec665df39c4c534e2732aeb798c9a5e496b5a0f7a0429efee27f9f5"
+  },
+  "pilot_receipt_sha256": "845d46b3291ac00a23150ea843989397c035cf3e6b33489ac32c49719d9c461a",
+  "plan_sha256": "fa1928349f5d19bb942d0208965c5b976b8491ffe6b49db4abc312ee491abca4",
+  "schema_version": "bir_phase2_plan_v1",
+  "selection_sha256": "99fb95852f848ef86dd16478c59e1a91be295cec788225da11e5acd179bdffb0",
+  "target_speedup": 1.5
+}
