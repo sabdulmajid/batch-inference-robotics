@@ -120,7 +120,8 @@ pass. There is no pooled full-workload ratio and no successful-only substitute.
 The six-episode number above describes its predeclared block only. No failed
 episode was dropped, retried, or used to tune the final settings.
 
-There was one paired run per episode. The failed block removes the planned
+The complete six-episode block had one paired run per episode. The failed block
+removes the planned
 opposite-order comparison, so order effects remain unresolved. No repeat-based
 confidence interval or population-wide speedup is supported. Roughly 2× was
 the ambitious objective; it was not demonstrated.
@@ -160,10 +161,28 @@ verification played an interval from the real precomputed example and saved a
 correction. CLI export preserved all 15 generated labels and that separate edit.
 The viewer runs on localhost; it is not a hosted service.
 
-**Final fresh annotation, isolated CPU resume, status, and export reproduction:
-pending.** The protected final run uses the original three development episodes
-and the unchanged candidate. Its result will be added after final scheduler and
-artifact verification.
+The final reproduction passed on the original three development episodes with
+the unchanged candidate. Fresh `annotate` produced 45 captions in 835.546 CLI
+seconds. All 45 captions and 65 ordered native model inputs match the pilot and
+accepted baseline. The isolated CPU resume reused six stages with zero new
+attempts, preparation, model loads, or generation. Original evidence remained
+unchanged. Status showed six complete stages, and all 45 exported records matched
+the saved labels and provenance. Independent artifact review passed.
+
+The complete allocation took 840 seconds on three GPUs: **0.700 GPU-hours**,
+including CPU resume, status, export, and cleanup. This is a recovery and workflow
+check, not an additional matched speedup trial. See [the reproduction evidence](../reports/phase2-reproduction.json)
+and [the exact commands](REPRODUCTION.md#6-phase-two-researcher-workflow-reproduction).
+The recovery check covers completed stages, not continuation inside generation.
+
+Across both project phases, use is **18.563889 of 24 GPU-hours** and **16 of 16
+GPU submissions**, including failed and cancelled work. Phase two used 9.790833
+GPU-hours. CPU-only allocations used 4.274444 core-hours across both phases.
+All 22 parent allocations are reconciled; no project allocations or reservations
+remain. Recorded persistent project storage is about 130.85 GiB, below 250 GiB.
+See [resource accounting and measurement boundaries](../reports/phase2-resources.json).
+The submission cap is exhausted despite unused GPU-hours. No further experiment
+is part of this release.
 
 The [frozen protocol](PHASE2_PROTOCOL.md#reproducible-commands) contains the
 comparison commands, timing boundaries, and decision rule. The

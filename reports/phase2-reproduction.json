@@ -1,0 +1,80 @@
+{
+  "candidate_commit": "87fff61d812b2e9cd9954fec5e25d4c953eeb330",
+  "cpu_resume": {
+    "actual_annotate_subprocess": true,
+    "elapsed_seconds": 1.2121824421919882,
+    "fresh_model_calls": 0,
+    "fresh_stage_attempts": 0,
+    "gpu_visibility_hidden": true,
+    "original_evidence_unchanged": true,
+    "resumed_stages": 6,
+    "status": "complete"
+  },
+  "evidence_sha256": {
+    "export": "3efb8c836d739a33f8054ac8de006cd9ba6239d4ed6f86e6ec0fe9a9e9630e83",
+    "fresh_runtime": "9097e94ad735f4e6fa8c229dd836bf56615b187a1c48c4096322e606627dc9a1",
+    "fresh_summary": "ac39b8e7f8397b2b8959ee02c834d1d5dcbd78d3b504040c10d879a3740e24fb",
+    "resume_receipt": "5d38e1397eb45e8187344bc589cefb36168c6fe6d6cc24ddb4bbec59a4740215",
+    "scheduler": "b409734581a0b7c25b4749f975350ed7142f27bf3a31a578c2d598b8cc63ad53",
+    "status": "456b69c537831322c2ca6f0cf4635d9bc43d7a354fcb3119d4ca7528c3fda4b9"
+  },
+  "fresh": {
+    "captions": 45,
+    "cli_workflow_seconds": 835.546070179902,
+    "compatibility": {
+      "accepted_v1_optimized": {
+        "compatible": true,
+        "difference_count": 0,
+        "tensor_input_agreement_verified": true
+      },
+      "candidate_pilot": {
+        "compatible": true,
+        "difference_count": 0,
+        "tensor_input_agreement_verified": true
+      }
+    },
+    "engine_seconds": 834.9600972919725,
+    "episodes": 3,
+    "failed_stages": 0,
+    "fresh_stage_attempts": 6,
+    "input_identity_sha256": "f355500e4264f61119a208cf0f7868155210387b2ce76521aba3bc25dc5703bb",
+    "native_input_records": 65,
+    "ordered_input_identity_agreement_with_pilot": true,
+    "resumed_stages": 0
+  },
+  "hardware": {
+    "cpus": 4,
+    "gpu_type": "NVIDIA GeForce RTX 3090",
+    "gpus": 3,
+    "requested_ram_gib": 128,
+    "requested_tmpdisk_gib": 20,
+    "same_node": true
+  },
+  "native_mode": {
+    "batch_size": 1,
+    "condition": "accelerated",
+    "inference_weight_offload": false,
+    "quantized": false,
+    "temporal_evidence_reduced": false
+  },
+  "peak_gpu_memory": "Not measured by the ordinary annotate command; see matched broader comparison.",
+  "recovery_limit": "Completed-stage recovery on an isolated state backup; not mid-generation continuation.",
+  "resume_helper_commit": "88f9b85c238400685771f95b08d64b99e238247f",
+  "scheduler": {
+    "allocated_gpu_hours": 0.7,
+    "elapsed_seconds": 840,
+    "exit_code": "0:0",
+    "final_state": "COMPLETED",
+    "requested_minutes": 30
+  },
+  "schema_version": "bir_phase2_reproduction_v1",
+  "status": "verified",
+  "timing_limit": "CLI, engine and resume timers are nested or separate workflow boundaries. This reproduction is not a matched speedup trial. The parent allocation includes all fresh inference, CPU resume, status, export and idle time.",
+  "workflow": {
+    "exported_labels_match_fresh_annotations": true,
+    "exported_records": 45,
+    "precomputed": false,
+    "status_complete_stages": 6,
+    "unique_export_record_ids": 45
+  }
+}

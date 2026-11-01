@@ -2,14 +2,15 @@
 
 Updated: 2026-11-01 UTC
 
-## Active next phase
+## Delivered phase two
 
-The user has requested a more substantial performance contribution and a
-researcher-facing annotation/review workflow. Follow [the phase-two brief](PHASE2_PROMPT.md).
-Use the delivered native release as the baseline, profile the actual bottleneck,
-implement the selected acceleration, and compare on a broader workload.
+Phase two delivers native preparation acceleration and an annotation, review,
+resume, and export workflow. See [the practical results](PHASE2_RESULTS.md) and
+[quickstart](QUICKSTART.md). The six-episode comparison measured 1.57× throughput;
+the full eleven-episode criterion did not pass because the baseline failed in
+the other block. All results and limits follow the [phase-two brief](PHASE2_PROMPT.md).
 
-Phase-two implementation is active. Source-only selection is frozen in
+Phase-two implementation and final workflow reproduction are complete. Source-only selection is frozen in
 [`manifests/phase2-native.json`](../manifests/phase2-native.json): eleven new
 complete episodes, 726.897933 source seconds, in two counterbalanced blocks.
 All eleven original videos passed scheduled CPU preparation with unchanged
@@ -37,9 +38,8 @@ A bounded metadata spill cache repairs the eight-entry reuse limit. Runtime
 dependency versions now enter the execution identity. The lightweight
 annotation/review/export workflow passed local browser playback, correction,
 HTTP, and export checks on real precomputed output. An independent review and
-actual CLI tests cover isolated CPU resume verification; the fresh GPU workflow
-reproduction remains pending. Existing phase-one
-evidence remains unchanged. Follow [the finite protocol](PHASE2_PROTOCOL.md);
+actual CLI tests cover isolated CPU resume verification. The fresh GPU workflow
+reproduction also passed. Existing phase-one evidence remains unchanged. Follow [the finite protocol](PHASE2_PROTOCOL.md);
 the budget does not reset. One pending profile submission was cancelled before
 allocation after a manifest relocation error was found. It used zero GPU time
 but consumed one submission. Profiling and the successful pilot shared one
@@ -71,12 +71,18 @@ retains all eleven episodes, both allocations, the incomplete status, and no
 pooled speedup. The two comparison allocations used 7.612500 GPU-hours,
 including the failed baseline work.
 
-Current aggregate accounting: 17.863889 GPU-hours used and 1.5 reserved for the
-protected final workflow reproduction. All sixteen GPU submission slots are
-now used. CPU-only use is 4.274444 core-hours. The final reproduction is running
-with the immutable accelerated code. It must verify fresh annotation, isolated
-CPU resume, status, and export before delivery. No further GPU submissions are
-permitted under the current cap.
+Final reproduction passed with 45 captions and 65 ordered model inputs matching
+the pilot and accepted baseline. The isolated CPU resume reused six stages with
+zero new attempts, preparation, or model calls. Status and all 45 exported records
+match the saved checkpoints. Independent artifact review passed. See
+[the reproduction report](../reports/phase2-reproduction.json).
+
+Final aggregate accounting: **18.563889 GPU-hours used**, zero reserved, and
+**16 of 16 GPU submission slots used**. CPU-only use is 4.274444 core-hours.
+All 22 parent allocations are reconciled. No project job remains active.
+Recorded storage is about 130.85 GiB under the 250 GiB cap. See
+[phase-two resource closure](../reports/phase2-resources.json). The submission
+limit is exhausted; no more GPU experiments are permitted within this envelope.
 
 ## Delivered baseline
 
@@ -189,10 +195,11 @@ project policy choice, not a cluster quota change.
 
 ## Next actions
 
-Execute the phase-two brief through implementation, a usable example, broader
-fresh-run comparison, and reproduction. Plan within remaining project resources;
-no new GPU job was submitted by this documentation update. The original adaptive
-experiment and its inconclusive result remain part of the baseline history.
+Use the quickstart to inspect the precomputed example or annotate supported
+videos in a prepared environment. Review generated labels before research use.
+The phase-two finite run plan is complete. Further hardware or workload experiments
+need a new explicit resource decision; this release does not reset the ledger.
+The original adaptive experiment and its inconclusive result remain unchanged.
 
 Private records retain exact job IDs, connection settings, output paths, skill
 hashes, and scheduler output. Public reports contain sanitized measurements.

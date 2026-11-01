@@ -210,9 +210,12 @@ an unadmitted batch, or an estimated final runtime as fresh inference evidence.
 
 The phase-two candidate is `87fff61d812b2e9cd9954fec5e25d4c953eeb330`.
 Its resume verifier is `88f9b85c238400685771f95b08d64b99e238247f`.
-The fresh verification run is pending. These are its exact commands, with
-portable paths. See [the phase-two results](PHASE2_RESULTS.md) for its eventual
-verified outcome. The phase-one reproduction above remains historical evidence.
+The fresh verification run passed. It produced 45 captions with 65 native model
+inputs matching the pilot and baseline. CPU resume reused six stages with zero
+new model calls; status and all exported labels passed verification. The whole
+allocation took 840 seconds and used 0.700 GPU-hours. These are its exact commands,
+with portable paths. See [the reproduction receipt](../reports/phase2-reproduction.json).
+The phase-one reproduction above remains historical evidence.
 
 Reuse the prepared environment, pinned source, models, and original three-video
 manifest. Create two new source directories from the repository history:

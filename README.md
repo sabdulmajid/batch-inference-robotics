@@ -17,8 +17,8 @@ block, not a result for the full eleven-video workload: the baseline ran out
 of GPU memory on two videos in the other block. The full-workload success
 criterion was not met. See [the results and limits](docs/PHASE2_RESULTS.md).
 
-The final fresh annotation and resume reproduction is pending. See
-[current progress](docs/STATUS.md).
+Fresh annotation, CPU-only resume, status, and export passed final reproduction.
+See [the reproduction evidence](reports/phase2-reproduction.json).
 
 ## Try the review workflow without model weights
 

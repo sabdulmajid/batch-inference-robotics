@@ -1,0 +1,181 @@
+{
+  "accounting_rule": "Count complete elapsed granted resources once per recorded parent attempt, including failed, cancelled, startup and idle allocations. Do not add scheduler steps. CPU-only core-hours exclude CPUs coallocated with GPUs; those are reported separately.",
+  "aggregate": {
+    "active_cpu_allocations": 0,
+    "active_gpu_allocations": 0,
+    "completed_parent_attempts": 22,
+    "cpu_only_core_hour_cap": 32,
+    "gpu_coallocated_cpu_core_hours": 25.441666666666666,
+    "gpu_hour_cap": 24,
+    "gpu_submission_cap": 16,
+    "gpu_submissions": 16,
+    "parent_outcomes": {
+      "CANCELLED": 2,
+      "COMPLETED": 17,
+      "FAILED": 3
+    },
+    "remaining_gpu_submission_slots": 0,
+    "reserved_gpu_hours": 0,
+    "unused_gpu_hours": 5.436111111111114,
+    "used_cpu_only_core_hours": 4.274444444444444,
+    "used_gpu_hours": 18.563888888888886
+  },
+  "generated_utc": "2026-11-01T09:49:57.969969+00:00",
+  "ledger_snapshot_sha256": "094d26f5e589f38a3e43bb67eb695b72d172f7412d6b8b7b8625cafca9110c42",
+  "limitation": "The sixteen-submission cap is exhausted despite unused GPU-hours. No further GPU experiments are authorized by this report.",
+  "new_paid_api_or_external_compute_spend_usd": 0,
+  "phase1": {
+    "historical_report": "reports/resources.json",
+    "used_cpu_only_core_hours": 3.007777777777777,
+    "used_gpu_hours": 8.773055555555553
+  },
+  "phase2": {
+    "gpu_submissions": 5,
+    "parent_allocations": [
+      {
+        "parent_attempts": [
+          {
+            "allocated_gpu_hours": 0.0,
+            "cpu_only_core_hours": 0.0,
+            "cpus": 0,
+            "elapsed_seconds": 0,
+            "exit_code": "0:0",
+            "final_state": "CANCELLED",
+            "gpus": 0,
+            "restart_index": 0
+          }
+        ],
+        "phase": "profile-01",
+        "requested_gpus": 3,
+        "requested_minutes": 25
+      },
+      {
+        "parent_attempts": [
+          {
+            "allocated_gpu_hours": 0.0,
+            "cpu_only_core_hours": 0.14666666666666667,
+            "cpus": 4,
+            "elapsed_seconds": 132,
+            "exit_code": "0:0",
+            "final_state": "COMPLETED",
+            "gpus": 0,
+            "restart_index": 0
+          }
+        ],
+        "phase": "prepare-01",
+        "requested_gpus": 0,
+        "requested_minutes": 15
+      },
+      {
+        "parent_attempts": [
+          {
+            "allocated_gpu_hours": 0.0,
+            "cpu_only_core_hours": 1.12,
+            "cpus": 4,
+            "elapsed_seconds": 1008,
+            "exit_code": "0:0",
+            "final_state": "COMPLETED",
+            "gpus": 0,
+            "restart_index": 0
+          }
+        ],
+        "phase": "cpu-inputs-01",
+        "requested_gpus": 0,
+        "requested_minutes": 30
+      },
+      {
+        "parent_attempts": [
+          {
+            "allocated_gpu_hours": 1.4783333333333333,
+            "cpu_only_core_hours": 0,
+            "cpus": 4,
+            "elapsed_seconds": 1774,
+            "exit_code": "0:0",
+            "final_state": "COMPLETED",
+            "gpus": 3,
+            "restart_index": 0
+          }
+        ],
+        "phase": "pilot-01",
+        "requested_gpus": 3,
+        "requested_minutes": 45
+      },
+      {
+        "parent_attempts": [
+          {
+            "allocated_gpu_hours": 2.7941666666666665,
+            "cpu_only_core_hours": 0,
+            "cpus": 4,
+            "elapsed_seconds": 3353,
+            "exit_code": "1:0",
+            "final_state": "FAILED",
+            "gpus": 3,
+            "restart_index": 0
+          }
+        ],
+        "phase": "block-0",
+        "requested_gpus": 3,
+        "requested_minutes": 116
+      },
+      {
+        "parent_attempts": [
+          {
+            "allocated_gpu_hours": 4.818333333333333,
+            "cpu_only_core_hours": 0,
+            "cpus": 4,
+            "elapsed_seconds": 5782,
+            "exit_code": "0:0",
+            "final_state": "COMPLETED",
+            "gpus": 3,
+            "restart_index": 0
+          }
+        ],
+        "phase": "block-1",
+        "requested_gpus": 3,
+        "requested_minutes": 116
+      },
+      {
+        "parent_attempts": [
+          {
+            "allocated_gpu_hours": 0.7,
+            "cpu_only_core_hours": 0,
+            "cpus": 4,
+            "elapsed_seconds": 840,
+            "exit_code": "0:0",
+            "final_state": "COMPLETED",
+            "gpus": 3,
+            "restart_index": 0
+          }
+        ],
+        "phase": "reproduction-01",
+        "requested_gpus": 3,
+        "requested_minutes": 30
+      }
+    ],
+    "used_cpu_only_core_hours": 1.2666666666666668,
+    "used_gpu_hours": 9.790833333333333
+  },
+  "reproduction_reserve": {
+    "actual_gpu_hours": 0.7,
+    "fulfilled": true,
+    "original_gpu_hours": 1.5,
+    "unused_requested_gpu_hours_released": 0.8
+  },
+  "schema_version": "bir_phase2_resource_closure_v1",
+  "status": "all_parent_allocations_reconciled",
+  "storage": {
+    "available_filesystem_bytes": 9037917716480,
+    "check_allowed": true,
+    "combined_observed_bytes": 140499188064,
+    "combined_observed_gib": 130.8500655591488,
+    "headroom_ratio": 1.2,
+    "local_measured_utc": "2026-11-01T09:49:57.857509+00:00",
+    "local_task_bytes": 1326350336,
+    "original_checkout_bytes": 4210688,
+    "planned_remaining_delivery_bytes": 1073741824,
+    "project_cap_gib": 250,
+    "remote_measured_utc": "2026-11-01T09:48:43Z",
+    "remote_project_bytes": 139168627040,
+    "scope": "Point-in-time remote apparent project bytes plus local allocated disk bytes for the whole task directory and original checkout. This includes environments, assets, caches, raw evidence and repository data. No shared unrelated directories are counted. Later documentation/commit writes fit the additional 1 GiB delivery allowance."
+  }
+}
