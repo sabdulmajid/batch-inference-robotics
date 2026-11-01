@@ -42,19 +42,30 @@ reproduction remains pending. Existing phase-one
 evidence remains unchanged. Follow [the finite protocol](PHASE2_PROTOCOL.md);
 the budget does not reset. One pending profile submission was cancelled before
 allocation after a manifest relocation error was found. It used zero GPU time
-but consumed one submission. Profiling and the pilot will share one corrected
-allocation. Three GPU submissions remain after the pilot submission, including
-protected reproduction.
+but consumed one submission. Profiling and the successful pilot shared one
+corrected allocation.
 The [frozen execution plan](../manifests/phase2-execution.json) admits both
 unchanged blocks at 116 minutes each on three GPUs. Their requested 11.6 GPU-hours
-plus 1.5 protected reproduction hours fit the 13.748611 hours remaining. All three
-remaining submission slots are assigned. No broader inference has run yet.
-The selection and success target remain unchanged.
+plus 1.5 protected reproduction hours fit the 13.748611 hours available at
+admission. The three submission slots then available were assigned. The selection and success target
+remain unchanged.
 
-Current aggregate accounting: 10.251389 GPU-hours used, including the pilot's
-1.478333 GPU-hours. Thirteen of sixteen GPU submissions are used. CPU-only use
-is 4.274444 core-hours. No allocation remains active at this checkpoint. The
-two admitted comparisons and protected reproduction are next.
+The first broader block failed in the previous optimized baseline. Captioner
+ran out of GPU memory on episodes 59 and 60. The other three episodes completed
+with 65 serialized captions. All five segmentation stages passed. The accelerated
+condition did not start. Identical input shapes succeeded elsewhere, so this
+does not establish a universal input-size limit or prove allocator fragmentation.
+See [the preserved failure evidence](../reports/phase2-block0-failure.json).
+
+All eleven episodes remain counted. The complete eleven-episode paired success
+criterion can no longer pass. The unchanged second block is submitted to provide
+separate evidence on its six preselected episodes; it cannot replace the failed
+block. No sources, native settings, allocation strategy, or targets were changed.
+
+Current aggregate accounting: 13.045556 GPU-hours used, including 2.794167 for
+the failed block, and 5.8 reserved for the second block. Fifteen of sixteen GPU
+submissions are used. CPU-only use is 4.274444 core-hours. The last submission
+and at least 1.5 GPU-hours remain protected for fresh workflow reproduction.
 
 ## Delivered baseline
 

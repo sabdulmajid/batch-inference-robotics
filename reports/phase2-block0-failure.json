@@ -1,0 +1,198 @@
+{
+  "schema_version": "bir_phase2_failed_block_v1",
+  "status": "failed",
+  "block": 0,
+  "plan_sha256": "fa1928349f5d19bb942d0208965c5b976b8491ffe6b49db4abc312ee491abca4",
+  "order": [
+    "baseline",
+    "candidate"
+  ],
+  "episode_ids": [
+    "homer_59",
+    "homer_60",
+    "homer_29",
+    "homer_48",
+    "homer_38"
+  ],
+  "source_seconds": 363.617,
+  "frozen_total_episodes": 11,
+  "baseline_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+  "candidate_commit": "87fff61d812b2e9cd9954fec5e25d4c953eeb330",
+  "candidate_started": false,
+  "baseline_whole_episodes_complete": 3,
+  "baseline_stages_complete": 8,
+  "baseline_stage_attempts": 10,
+  "completed_episodes": [
+    {
+      "episode_id": "homer_29",
+      "captions": 15
+    },
+    {
+      "episode_id": "homer_38",
+      "captions": 31
+    },
+    {
+      "episode_id": "homer_48",
+      "captions": 19
+    }
+  ],
+  "failed_caption_requests": [
+    {
+      "episode": "homer_59",
+      "stage": "caption",
+      "ordinal": 6,
+      "tokens": 8504,
+      "digest": "8df50fcdabc8250793d6e95ad066543282f9da71dadce2ab0ba96ce403039aaf",
+      "tensors": {
+        "attention_mask": {
+          "shape": [
+            1,
+            8504
+          ],
+          "dtype": "torch.int64"
+        },
+        "input_ids": {
+          "shape": [
+            1,
+            8504
+          ],
+          "dtype": "torch.int64"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            8504
+          ],
+          "dtype": "torch.int64"
+        },
+        "pixel_values_videos": {
+          "shape": [
+            32256,
+            1536
+          ],
+          "dtype": "torch.float32"
+        },
+        "video_grid_thw": {
+          "shape": [
+            3,
+            3
+          ],
+          "dtype": "torch.int64"
+        }
+      }
+    },
+    {
+      "episode": "homer_60",
+      "stage": "caption",
+      "ordinal": 7,
+      "tokens": 8504,
+      "digest": "d6d9bc165f5e5b37b608e972b1abb241be19b3b985a2f9f89391bda8be44d69c",
+      "tensors": {
+        "attention_mask": {
+          "shape": [
+            1,
+            8504
+          ],
+          "dtype": "torch.int64"
+        },
+        "input_ids": {
+          "shape": [
+            1,
+            8504
+          ],
+          "dtype": "torch.int64"
+        },
+        "mm_token_type_ids": {
+          "shape": [
+            1,
+            8504
+          ],
+          "dtype": "torch.int64"
+        },
+        "pixel_values_videos": {
+          "shape": [
+            32256,
+            1536
+          ],
+          "dtype": "torch.float32"
+        },
+        "video_grid_thw": {
+          "shape": [
+            3,
+            3
+          ],
+          "dtype": "torch.int64"
+        }
+      }
+    }
+  ],
+  "native_generation_counts": {
+    "tempseg_started": 56,
+    "tempseg_completed": 56,
+    "captioner_started": 80,
+    "captioner_completed": 78
+  },
+  "successful_calls_within_failed_episodes": 13,
+  "baseline_subprocess_wall_seconds": 3351.3911497220397,
+  "pair_wall_seconds": 3351.4441540222615,
+  "gpu_memory": [
+    {
+      "logical_device": 0,
+      "peak_allocated_bytes": 22462446592,
+      "peak_reserved_bytes": 24916262912
+    },
+    {
+      "logical_device": 1,
+      "peak_allocated_bytes": 23969016320,
+      "peak_reserved_bytes": 24882708480
+    },
+    {
+      "logical_device": 2,
+      "peak_allocated_bytes": 24360223744,
+      "peak_reserved_bytes": 24937234432
+    }
+  ],
+  "failure": {
+    "kind": "native_cuda_out_of_memory",
+    "logical_gpu": 2,
+    "requested_mib": 200.0,
+    "reported_driver_free_mib": 135.94,
+    "reported_torch_allocated_gib": 21.88,
+    "reported_torch_reserved_unallocated_gib": 1.23,
+    "error_numbers_scope": "Rounded values reported by PyTorch for each failed call; run-wide memory peaks above are separate.",
+    "same_complete_input_shapes_succeeded_in_prior_baseline": 9,
+    "same_complete_input_shapes_succeeded_later_in_this_run": 14,
+    "cause": "Memory pressure is observed. Allocator fragmentation is plausible but not proven. These observations do not establish a universal input-size limit."
+  },
+  "fidelity_review": {
+    "unchanged_baseline_code": true,
+    "unchanged_native_model_lock": true,
+    "batch_size": 1,
+    "captioner_placement_headroom_gib": 4.0,
+    "native_parameter_verification_passed": true,
+    "actual_placement_matched_pilot": true,
+    "stored_identity_and_payload_checks_passed": true
+  },
+  "scheduler": {
+    "final_state": "FAILED",
+    "exit_code": "1:0",
+    "allocated_seconds": 3353,
+    "allocated_cpus": 4,
+    "allocated_gpus": 3,
+    "allocated_gpu_hours": 2.7941666666666665
+  },
+  "evidence_sha256": {
+    "pair": "49a302cc7725ce5ceaa47e39ed796a02e64467b0c33cd48ee01b17caa0f9021b",
+    "worker": "687dafa53843a0af496ac212d6f6707d5cb2adb22d12cbe50135414d3b256672",
+    "summary": "8ff3a9a096ad1103be792ce85d56ce73fc0b93b03d26e88586e5a2970fa32355",
+    "runtime": "9d552de5e81459ff9d2637d0bb04bd9946816a64b8d052ce864889b7e430b598"
+  },
+  "interpretation": [
+    "All five block episodes remain in the frozen eleven-episode denominator.",
+    "The accelerated condition did not run in this block. Its performance and agreement here are unmeasured.",
+    "The full eleven-episode paired success criterion cannot pass. A later successful block cannot replace these failures.",
+    "The unchanged second block can supply separate six-episode evidence; no retry, source removal, allocator change, or hardware change is admitted."
+  ],
+  "baseline_serialized_captions": 65,
+  "baseline_caption_artifact_files": 3
+}
