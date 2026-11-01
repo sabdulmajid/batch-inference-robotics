@@ -1,0 +1,541 @@
+{
+  "allocated_gpu_hours": 7.6125,
+  "allocation_boundary": "Both versions and all controller, failed, idle and cleanup time, charged once per complete parent attempt; not a per-version bill.",
+  "allocation_count": 2,
+  "blocks": [
+    {
+      "baseline_over_candidate_wall_ratio": null,
+      "block": 0,
+      "complete": false,
+      "conditions": {
+        "baseline": {
+          "status": "failed",
+          "subprocess_wall_seconds": 3351.3911497220397
+        }
+      },
+      "order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline_over_candidate_wall_ratio": 1.5732843521731688,
+      "block": 1,
+      "complete": true,
+      "conditions": {
+        "baseline": {
+          "gpu_memory": [
+            {
+              "logical_device": 0,
+              "peak_allocated_bytes": 22463943680,
+              "peak_reserved_bytes": 24918360064
+            },
+            {
+              "logical_device": 1,
+              "peak_allocated_bytes": 23979252224,
+              "peak_reserved_bytes": 24884805632
+            },
+            {
+              "logical_device": 2,
+              "peak_allocated_bytes": 24360223744,
+              "peak_reserved_bytes": 24888999936
+            }
+          ],
+          "metrics": {
+            "allocated_gpu_hours": null,
+            "allocation_accounting": "not_provided",
+            "attempt_work_seconds_excluding_preparation": 3510.0818438627757,
+            "attempts_with_unknown_elapsed": 0,
+            "condition": "optimized",
+            "condition_window_gpu_seconds_per_source_minute": 1751.200318647935,
+            "eligible_as_fresh_inference_benchmark": true,
+            "engine_work_telemetry": {
+              "backends": [
+                {
+                  "backend_ordinal": 0,
+                  "decoded_frame_cache": {
+                    "entries": 97,
+                    "evictions": 5898,
+                    "hits": 902,
+                    "max_bytes": 268435456,
+                    "max_entries": 4096,
+                    "misses": 5995,
+                    "peak_retained_bytes": 268392960,
+                    "retained_bytes": 268185600
+                  },
+                  "episode_id": null
+                }
+              ],
+              "cpu_preparation": {
+                "backend_preparation_calls": 6,
+                "backend_preparation_failures": 0,
+                "backend_preparation_work_seconds": 67.90598598401994,
+                "metadata_cache_hits": 6,
+                "preparation_requests": 12,
+                "source_verification_calls": 12,
+                "source_verification_failures": 0,
+                "source_verification_work_seconds": 1.1862005535513163
+              },
+              "cpu_timing_scope": "Summed engine worker time includes failed calls. Preparation can overlap inference; these sums are not end-to-end wall time. Initial CLI manifest hashing is outside these counters.",
+              "decoded_cache_scope": "Cumulative counters per backend cache lifetime, captured before close. Byte counts cover retained RGB payloads only; null means no decoded-frame cache.",
+              "prefetch": 1,
+              "prepared_metadata_cache_capacity": 8
+            },
+            "failed_attempts": 0,
+            "fresh_attempts": 12,
+            "full_cold_model_load_seconds": 135.58737065829337,
+            "gpu_cost_limit": "Condition-window GPU seconds multiply visible GPU count by subprocess wall. They measure held-device capacity, not GPU utilization or separately billed allocations. Coordinator reconciles full parent allocations once.",
+            "load_excluded_source_minutes_per_wall_minute": 0.10688716111886783,
+            "load_excluded_workflow_seconds": 3398.733105054591,
+            "per_episode_end_to_end_latency": {
+              "arrival": "all_jobs_at_engine_run_start",
+              "boundary": "serialized_export_completed",
+              "episodes": [
+                {
+                  "episode_id": "homer_39",
+                  "final_stage_commit_seconds": 1620.5052309981547,
+                  "result_available_seconds": 3528.8878729729913
+                },
+                {
+                  "episode_id": "homer_56",
+                  "final_stage_commit_seconds": 1778.2627369952388,
+                  "result_available_seconds": 3528.915930524934
+                },
+                {
+                  "episode_id": "homer_33",
+                  "final_stage_commit_seconds": 2340.839859467931,
+                  "result_available_seconds": 3528.943718238268
+                },
+                {
+                  "episode_id": "homer_53",
+                  "final_stage_commit_seconds": 2653.147038645111,
+                  "result_available_seconds": 3528.969778339844
+                },
+                {
+                  "episode_id": "homer_37",
+                  "final_stage_commit_seconds": 3322.2325324262492,
+                  "result_available_seconds": 3528.9983576019295
+                },
+                {
+                  "episode_id": "homer_40",
+                  "final_stage_commit_seconds": 3527.923957114108,
+                  "result_available_seconds": 3529.0251929452643
+                }
+              ],
+              "limitation": "Exports occur after all inference and backend cleanup, in manifest order; export latencies can therefore be close.",
+              "median_seconds": 3528.956748289056,
+              "p95_seconds": 3529.0184841094306,
+              "percentile_method": "linear interpolation of sorted values at (n-1)*p (type 7)",
+              "population": "all expected episodes from a wholly fresh complete run; partial, failed, cached, and mixed execution are excluded",
+              "status": "measured"
+            },
+            "planned_source_seconds": 363.280933,
+            "runtime": {
+              "stages": {
+                "captioner": {
+                  "generation_call_count": 121,
+                  "generation_event_seconds": 1028.4070000000006,
+                  "model_load_count": 1,
+                  "model_parameter_load_verification_event_count": 1,
+                  "model_parameter_load_verification_event_seconds": 85.62,
+                  "model_ready_count": 1,
+                  "session_load_event_count": 1,
+                  "session_load_event_seconds": 86.76156719494611,
+                  "session_load_failed_event_count": 0
+                },
+                "tempseg": {
+                  "generation_call_count": 49,
+                  "generation_event_seconds": 392.47999999999996,
+                  "model_load_count": 1,
+                  "model_parameter_load_verification_event_count": 1,
+                  "model_parameter_load_verification_event_seconds": 47.702,
+                  "model_ready_count": 1,
+                  "session_load_event_count": 1,
+                  "session_load_event_seconds": 48.825803463347256,
+                  "session_load_failed_event_count": 0
+                }
+              },
+              "timing_boundary": "Upstream model_parameters_verified is cumulative from native load start through parameter verification and excludes processor finalization. model_ready is counted only. Adapter session-load events include the full cold load, processor, audit/residency checks, synchronization, and failed-call work. Generation excludes preparation, input hashing, and device transfer. These overlapping event boundaries must not be added to wall time."
+            },
+            "source_hours": 0.10091137027777777,
+            "source_hours_per_allocated_gpu_hour": null,
+            "source_hours_per_wall_hour": 0.1029297657251418,
+            "source_minutes_per_wall_minute": 0.10278664187257242,
+            "stage_attempts": [
+              {
+                "elapsed_s": 243.2807111730799,
+                "episode_id": "homer_39",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 63.578296286053956,
+                "episode_id": "homer_56",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 123.07517848396674,
+                "episode_id": "homer_33",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 104.4433250296861,
+                "episode_id": "homer_53",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 247.74995964113623,
+                "episode_id": "homer_37",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 51.9896240318194,
+                "episode_id": "homer_40",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 768.9512141379528,
+                "episode_id": "homer_39",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 157.680247544311,
+                "episode_id": "homer_56",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 562.4964369977824,
+                "episode_id": "homer_33",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 312.2282614330761,
+                "episode_id": "homer_53",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 668.9962860629894,
+                "episode_id": "homer_37",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 205.6123030409217,
+                "episode_id": "homer_40",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              }
+            ],
+            "subprocess_wall_seconds": 3534.320475712884,
+            "sustained_measurement_limit": "Load-excluded workflow is a derived diagnostic, not an independently timed steady-state run. It retains process/CLI and other overhead. Cold-load work can overlap CPU preparation. Primary comparison uses full subprocess wall time.",
+            "unique_episodes": 6,
+            "wall_boundary": "CLI workflow when available, otherwise engine run; startup included",
+            "wall_seconds": 3529.4060026337393
+          },
+          "request_input_identity_sha256": "1971a272dbc466ea336a9b82a45e514bf6d81d225a3e892245490ae8cd185510",
+          "status": "fresh_complete",
+          "subprocess_wall_seconds": 3534.320475712884
+        },
+        "candidate": {
+          "gpu_memory": [
+            {
+              "logical_device": 0,
+              "peak_allocated_bytes": 22463943680,
+              "peak_reserved_bytes": 24918360064
+            },
+            {
+              "logical_device": 1,
+              "peak_allocated_bytes": 23979252224,
+              "peak_reserved_bytes": 24884805632
+            },
+            {
+              "logical_device": 2,
+              "peak_allocated_bytes": 24360223744,
+              "peak_reserved_bytes": 24888999936
+            }
+          ],
+          "metrics": {
+            "allocated_gpu_hours": null,
+            "allocation_accounting": "not_provided",
+            "attempt_work_seconds_excluding_preparation": 2222.475679460913,
+            "attempts_with_unknown_elapsed": 0,
+            "condition": "accelerated",
+            "condition_window_gpu_seconds_per_source_minute": 1113.0857026760686,
+            "eligible_as_fresh_inference_benchmark": true,
+            "engine_work_telemetry": {
+              "backends": [
+                {
+                  "backend_ordinal": 0,
+                  "decoded_frame_cache": {
+                    "entries": 97,
+                    "evictions": 6186,
+                    "hits": 1816,
+                    "max_bytes": 268435456,
+                    "max_entries": 4096,
+                    "misses": 6283,
+                    "peak_retained_bytes": 268392960,
+                    "retained_bytes": 268185600
+                  },
+                  "episode_id": null
+                }
+              ],
+              "cpu_preparation": {
+                "backend_preparation_calls": 6,
+                "backend_preparation_failures": 0,
+                "backend_preparation_work_seconds": 67.87780746305361,
+                "metadata_cache_hits": 6,
+                "preparation_requests": 12,
+                "source_verification_calls": 12,
+                "source_verification_failures": 0,
+                "source_verification_work_seconds": 1.1148543069139123
+              },
+              "cpu_timing_scope": "Summed engine worker time includes failed calls. Preparation can overlap inference; these sums are not end-to-end wall time. Initial CLI manifest hashing is outside these counters.",
+              "decoded_cache_scope": "Cumulative counters per backend cache lifetime, captured before close. Byte counts cover retained RGB payloads only; null means no decoded-frame cache.",
+              "prefetch": 1,
+              "prepared_metadata_cache_capacity": 8,
+              "prepared_metadata_spool": {
+                "hits": 0,
+                "max_bytes": 134217728,
+                "max_entry_bytes": 8388608,
+                "poisoned": false,
+                "refused": 0,
+                "unremoved_partial_bound_bytes": 0,
+                "write_errors": 0,
+                "writes": 6,
+                "written_bytes": 161864
+              }
+            },
+            "failed_attempts": 0,
+            "fresh_attempts": 12,
+            "full_cold_model_load_seconds": 135.67809878708795,
+            "gpu_cost_limit": "Condition-window GPU seconds multiply visible GPU count by subprocess wall. They measure held-device capacity, not GPU utilization or separately billed allocations. Coordinator reconciles full parent allocations once.",
+            "load_excluded_source_minutes_per_wall_minute": 0.17210727492291544,
+            "load_excluded_workflow_seconds": 2110.7819710858166,
+            "per_episode_end_to_end_latency": {
+              "arrival": "all_jobs_at_engine_run_start",
+              "boundary": "serialized_export_completed",
+              "episodes": [
+                {
+                  "episode_id": "homer_39",
+                  "final_stage_commit_seconds": 1233.0508227837272,
+                  "result_available_seconds": 2241.538263747003
+                },
+                {
+                  "episode_id": "homer_56",
+                  "final_stage_commit_seconds": 1351.1681892396882,
+                  "result_available_seconds": 2241.5662314277142
+                },
+                {
+                  "episode_id": "homer_33",
+                  "final_stage_commit_seconds": 1653.2022870960645,
+                  "result_available_seconds": 2241.595199470874
+                },
+                {
+                  "episode_id": "homer_53",
+                  "final_stage_commit_seconds": 1773.9950029319152,
+                  "result_available_seconds": 2241.6227734107524
+                },
+                {
+                  "episode_id": "homer_37",
+                  "final_stage_commit_seconds": 2125.072526634671,
+                  "result_available_seconds": 2241.6528405360878
+                },
+                {
+                  "episode_id": "homer_40",
+                  "final_stage_commit_seconds": 2240.179908222053,
+                  "result_available_seconds": 2241.6807795958593
+                }
+              ],
+              "limitation": "Exports occur after all inference and backend cleanup, in manifest order; export latencies can therefore be close.",
+              "median_seconds": 2241.608986440813,
+              "p95_seconds": 2241.6737948309164,
+              "percentile_method": "linear interpolation of sorted values at (n-1)*p (type 7)",
+              "population": "all expected episodes from a wholly fresh complete run; partial, failed, cached, and mixed execution are excluded",
+              "status": "measured"
+            },
+            "planned_source_seconds": 363.280933,
+            "runtime": {
+              "stages": {
+                "captioner": {
+                  "generation_call_count": 121,
+                  "generation_event_seconds": 1037.6680000000001,
+                  "model_load_count": 1,
+                  "model_parameter_load_verification_event_count": 1,
+                  "model_parameter_load_verification_event_seconds": 85.66,
+                  "model_ready_count": 1,
+                  "session_load_event_count": 1,
+                  "session_load_event_seconds": 86.76405863696709,
+                  "session_load_failed_event_count": 0
+                },
+                "tempseg": {
+                  "generation_call_count": 49,
+                  "generation_event_seconds": 396.0279999999999,
+                  "model_load_count": 1,
+                  "model_parameter_load_verification_event_count": 1,
+                  "model_parameter_load_verification_event_seconds": 47.703,
+                  "model_ready_count": 1,
+                  "session_load_event_count": 1,
+                  "session_load_event_seconds": 48.914040150120854,
+                  "session_load_failed_event_count": 0
+                }
+              },
+              "timing_boundary": "Upstream model_parameters_verified is cumulative from native load start through parameter verification and excludes processor finalization. model_ready is counted only. Adapter session-load events include the full cold load, processor, audit/residency checks, synchronization, and failed-call work. Generation excludes preparation, input hashing, and device transfer. These overlapping event boundaries must not be added to wall time."
+            },
+            "source_hours": 0.10091137027777777,
+            "source_hours_per_allocated_gpu_hour": null,
+            "source_hours_per_wall_hour": 0.16202924079579475,
+            "source_minutes_per_wall_minute": 0.1617126152705456,
+            "stage_attempts": [
+              {
+                "elapsed_s": 244.55890566576272,
+                "episode_id": "homer_39",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 64.65484352502972,
+                "episode_id": "homer_56",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 123.41548039996997,
+                "episode_id": "homer_33",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 105.04779961472377,
+                "episode_id": "homer_53",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 249.1863257260993,
+                "episode_id": "homer_37",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 52.13181722117588,
+                "episode_id": "homer_40",
+                "number": 1,
+                "stage": "segment",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 376.7794569642283,
+                "episode_id": "homer_39",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 118.01674802508205,
+                "episode_id": "homer_56",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 301.94401011709124,
+                "episode_id": "homer_33",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 120.71164518781006,
+                "episode_id": "homer_53",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 350.99571582488716,
+                "episode_id": "homer_37",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              },
+              {
+                "elapsed_s": 115.03293118905276,
+                "episode_id": "homer_40",
+                "number": 1,
+                "stage": "caption",
+                "state": "complete"
+              }
+            ],
+            "subprocess_wall_seconds": 2246.4600698729046,
+            "sustained_measurement_limit": "Load-excluded workflow is a derived diagnostic, not an independently timed steady-state run. It retains process/CLI and other overhead. Cold-load work can overlap CPU preparation. Primary comparison uses full subprocess wall time.",
+            "unique_episodes": 6,
+            "wall_boundary": "CLI workflow when available, otherwise engine run; startup included",
+            "wall_seconds": 2242.0702042160556
+          },
+          "request_input_identity_sha256": "1971a272dbc466ea336a9b82a45e514bf6d81d225a3e892245490ae8cd185510",
+          "status": "fresh_complete",
+          "subprocess_wall_seconds": 2246.4600698729046
+        }
+      },
+      "order": [
+        "candidate",
+        "baseline"
+      ]
+    }
+  ],
+  "campaign_allocated_gpu_seconds_per_unique_source_minute": 2262.0782442092873,
+  "compatibility_is_annotation_quality": false,
+  "conditions": {
+    "baseline": {
+      "condition_window_gpu_seconds_per_source_minute": null,
+      "coverage_limit": "Counts are whole verified blocks. Failed blocks can retain successful partial stages in their private state; these are not silently treated as a complete performance sample.",
+      "episodes_outside_fully_verified_blocks": 5,
+      "observed_subprocess_wall_seconds_including_failed_calls": 6885.711625434924,
+      "planned_episodes": 11,
+      "verified_complete_block_episodes": 6,
+      "whole_workflow_seconds": null
+    },
+    "candidate": {
+      "condition_window_gpu_seconds_per_source_minute": null,
+      "coverage_limit": "Counts are whole verified blocks. Failed blocks can retain successful partial stages in their private state; these are not silently treated as a complete performance sample.",
+      "episodes_outside_fully_verified_blocks": 5,
+      "observed_subprocess_wall_seconds_including_failed_calls": 2246.4600698729046,
+      "planned_episodes": 11,
+      "verified_complete_block_episodes": 6,
+      "whole_workflow_seconds": null
+    }
+  },
+  "performance_claim_admitted": false,
+  "plan_sha256": "fa1928349f5d19bb942d0208965c5b976b8491ffe6b49db4abc312ee491abca4",
+  "planned_unique_episodes": 11,
+  "planned_unique_source_seconds": 726.897933,
+  "replication": "Two counterbalanced disjoint blocks; one paired trial per episode. Report both block ratios and pooled wall ratio. No repeat-based confidence interval or population generalization.",
+  "schema_version": "bir_phase2_comparison_v1",
+  "status": "incomplete"
+}

@@ -9,12 +9,16 @@ This is an offline research tool around NVIDIA FLORA TempSeg and Captioner.
 For example, a researcher can annotate short assembly videos, inspect uncertain
 labels, and export generated and reviewed text with source hashes and timestamps.
 
-**Phase two is under GPU validation.** The new direct image preparation path
-and researcher workflow are implemented. CPU tests establish input equivalence
-on tested requests. They do not establish a complete-pipeline speedup. The
-[previous verified release](docs/FINAL_REPORT.md) remains the comparison
-baseline. See [current progress](docs/STATUS.md) and the
-[frozen comparison protocol](docs/PHASE2_PROTOCOL.md).
+The accelerated path processed six unseen videos in **37.4 minutes**, versus
+**58.9 minutes** for the previous optimized release on the same three GPUs.
+That is **1.57× throughput and 36.4% less GPU capacity-time**, with all 121
+captions and 170 native model inputs unchanged. This is one complete comparison
+block, not a result for the full eleven-video workload: the baseline ran out
+of GPU memory on two videos in the other block. The full-workload success
+criterion was not met. See [the results and limits](docs/PHASE2_RESULTS.md).
+
+The final fresh annotation and resume reproduction is pending. See
+[current progress](docs/STATUS.md).
 
 ## Try the review workflow without model weights
 
@@ -22,12 +26,11 @@ The [quickstart](docs/QUICKSTART.md) includes a pinned public-data download and
 a precomputed example with 15 real captions. The example is labeled as
 precomputed throughout the interface and export. It does not run inference.
 
-From this checkout, after installing the lightweight package and obtaining the
-pinned public dataset:
+From this checkout, after the quickstart's environment setup and pinned
+public-data download:
 
 ```sh
-pip install -e '.[test]'
-bir demo --parquet annotations.parquet --output-dir runs/demo
+bir demo --parquet .local/demo-data/data/annotations.parquet --output-dir runs/demo
 bir review --run-dir runs/demo --open
 bir export --run-dir runs/demo --output labels.jsonl
 ```
@@ -40,11 +43,12 @@ inspect labels before using them as training data.
 ## Annotate your videos
 
 Use the [pinned native environment and model setup](docs/QUICKSTART.md).
-Run these commands from the checkout with the prepared FLORA source and assets:
+Set `FLORA_SOURCE` to the pinned FLORA checkout, as shown in the quickstart.
+Run these commands with the prepared environment and model assets:
 
 ```sh
-bir source-check --source third_party/Flora
-bir annotate --videos /path/to/videos --source third_party/Flora \
+bir source-check --source "$FLORA_SOURCE"
+bir annotate --videos /path/to/videos --source "$FLORA_SOURCE" \
   --run-dir runs/my-dataset
 bir status --run-dir runs/my-dataset
 bir review --run-dir runs/my-dataset --open
@@ -76,9 +80,11 @@ not a relabeled new implementation.
 
 ## Hardware and scope
 
-- Verified v1 inference used three same-node RTX 3090 GPUs, four CPU cores,
+- Verified native inference used three same-node RTX 3090 GPUs, four CPU cores,
   and 128 GiB host RAM. Full Captioner parameter storage is about 50.96 GiB.
   One or two 24 GiB GPUs cannot hold this native configuration.
+  Three such GPUs are not a guarantee of sufficient memory: the broader run
+  exposed two baseline failures, and measured memory margin was small.
 - The new path targets short human single-view videos. Its retained source RGB
   and final CPU tensor payload is bounded at 1 GiB per request, with at most one
   preparing/ready request beside the active request and a separate 256 MiB
@@ -86,9 +92,11 @@ not a relabeled new implementation.
 - Native values, precision, temporal evidence, generation limits, parsing, and
   stitching remain unchanged. Production inference stays batch one. No new
   batching or approximate-model claim is made.
-- The broader comparison contains eleven complete unseen episodes across eight
-  task groups. Its GPU results are pending. Prior native agreement and adaptive
-  results are preserved in the [baseline report](docs/FINAL_REPORT.md).
+- The frozen broader workload contains eleven unseen episodes across eight
+  task groups. Six have complete paired measurements; all eleven remain counted.
+  The trial does not establish long-video capacity, repeated-run uncertainty,
+  or visual label quality. Prior native and adaptive results remain in the
+  [baseline report](docs/FINAL_REPORT.md).
 
 ## Development and provenance
 

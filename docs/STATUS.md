@@ -58,14 +58,25 @@ does not establish a universal input-size limit or prove allocator fragmentation
 See [the preserved failure evidence](../reports/phase2-block0-failure.json).
 
 All eleven episodes remain counted. The complete eleven-episode paired success
-criterion can no longer pass. The unchanged second block is submitted to provide
-separate evidence on its six preselected episodes; it cannot replace the failed
-block. No sources, native settings, allocation strategy, or targets were changed.
+criterion did not pass. The unchanged second block completed all six preselected
+episodes in both versions. The new path took 2,246.460 subprocess seconds versus
+3,534.320 for the previous optimized path: **1.573284× throughput and 36.438699%
+less GPU capacity-time** on the same three RTX 3090 GPUs. All 121 captions and
+170 ordered native model inputs match. Independent review confirmed source,
+frame, prompt, parameter, placement, runtime, identity, and output agreement.
 
-Current aggregate accounting: 13.045556 GPU-hours used, including 2.794167 for
-the failed block, and 5.8 reserved for the second block. Fifteen of sixteen GPU
-submissions are used. CPU-only use is 4.274444 core-hours. The last submission
-and at least 1.5 GPU-hours remain protected for fresh workflow reproduction.
+This is one candidate-first block. It does not replace the failed block or
+establish the full-corpus target. The [combined comparison report](../reports/phase2-comparison.json)
+retains all eleven episodes, both allocations, the incomplete status, and no
+pooled speedup. The two comparison allocations used 7.612500 GPU-hours,
+including the failed baseline work.
+
+Current aggregate accounting: 17.863889 GPU-hours used and 1.5 reserved for the
+protected final workflow reproduction. All sixteen GPU submission slots are
+now used. CPU-only use is 4.274444 core-hours. The final reproduction is running
+with the immutable accelerated code. It must verify fresh annotation, isolated
+CPU resume, status, and export before delivery. No further GPU submissions are
+permitted under the current cap.
 
 ## Delivered baseline
 

@@ -205,3 +205,71 @@ The controlled performance command is in [NATIVE_BENCHMARK.md](NATIVE_BENCHMARK.
 The frozen adaptive result and rejected final projection are in
 [ADAPTIVE_RESULTS.md](ADAPTIVE_RESULTS.md). Do not treat a cache-only resume,
 an unadmitted batch, or an estimated final runtime as fresh inference evidence.
+
+## 6. Phase-two researcher workflow reproduction
+
+The phase-two candidate is `87fff61d812b2e9cd9954fec5e25d4c953eeb330`.
+Its resume verifier is `88f9b85c238400685771f95b08d64b99e238247f`.
+The fresh verification run is pending. These are its exact commands, with
+portable paths. See [the phase-two results](PHASE2_RESULTS.md) for its eventual
+verified outcome. The phase-one reproduction above remains historical evidence.
+
+Reuse the prepared environment, pinned source, models, and original three-video
+manifest. Create two new source directories from the repository history:
+
+```bash
+export BIR_PHASE2_CODE="$BIR_PROJECT_ROOT/phase2-release"
+export BIR_PHASE2_HELPER="$BIR_PROJECT_ROOT/phase2-resume-helper"
+mkdir "$BIR_PHASE2_CODE" "$BIR_PHASE2_HELPER"
+git -C "$BIR_PROJECT_ROOT/code" archive \
+  87fff61d812b2e9cd9954fec5e25d4c953eeb330 | tar -x -C "$BIR_PHASE2_CODE"
+git -C "$BIR_PROJECT_ROOT/code" archive \
+  88f9b85c238400685771f95b08d64b99e238247f | tar -x -C "$BIR_PHASE2_HELPER"
+```
+
+Inside the reserved allocation, use the prepared environment. The recorded
+request is thirty minutes on three same-node RTX 3090 GPUs, four CPU cores,
+128 GiB host RAM, and 20 GiB temporary disk, without automatic requeue.
+Preserve the scheduler's GPU visibility. These commands do not submit a job.
+
+```bash
+set -euo pipefail
+test "${SLURM_RESTART_COUNT:-0}" = 0
+export PATH="$BIR_PROJECT_ROOT/venv/bin:$PATH"
+export PYTHONPATH="$BIR_PHASE2_CODE/src"
+export HF_HOME="$BIR_PROJECT_ROOT/cache/huggingface"
+export FLORA_MODEL_CACHE="$BIR_PROJECT_ROOT/models"
+export HF_HUB_OFFLINE=1
+export OMP_NUM_THREADS=4
+export TOKENIZERS_PARALLELISM=false
+export PYTHONUNBUFFERED=1
+export BIR_PHASE2_STATE="$BIR_PROJECT_ROOT/runs/phase2-reproduce"
+export BIR_PHASE2_RESUME="$BIR_PROJECT_ROOT/ops/phase2-reproduce-resume"
+export BIR_PHASE2_STATUS="$BIR_PROJECT_ROOT/ops/phase2-reproduce-status.json"
+export BIR_PHASE2_LABELS="$BIR_PROJECT_ROOT/ops/phase2-reproduce-labels.jsonl"
+test ! -e "$BIR_PHASE2_STATE"
+test ! -e "$BIR_PHASE2_RESUME"
+test ! -e "$BIR_PHASE2_STATUS"
+test ! -L "$BIR_PHASE2_STATUS"
+test ! -e "$BIR_PHASE2_LABELS"
+test ! -L "$BIR_PHASE2_LABELS"
+set -C
+cd "$BIR_PHASE2_CODE"
+python -m bir.cli annotate \
+  --manifest "$BIR_PROJECT_ROOT/datasets/initial/jobs.jsonl" \
+  --source "$BIR_PROJECT_ROOT/Flora" --run-dir "$BIR_PHASE2_STATE"
+python "$BIR_PHASE2_HELPER/scripts/verify_workflow_resume.py" \
+  --python "$BIR_PROJECT_ROOT/venv/bin/python" --code-root "$BIR_PHASE2_CODE" \
+  --source-root "$BIR_PROJECT_ROOT/Flora" \
+  --manifest "$BIR_PROJECT_ROOT/datasets/initial/jobs.jsonl" \
+  --state-dir "$BIR_PHASE2_STATE" --output-dir "$BIR_PHASE2_RESUME"
+python -m bir.cli status --run-dir "$BIR_PHASE2_STATE" > "$BIR_PHASE2_STATUS"
+python -m bir.cli export --run-dir "$BIR_PHASE2_STATE" --output "$BIR_PHASE2_LABELS"
+```
+
+The verifier backs up the completed state, hides GPUs from the child process,
+and invokes the same `annotate` command on the copy. It checks six reused stages,
+zero new model calls or stage attempts, unchanged request identities and labels,
+and unchanged original evidence. This is a completed-stage recovery test; it
+does not resume a partially generated caption. Keep the original fresh run,
+resume receipt, status output, exported labels, and scheduler outcome.

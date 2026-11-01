@@ -113,11 +113,12 @@ bir inspect --manifest jobs.jsonl --source "$FLORA_SOURCE"
 bir annotate --manifest jobs.jsonl --source "$FLORA_SOURCE" --run-dir runs/research
 ```
 
-`annotate` selects `--condition accelerated`. This is the phase-two execution
-path; its GPU compatibility and throughput evidence are recorded separately
-from the already verified v1 baseline. The baseline remains available with
-`--condition optimized`. Use separate run directories for different conditions.
-Do not interpret a new command name or CPU test as an acceleration measurement.
+`annotate` selects `--condition accelerated`. A matched six-episode comparison
+measured 1.57× throughput with all 121 captions and 170 native model inputs
+unchanged. The full eleven-episode target did not pass because the baseline
+failed on two videos in the other block. See [the measured results and limits](PHASE2_RESULTS.md).
+The baseline remains available with `--condition optimized`. Use separate run
+directories for different conditions.
 
 Progress shows completed stages, failures, and the current episode/stage.
 Detailed native output is appended to `inference.log`. Completed segmentation
