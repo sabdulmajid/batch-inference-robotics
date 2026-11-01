@@ -6,7 +6,7 @@ prompts, generation, parsing, and reconstruction stay upstream-owned.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager, nullcontext
+from contextlib import contextmanager, nullcontext, ExitStack
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
@@ -243,7 +243,16 @@ class NativeBackend:
     process-wide state. This adapter does not alter CUDA_VISIBLE_DEVICES.
     """
     def __init__(self, source_root, *, captioner_headroom_gib=4.0,
-                 decoded_frame_cache=None, frame_cache_bytes=0, progress=None):
+                 decoded_frame_cache=None, frame_cache_bytes=0, progress=None,
+                 preparation_mode='upstream', preparation_prefetch=1, profile_native=False):
+        if preparation_mode not in ('upstream', 'direct'):
+            raise ValueError('Choose upstream or direct native preparation')
+        if type(preparation_prefetch) is not int or preparation_prefetch not in (0, 1):
+            raise ValueError('Native preparation prefetch must be zero or one')
+        from .native_profile import NativeProfile
+        self.preparation_mode = preparation_mode
+        self.preparation_prefetch = preparation_prefetch
+        self.native_profile = NativeProfile(profile_native)
         self.source_root = Path(source_root).expanduser().resolve(strict=True)
         self.provenance = verify_source(self.source_root)
         if not math.isfinite(captioner_headroom_gib) or captioner_headroom_gib <= 0:
@@ -274,6 +283,8 @@ class NativeBackend:
                       right_wrist=row.get('right_wrist'), yam32=row.get('yam32', False),
                       instruction=row.get('instruction', ''))
         videos, profile = self.api.DataEnginePipeline._inputs(row['video'], **values)
+        if self.preparation_mode == 'direct' and (profile not in ('Human', 'Human actions') or set(videos) != {'main'}):
+            raise ValueError('Direct native preparation currently requires Human single-view input')
         metadata = {
             'status': 'inputs_validated', 'profile': profile, 'yam32': values['yam32'],
             'duration_s': videos['main'].duration_s,
@@ -287,15 +298,31 @@ class NativeBackend:
         return PreparedEpisode(row, videos, profile, metadata)
 
     @contextmanager
-    def _execution(self):
-        with _NATIVE_LOCK:
-            if self.frame_cache is None:
-                yield
-            else:
+    def _execution(self, prepared=None, stage=None):
+        with _NATIVE_LOCK, ExitStack() as hooks:
+            if self.frame_cache is not None:
                 def decode(video, wanted, canonical=False):
                     return self.frame_cache.decode(video, wanted, canonical=canonical, decoder=self._decode)
-                with patch.object(self.media, 'decode_selected', side_effect=decode):
-                    yield
+                hooks.enter_context(patch.object(self.media, 'decode_selected', side_effect=decode))
+            if prepared is not None and hasattr(self.pipeline, 'generate'):
+                original_generate = self.pipeline.generate
+                ordinal = 0
+                def generate(*args, **kwargs):
+                    nonlocal ordinal
+                    identity = dict(episode_id=prepared.job.get('id', prepared.job.get('episode_id', 'unknown')),
+                                    stage=stage, request_ordinal=ordinal,
+                                    source_sha256=prepared.metadata.get('input_sha256', {}))
+                    ordinal += 1
+                    _runtime_event('native_request_start', **identity)
+                    try:
+                        result = original_generate(*args, **kwargs)
+                    except BaseException as error:
+                        _runtime_event('native_request_end', status='failed', error_type=type(error).__name__, **identity)
+                        raise
+                    _runtime_event('native_request_end', status='complete', **identity)
+                    return result
+                hooks.enter_context(patch.object(self.pipeline, 'generate', side_effect=generate))
+            yield
 
     def _binding(self, prepared):
         return {key: prepared.metadata[key] for key in
@@ -307,7 +334,7 @@ class NativeBackend:
             raise RuntimeError('CUDA is required for native segmentation')
         pool = 'yam32' if prepared.job.get('yam32', False) else self.config.PROFILE_POOLS[prepared.profile]
         start = time.monotonic()
-        with self._execution():
+        with self._execution(prepared, 'segment'):
             segments, audit = self.pipeline.segment(prepared.videos, pool, self.session,
                                                      prepared.job.get('instruction', ''), self.progress)
         result = {**self._binding(prepared), 'schema_version': 'bir_segmentation_v1',
@@ -331,8 +358,12 @@ class NativeBackend:
             raise RuntimeError('Segmentation checkpoint native contract changed')
         segments = segmentation['segments']
         started = time.monotonic()
-        with self._execution():
-            if len(prepared.videos) == 3:
+        with self._execution(prepared, 'caption'):
+            if getattr(self, 'preparation_mode', 'upstream') == 'direct':
+                from .native_preparation import caption_single_direct
+                captions, audit = caption_single_direct(self, prepared, segments,
+                    prefetch=self.preparation_prefetch)
+            elif len(prepared.videos) == 3:
                 captions, audit = self.pipeline.caption_three(prepared.videos, segments, self.session,
                     prepared.job.get('instruction', ''), self.progress, profile=prepared.profile)
             else:

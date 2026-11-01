@@ -1,19 +1,20 @@
 {
+  "block_assignment_revision": 2,
   "blocks": [
     {
       "block": 0,
       "episode_ids": [
         "homer_59",
         "homer_60",
+        "homer_29",
         "homer_48",
-        "homer_38",
-        "homer_40"
+        "homer_38"
       ],
       "order": [
         "baseline",
         "candidate"
       ],
-      "source_seconds": 340.191467
+      "source_seconds": 363.617
     },
     {
       "block": 1,
@@ -22,14 +23,14 @@
         "homer_56",
         "homer_33",
         "homer_53",
-        "homer_29",
-        "homer_37"
+        "homer_37",
+        "homer_40"
       ],
       "order": [
         "candidate",
         "baseline"
       ],
-      "source_seconds": 386.706466
+      "source_seconds": 363.280933
     }
   ],
   "dataset": {
@@ -199,10 +200,12 @@
     "homer_52"
   ],
   "known_supported_episodes": 14,
+  "previous_selection_sha256": "3a283c389e765afe4cf0abe232a36c0f47dc205f8f1af86a5e884c3418278eb8",
+  "scheduling_decision": "Before any phase-two GPU profile, pilot, or final prediction, replace the initial greedy assignment's 46.514999-second duration imbalance with an exhaustive source-only duration minimum. Preserve every source, both condition orders, five/six counts, cost headroom and resource limits. Previously extracted original videos remain valid.",
   "schema_version": "bir_phase2_selection_v1",
   "scope_limit": "Eleven unseen episodes fall below the 12\u201320 target because the pinned validated pool has fourteen supported episodes, three used for development. Each block stays below the old eight-job metadata capacity; a separate CPU regression covers that limit.",
   "selected_episodes": 11,
-  "selection_rule": "All eleven previously unpredicted supported episodes. Assign episodes largest-duration first to the shorter block, breaking ties by block index, with capacities five/six. Each block requires three task labels and uses fixed hash order. Task labels come from source instructions and source-video metadata, not predictions. Both engines receive the same explicit empty instruction.",
-  "selection_sha256": "3a283c389e765afe4cf0abe232a36c0f47dc205f8f1af86a5e884c3418278eb8",
+  "selection_rule": "All eleven previously unpredicted supported episodes. Enumerate all 462 five-episode subsets and their six-episode complements. Require at least three source task labels in each block. Minimize absolute source-duration difference with exact decimal arithmetic; break ties by SHA256 of ['phase2-balance-v2', sorted five-episode IDs]. Use the unchanged fixed hash order inside each block. Task labels come from source instructions and source-video metadata, not predictions. Both engines receive the same explicit empty instruction.",
+  "selection_sha256": "99fb95852f848ef86dd16478c59e1a91be295cec788225da11e5acd179bdffb0",
   "source_seconds": 726.897933
 }

@@ -19,6 +19,7 @@ from .engine import Engine
 from .manifest import canonical_json, file_sha256, load_manifest
 from .native import MODEL_REVISIONS, UPSTREAM_COMMIT, NativeBackend, verify_source
 from .resource_ledger import ResourceLedger, check_storage, reject_restarted_execution
+from .runtime_identity import runtime_identity
 from .store import RunStore
 
 
@@ -68,6 +69,7 @@ def build_execution_contract(*, model_lock=Path("configs/native-models.json"),
     # locations are not part of output identity. Placement headroom is explicit.
     code = {path.name: file_sha256(path) for path in sorted(Path(__file__).parent.glob("*.py"))}
     return dict(engine_version=__version__, engine_source_sha256=code,
+                runtime=runtime_identity(),
                 native_model_lock=_model_lock(model_lock), condition=condition,
                 captioner_headroom_gib=captioner_headroom_gib, batch_size=batch_size)
 
@@ -78,9 +80,10 @@ def _contract(args, condition):
                                     condition=condition, batch_size=args.batch_size)
 
 
-def _native_options(parser):
+def _native_options(parser, *, manifest=True):
     parser.add_argument("--source", type=Path, required=True, help="Pinned NVIDIA FLORA checkout")
-    parser.add_argument("--manifest", type=Path, required=True, help="Native video JSONL manifest")
+    if manifest:
+        parser.add_argument("--manifest", type=Path, required=True, help="Native video JSONL manifest")
     parser.add_argument("--model-lock", type=Path, default=Path("configs/native-models.json"))
     parser.add_argument("--captioner-headroom-gib", type=float, default=4.0)
     parser.add_argument("--batch-size", type=int, default=1)
@@ -98,8 +101,31 @@ def build_parser():
     run = commands.add_parser("run", help="Run or resume native inference")
     _native_options(run)
     run.add_argument("--run-dir", type=Path, required=True)
-    run.add_argument("--condition", choices=("reference", "persistent", "optimized"), default="optimized")
+    run.add_argument("--condition", choices=("reference", "persistent", "optimized", "accelerated"), default="optimized")
     run.add_argument("--stages", choices=("all", "segment", "caption"), default="all")
+    annotate = commands.add_parser("annotate", help="Annotate a folder or manifest with progress; repeat to resume")
+    _native_options(annotate, manifest=False)
+    inputs = annotate.add_mutually_exclusive_group(required=True)
+    inputs.add_argument("--videos", type=Path, help="Folder of single-view human videos, including subfolders")
+    inputs.add_argument("--manifest", type=Path, help="Existing native video JSONL manifest")
+    annotate.add_argument("--run-dir", type=Path, required=True)
+    annotate.add_argument("--condition", choices=("reference", "persistent", "optimized", "accelerated"), default="accelerated")
+    state = commands.add_parser("status", help="Inspect saved progress and actionable failures")
+    state.add_argument("--run-dir", type=Path, required=True)
+    review = commands.add_parser("review", help="Play intervals and save separate corrections in a local browser")
+    review.add_argument("--run-dir", type=Path, required=True)
+    review.add_argument("--manifest", type=Path, help="Required for older runs without inputs.jsonl")
+    review.add_argument("--port", type=int, default=8765)
+    review.add_argument("--open", action="store_true", help="Open the local review URL in your browser")
+    export = commands.add_parser("export", help="Export generated labels, corrections, and failures as JSONL")
+    export.add_argument("--run-dir", type=Path, required=True)
+    export.add_argument("--output", type=Path, required=True)
+    demo = commands.add_parser("demo", help="Install explicitly precomputed public-data labels; no model download")
+    demo.add_argument("--output-dir", type=Path, required=True)
+    demo.add_argument("--example", type=Path, default=Path(__file__).resolve().parents[2] / "examples/precomputed-homer41.json")
+    demo_source = demo.add_mutually_exclusive_group(required=True)
+    demo_source.add_argument("--video", type=Path, help="Exact checksum-matched original public demo video")
+    demo_source.add_argument("--parquet", type=Path, help="Pinned downloaded public WGO dataset")
     storage = commands.add_parser("storage-check", help="Check measured project storage against the resource policy")
     storage.add_argument("--policy", type=Path, default=Path("configs/resource_policy.yaml"))
     storage.add_argument("--project-path", type=Path, required=True)
@@ -166,12 +192,15 @@ def execute_run(args, started):
             atomic_json(metadata_path, metadata)
         store = RunStore(directory / "run.sqlite")
         try:
-            cache_bytes = 256 * 1024**2 if args.condition == "optimized" else 0
+            optimized = args.condition in {"optimized", "accelerated"}
+            accelerated = args.condition == "accelerated"
+            cache_bytes = 256 * 1024**2 if optimized else 0
             factory = lambda: NativeBackend(args.source, captioner_headroom_gib=args.captioner_headroom_gib,
-                                             frame_cache_bytes=cache_bytes)
+                                             frame_cache_bytes=cache_bytes,
+                                             **({"preparation_mode": "direct"} if accelerated else {}))
             engine = Engine(factory, store, mode="reference" if args.condition == "reference" else "staged",
-                            prefetch=1 if args.condition == "optimized" else 0,
-                            prepared_cache_size=8 if args.condition == "optimized" else 0)
+                            prefetch=1 if optimized else 0,
+                            prepared_cache_size=8 if optimized else 0, spill_metadata=accelerated)
             result = engine.run(jobs, stages=args.stages, output_dir=directory / "annotations")
             result.update(condition=args.condition, requested_stages=args.stages,
                           contract_sha256=fingerprint, total_cli_workflow_s=time.monotonic() - started,
@@ -208,7 +237,7 @@ def main(argv=None):
     started = time.monotonic()
     args = build_parser().parse_args(argv)
     try:
-        if args.command in {"inspect", "run"}:
+        if args.command in {"inspect", "run", "annotate"}:
             if args.batch_size != 1:
                 raise ValueError("Batch sizes above one require GPU compatibility and memory measurements")
             if not math.isfinite(args.captioner_headroom_gib) or args.captioner_headroom_gib <= 0:
@@ -219,6 +248,21 @@ def main(argv=None):
             result, code = _inspect(args, started)
         elif args.command == "run":
             result, code = execute_run(args, started)
+        elif args.command == "annotate":
+            from .workflow import annotate
+            result, code = annotate(args, started, execute_run)
+        elif args.command == "status":
+            from .workflow import status
+            result, code = status(args.run_dir), 0
+        elif args.command == "review":
+            from .review import serve
+            result, code = serve(args.run_dir, manifest=args.manifest, port=args.port, open_browser=args.open)
+        elif args.command == "export":
+            from .workflow import export_jsonl
+            result, code = export_jsonl(args.run_dir, args.output), 0
+        elif args.command == "demo":
+            from .workflow import prepare_demo
+            result, code = prepare_demo(args.output_dir, args.example, video=args.video, parquet=args.parquet), 0
         elif args.command == "storage-check":
             if not math.isfinite(args.planned_gib) or args.planned_gib < 0:
                 raise ValueError("Planned new GiB must be finite and nonnegative")

@@ -1,0 +1,642 @@
+{
+  "attribution": {
+    "dataset": "WGO-Bench, published by MacroData; original HomER episode homer_41",
+    "dataset_card": "https://huggingface.co/datasets/macrodata/WGO-Bench/blob/9cfb7bb98d60a58319f4b3d7b41374eedfb7980c/README.md",
+    "dataset_license": "CC-BY-NC-SA-4.0",
+    "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "model": "NVIDIA FLORA TempSeg and Captioner",
+    "model_use": "Non-commercial research and evaluation; see LICENSE-NVIDIA. The repository does not redistribute demo video."
+  },
+  "dataset": {
+    "parquet_sha256": "24c6c23447753385b9cea0d17f17d7a8aa74131d800d9bc9ab74d7669d7404ab",
+    "path": "data/annotations.parquet",
+    "repository": "macrodata/WGO-Bench",
+    "revision": "9cfb7bb98d60a58319f4b3d7b41374eedfb7980c"
+  },
+  "description": "Actual FLORA-generated development outputs. These are precomputed model captions, not reference labels or a quality guarantee.",
+  "new_model_calls": 0,
+  "precomputed": true,
+  "records": [
+    {
+      "end_s": 6.8,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "grip bottle with right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 0,
+      "profile": "human",
+      "record_id": "1eef1420a72d8e493e80afce6f35bae00ba8e705e07257d7ec1b8fc999dacd8a",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 0.0
+    },
+    {
+      "end_s": 9.2,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "pick up water bottle with left hand, pass water bottle from left hand to right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 1,
+      "profile": "human",
+      "record_id": "e28d07902b1965806ea08d1a84e4b8a1d67cbe7a6eae6a2345a8880a83db10e4",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 6.8
+    },
+    {
+      "end_s": 15.2,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "hold bottle with both hands, place bottle on stove with right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 2,
+      "profile": "human",
+      "record_id": "1460dad5e2548769eff2e15c054cbb31d8bf60f1c5ceeaea842aa866df0bf4dc",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 9.2
+    },
+    {
+      "end_s": 20.4,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "pick up water bottle with both hands",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 3,
+      "profile": "human",
+      "record_id": "6a4ee8a8f89e6de41cac94b8558dbe5c50dd4bd7d7795cf094e27cf8a04a11f0",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 15.2
+    },
+    {
+      "end_s": 25.6,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "hold water bottle with both hands, place water bottle on stove with both hands",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 4,
+      "profile": "human",
+      "record_id": "a5adcdcdb3345ea8cbffe5a6124665d33e5ec4d5b69d2c12cd37f4a745af6ad9",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 19.7
+    },
+    {
+      "end_s": 28.8,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "hold water bottle with both hands, place water bottle on stove with both hands",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 5,
+      "profile": "human",
+      "record_id": "202da72488aeed898ac9ca7744229262d11d0d0ac1f52a0a8ef82c0b8ed0d4a8",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 20.4
+    },
+    {
+      "end_s": 33.2,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "grip bottle with both hands",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 6,
+      "profile": "human",
+      "record_id": "d02e49cdff1f8e4ad51e4d9cb36b960b8919cff0bb943cb25ff0269d5bd2883b",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 25.6
+    },
+    {
+      "end_s": 42.0,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "hold bottle with both hands",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 7,
+      "profile": "human",
+      "record_id": "fb3fb373cc854d2bcc92adba5efdba99579c1a5cdf8e72d2c3caf3e638bc46c2",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 33.2
+    },
+    {
+      "end_s": 44.3,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "place bottle on stove with both hands",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 8,
+      "profile": "human",
+      "record_id": "7b541687816d3da099000664644a0d1a04f8764d02f72a2d3af81833e383cdbc",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 42.0
+    },
+    {
+      "end_s": 45.5,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "shift bottle on stove with left hand, shift bottle on stove with right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 9,
+      "profile": "human",
+      "record_id": "81ffe3185bc8d21b7a27aa2dc8df9dee6f0b80f13530df99ca39d7e5fe5e19ce",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 44.3
+    },
+    {
+      "end_s": 46.5,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "hold bottle with left hand, shift bottle on stove with right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 10,
+      "profile": "human",
+      "record_id": "13334d77e85eeeedacc8f374591ee67eeb9320c66bde09bef6916bf41dae08bf",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 45.5
+    },
+    {
+      "end_s": 48.4,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "shift bottle on stove with left hand, shift bottle on stove with right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 11,
+      "profile": "human",
+      "record_id": "5dd0db1f69a3abd8eee77f8b664ffb08234d3542a7ecd62d760ebaba1578dca9",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 45.6
+    },
+    {
+      "end_s": 48.3,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "shift bottle on stove with left hand, shift bottle on stove with right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 12,
+      "profile": "human",
+      "record_id": "9d58d65d0ae1b9c0b1b6b9593cc67f96ca604812063e730973fbc0822308bee3",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 46.5
+    },
+    {
+      "end_s": 49.4,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "shift bottle on stove with left hand, shift bottle on stove with right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 13,
+      "profile": "human",
+      "record_id": "1d692f5d5af810647d6d4ceda2db12bc42e6eda194906dddad448d1bdf8ab040",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 48.4
+    },
+    {
+      "end_s": 54.25,
+      "episode_id": "homer_41",
+      "failure": null,
+      "generated_caption": "shift bottle on stove with right hand",
+      "generation": {
+        "contract_sha256": "629b41270b05d2a1e234b9f93e9abcec8414875d0ede25de3e59f3f15a3586ce",
+        "model_revisions": {
+          "captioner": {
+            "repo": "nvidia/Flora-Captioner",
+            "repo_env": "FLORA_CAPTIONER_REPO",
+            "revision": "fef0bbfe11829ca7f3539d58da7a6a2c2f109dc6",
+            "source_manifest_identity": "2ab6cafd286df7f446bfb84fbc4af7c54773d5e890dd277ac5a0453d0d4fb778"
+          },
+          "tempseg": {
+            "repo": "nvidia/Flora-TempSeg",
+            "repo_env": "FLORA_TEMPSEG_REPO",
+            "revision": "114a1076f70eb53f4a58ac045505db3087e79347",
+            "sha256": "1d80fe544e4cd1a7ff6b0ea4be71e988972408dab81d4c8af72e3a628739d6c3"
+          },
+          "tempseg_base": {
+            "repo": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+          }
+        },
+        "native_runtime_commit": "d2701b08a08b88d18887abed81f71c8373478d7b",
+        "payload_sha256": "a867c4f3a8269e2ccaba2bf9f02f560cb4687a35ab6754f68ecf555eddc92372",
+        "precomputed": true,
+        "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7"
+      },
+      "inference_status": "complete",
+      "interval_index": 14,
+      "profile": "human",
+      "record_id": "4bcde6075f9c4b3ebb0dc8cdd5b15f4b9b39432a891861e585e3d56053586389",
+      "request_id": "17b14c1c494c69a554c8d9423261d12eb1c8f2202505c6c24697bb55b84407f4",
+      "schema_version": "bir_label_v1",
+      "source_sha256": {
+        "main": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+      },
+      "start_s": 49.4
+    }
+  ],
+  "schema_version": "bir_precomputed_example_v1",
+  "source": {
+    "duration_s": 54.3,
+    "episode_id": "homer_41",
+    "sha256": "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12"
+  }
+}

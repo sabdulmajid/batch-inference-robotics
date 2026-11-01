@@ -9,9 +9,27 @@ researcher-facing annotation/review workflow. Follow [the phase-two brief](PHASE
 Use the delivered native release as the baseline, profile the actual bottleneck,
 implement the selected acceleration, and compare on a broader workload.
 
-Phase-two implementation and measurements have not started in this planning
-update. Existing phase-one evidence remains unchanged. Reconcile the existing
-ledger before new compute; the budget does not reset.
+Phase-two implementation is active. Source-only selection is frozen in
+[`manifests/phase2-native.json`](../manifests/phase2-native.json): eleven new
+complete episodes, 726.897933 source seconds, in two counterbalanced blocks.
+All eleven original videos passed scheduled CPU preparation with unchanged
+bytes, durations, and geometry. This used 132 seconds on four CPU cores.
+
+The selected optimization removes lossless PNG serialization/readback from
+human single-view caption preparation and prepares one next request during
+generation. A real two-request CPU check measured 17.688 s for the original
+path and 7.535 s for direct preparation, with exact processor tensors and
+frame/clock/prompt agreement. This is not an end-to-end GPU speedup result.
+The GPU compatibility pilot and broader comparison remain pending.
+
+A bounded metadata spill cache repairs the eight-entry reuse limit. Runtime
+dependency versions now enter the execution identity. The lightweight
+annotation/review/export workflow is under verification. Existing phase-one
+evidence remains unchanged. Follow [the finite protocol](PHASE2_PROTOCOL.md);
+the budget does not reset. One pending profile submission was cancelled before
+allocation after a manifest relocation error was found. It used zero GPU time
+but consumed one submission. Profiling and the pilot will share one corrected
+allocation. Four GPU submissions remain, including protected reproduction.
 
 ## Delivered baseline
 

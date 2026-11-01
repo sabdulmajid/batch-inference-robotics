@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections import OrderedDict, deque
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import ExitStack
 import errno
 import threading
 import time
@@ -21,7 +22,7 @@ def is_transient(error):
 
 class Engine:
     def __init__(self, backend_factory, store, *, mode="staged", prefetch=1,
-                 prepared_cache_size=8, max_transient_retries=1):
+                 prepared_cache_size=8, max_transient_retries=1, spill_metadata=False):
         if mode not in {"staged", "reference"}:
             raise ValueError("mode must be staged or reference")
         if not isinstance(prefetch, int) or not 0 <= prefetch <= 8:
@@ -36,6 +37,9 @@ class Engine:
         # stages of the same episode. Drop it when that episode closes.
         self.prepared_cache_size = prepared_cache_size if mode == "staged" else 1
         self.max_transient_retries = max_transient_retries
+        self.spill_metadata = bool(spill_metadata) and mode == "staged"
+        self._metadata_spool = None
+        self._metadata_spool_stats = None
         self._prepared = OrderedDict()
         self._prepared_lock = threading.RLock()
         self._telemetry_lock = threading.RLock()
@@ -81,6 +85,7 @@ class Engine:
         with self._telemetry_lock:
             return dict(schema_version='bir_engine_work_telemetry_v1',
                 cpu_preparation=dict(self._cpu_work), backends=list(self._backend_telemetry),
+                prepared_metadata_spool=self._metadata_spool_stats,
                 prefetch=self.prefetch, prepared_metadata_cache_capacity=self.prepared_cache_size,
                 cpu_timing_scope='Summed engine worker time includes failed calls. Preparation can overlap inference; these sums are not end-to-end wall time. Initial CLI manifest hashing is outside these counters.',
                 decoded_cache_scope='Cumulative counters per backend cache lifetime, captured before close. Byte counts cover retained RGB payloads only; null means no decoded-frame cache.')
@@ -98,10 +103,16 @@ class Engine:
                 with self._telemetry_lock:
                     self._cpu_work['metadata_cache_hits'] += 1
                 return result
+        if self._metadata_spool is not None:
+            result = self._metadata_spool.get(job, backend)
+            if result is not None:
+                return result
         result = self._measure_preparation('backend_preparation', lambda: backend.prepare(job.as_native_dict()))
         metadata = getattr(result, "metadata", {})
         if "input_sha256" in metadata and metadata["input_sha256"] != dict(job.source_sha256):
             raise ValueError("Native input checksums differ from the request identity")
+        if self._metadata_spool is not None:
+            self._metadata_spool.put(job, result)
         with self._prepared_lock:
             if self.prepared_cache_size:
                 self._prepared[job.request_id] = result
@@ -235,7 +246,16 @@ class Engine:
         self._model_load_failure = None
         self._reset_telemetry()
         self._prepared.clear()
-        with self.store.exclusive():
+        self._metadata_spool_stats = None
+        with ExitStack() as cleanup, self.store.exclusive():
+            if self.spill_metadata:
+                from .metadata_cache import PreparedMetadataSpool
+                self._metadata_spool = PreparedMetadataSpool()
+                def close_spool():
+                    self._metadata_spool_stats = self._metadata_spool.stats()
+                    self._metadata_spool.close()
+                    self._metadata_spool = None
+                cleanup.callback(close_spool)
             before_attempts = {(a["request_id"], a["stage"], a["number"]) for a in self.store.attempts()}
             for job in jobs:
                 self.store.register(job)
