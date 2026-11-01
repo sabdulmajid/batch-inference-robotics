@@ -2,7 +2,18 @@
 
 Updated: 2026-10-31
 
-## Current state
+## Active next phase
+
+The user has requested a more substantial performance contribution and a
+researcher-facing annotation/review workflow. Follow [the phase-two brief](PHASE2_PROMPT.md).
+Use the delivered native release as the baseline, profile the actual bottleneck,
+implement the selected acceleration, and compare on a broader workload.
+
+Phase-two implementation and measurements have not started in this planning
+update. Existing phase-one evidence remains unchanged. Reconcile the existing
+ledger before new compute; the budget does not reset.
+
+## Delivered baseline
 
 The native batch-one research release is implemented and independently verified.
 It follows planning commit `459f49d`. See the [final report](FINAL_REPORT.md) for
@@ -113,9 +124,10 @@ project policy choice, not a cluster quota change.
 
 ## Next actions
 
-The verified native path is ready for continued research within its documented
-configuration. No further experiment is scheduled. Larger batches, additional
-profiles, and held-out adaptive quality require a separately planned extension.
+Execute the phase-two brief through implementation, a usable example, broader
+fresh-run comparison, and reproduction. Plan within remaining project resources;
+no new GPU job was submitted by this documentation update. The original adaptive
+experiment and its inconclusive result remain part of the baseline history.
 
 Private records retain exact job IDs, connection settings, output paths, skill
 hashes, and scheduler output. Public reports contain sanitized measurements.

@@ -19,6 +19,16 @@ quality remains limited to the reported AI text-reference evaluations.
 See the [final report, evidence, and limits](docs/FINAL_REPORT.md),
 [reproduction commands](docs/REPRODUCTION.md), and [current status](docs/STATUS.md).
 
+## Next phase: substantial acceleration and a practical workflow
+
+The current release is the baseline. The next phase targets a faster annotation
+path, a short folder/manifest-to-labels workflow, and a lightweight local review
+view, followed by broader multi-clip comparisons. These improvements are planned;
+the measurements above describe the existing release.
+
+The head agent should follow [the phase-two implementation brief](docs/PHASE2_PROMPT.md).
+Existing results and the project-wide resource budget remain in force.
+
 ## Local checks
 
 Use Python 3.12 for the native environment. Python 3.11 or later supports the

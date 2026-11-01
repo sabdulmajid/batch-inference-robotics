@@ -2,7 +2,9 @@
 
 ## Mission and authority
 
-Implement and evaluate the project described in docs/PROJECT_PLAN.md. Work autonomously on routine implementation, dependency setup, bounded experiments, debugging, review, commits, and pushes within the user's launch authorization and configs/resource_policy.yaml. Respect actual account, filesystem, scheduler, and host-tool restrictions.
+Active phase: docs/PHASE2_PROMPT.md. The user requests substantial throughput improvements and a practical researcher workflow, using the existing native release as the baseline. Follow that brief for current priorities and completion; docs/PROJECT_PLAN.md and docs/ORCHESTRATOR_PROMPT.md retain phase-one context. Keep applicable native contracts, project-wide resource caps, and access restrictions. The old adaptive phase's stopping condition is historical, not the objective of this phase. Further private-archive auditing is not requested.
+
+Work autonomously on routine implementation, dependency setup, bounded experiments, debugging, review, commits, and pushes within the user's launch authorization and configs/resource_policy.yaml. Respect actual account, filesystem, scheduler, and host-tool restrictions.
 
 The launch instruction supplies authorization for project-specific model downloads and scheduled multi-GPU probes within the stated envelope; do not repeatedly ask for permission already granted. Never invent access, disable a safeguard, exceed a cap, or infer ownership of unrelated jobs from a shared Unix username.
 
@@ -46,13 +48,13 @@ Validate a batch request, then run a small actual application test, then size an
 
 ## Repository and release
 
-The repository is public. Keep the personal skill and its account-specific references, real connection settings, private absolute paths, raw cluster/account logs, tokens, private keys, datasets, model weights, and environments out of commits. Use .local/ and other ignored task directories for these.
+The repository is public. Keep the personal skill and its account-specific references, real connection settings, private absolute paths, raw cluster/account logs, tokens, private keys, datasets, model weights, and environments out of commits. Use .local/ and other ignored task directories for these. Small reviewed demo examples may be published only when redistribution is permitted, with attribution and without private data; a public-data download recipe is an alternative.
 
 Keep upstream source pinned and intact, with integrity and license checks. Prefer adapters around native code. Do not relabel covered upstream code as permissively licensed.
 
 Stage explicit reviewed files. The integrator alone updates the delivery branch. Use normal fast-forward pushes; never force-push, discard unrelated changes, or overwrite concurrent work. Preserve branch protections. If protected, push a reviewable branch/draft PR without bypassing policy.
 
-Use meaningful tests for timestamp fidelity, model placement, batching identities, retry/resume, and metric accounting. Verify real GPU execution where available. Stop optional sweeps after the predefined gates and bounded adaptive experiment.
+Use meaningful tests for timestamp fidelity, model placement, batching identities, retry/resume, and metric accounting. Verify real GPU execution where available. Use the active phase's finite experiment plan and reserve final reproduction within the existing aggregate budget. Stop optional sweeps after its goals are adequately evaluated.
 
 At completion, report separately: implemented software, real end-to-end validation, fidelity, performance, adaptive-quality verdict, resource consumption, reproduction commands, and remaining limitations.
 

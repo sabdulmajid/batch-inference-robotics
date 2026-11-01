@@ -1,4 +1,6 @@
-# Head orchestrator brief
+# Phase-one head orchestrator brief
+
+The active follow-up is [Phase 2: a fast, usable FLORA annotation tool](PHASE2_PROMPT.md). Use that brief for current priorities and sequencing. This document preserves the original implementation context; reusable safety, fidelity, and resource constraints still apply.
 
 Use this brief with the user's launch message, which supplies the local checkout and identifies the installed `$watcloud` skill.
 
