@@ -60,3 +60,5 @@ node_modules/
 !web/examples/robot.mp4
 !examples/rl/lift-iql-smoke/iql-checkpoint.pth
 !examples/rl/lift-iql-smoke/iql-resumed.pth
+
+!examples/rl/lift-environment.hdf5

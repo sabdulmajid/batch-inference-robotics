@@ -1,8 +1,31 @@
 # Project status
 
-Updated: 2026-11-01 UTC
+Updated: 2026-11-02 UTC
 
-## Delivered phase two
+## Delivered rollout integration phase
+
+The [rollout release](ROLLOUT_RESULTS.md) adds versioned real trajectories,
+explicit clocks and reward selection, robomimic IQL export, a separate Rewarder
+worker, and an anonymous [public review demo](https://flora-rollout-review.exact-leaf-7339.chatgpt.site).
+The [quickstart](ROLLOUT_QUICKSTART.md) covers the installable workflow.
+
+Real Lift data passed exact checks on 117 transitions. CPU IQL completed 20
+optimizer updates, checkpoint reload, and one further update. Two fresh policy
+episodes produced 0/2 successes: integration smoke evidence only. The public
+robot replay contains 59 clock-matched frames rendered with OSMesa/llvmpipe.
+Native robot captions and Rewarder results remain unavailable. The historical
+human example supplies 15 precomputed native captions and editable review history.
+
+GPU work remains paused. The carried ledger retains **18.563889/24 GPU-hours**
+and **16/16 GPU submissions**. CPU-only allocated use is **5.034444 core-hours**,
+including the failed CMake setup and successful replay retry. No active jobs or
+reservations remain. Measured task storage is about **138.22 GiB**, below the
+250 GiB cap, with 1 GiB reserved for release files. See [resource closure](../reports/rollout-resources.json).
+No counters were reset and no new GPU inference ran. Native Rewarder and policy
+improvement remain unvalidated; the later GPU proposal needs explicit approval
+of the pause and submission-limit changes.
+
+## Delivered phase two (historical)
 
 Phase two delivers native preparation acceleration and an annotation, review,
 resume, and export workflow. See [the practical results](PHASE2_RESULTS.md) and

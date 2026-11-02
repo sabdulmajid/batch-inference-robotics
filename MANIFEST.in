@@ -1,7 +1,7 @@
 include setup.py
 recursive-include configs *.json *.yaml *.txt
 include examples/precomputed-homer41.json
-recursive-include examples/rl/lift-iql-smoke *.json *.md *.pth
+recursive-include examples/rl *.json *.md *.pth *.hdf5
 include scripts/rl_cpu_smoke.py scripts/prepare_rollout_example.py
 recursive-include web *.html *.js *.css *.md *.json *.mp4
 

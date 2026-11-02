@@ -263,6 +263,22 @@ class RewarderTests(unittest.TestCase):
         self.assertEqual(result["status"], "interrupted")
         self.assertEqual(self.calls, 0)
 
+    def test_recorded_native_interruption_cannot_retry_in_the_same_directory(self):
+        # State-machine fixture only. No native subprocess, GPU, or model runs.
+        result = self.run_fixture()
+        result.update(status="interrupted", parse_valid=False, score=None, expected_score=None, progress=None)
+        result["execution"] = {"kind": "native", "native_validation": "awaiting_validation"}
+        result["result_digest"] = _digest({k: v for k, v in result.items() if k != "result_digest"})
+        directory = self.root / "rewards" / self.request["request_id"]
+        _atomic(directory / "result.json", result)
+        _atomic(directory / "state.json", dict(attempt=1, status="interrupted", execution=result["execution"]))
+        # Reading the failed receipt remains possible; requesting execution does not.
+        self.assertEqual(self.run_fixture(), result)
+        with self.assertRaisesRegex(RuntimeError, "allocation reconciliation.*fresh output directory"):
+            self.run_fixture(retry=True)
+        self.assertEqual(self.calls, 1)
+        self.assertFalse((directory / "attempt-0002").exists())
+
     def test_separate_mapping_arithmetic_and_version_checks(self):
         # Arithmetic fixture only. This explicit constructed record is not execution evidence.
         result = self.run_fixture()

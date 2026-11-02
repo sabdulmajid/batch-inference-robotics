@@ -1,0 +1,94 @@
+{
+  "schema_version": "bir_rollout_resources_v1",
+  "measured_utc": "2026-11-02T00:38:45.583521+00:00",
+  "status": "all_task_allocations_reconciled",
+  "gpu_pause": true,
+  "aggregate": {
+    "used_gpu_hours": 18.563888888888886,
+    "used_cpu_core_hours": 5.034444444444444,
+    "reserved_gpu_hours": 0.0,
+    "reserved_cpu_core_hours": 0.0,
+    "gpu_submissions_and_reservations": 16,
+    "active": {
+      "gpu": 0,
+      "cpu": 0
+    },
+    "remaining_gpu_hours": 5.436111111111114,
+    "remaining_cpu_core_hours": 26.965555555555557
+  },
+  "phase_cpu_allocations": [
+    {
+      "purpose": "software replay environment setup",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 723,
+      "cpus": 2,
+      "gpus": 0,
+      "core_hours": 0.40166666666666667,
+      "reason": "Missing CMake build dependency; no replay produced."
+    },
+    {
+      "purpose": "software replay with CMake dependency",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 645,
+      "cpus": 2,
+      "gpus": 0,
+      "core_hours": 0.35833333333333334,
+      "expected_artifacts_verified": true
+    }
+  ],
+  "new_gpu_hours": 0,
+  "new_gpu_submissions": 0,
+  "paid_compute_usd": 0,
+  "local_trainer": {
+    "runs": [
+      {
+        "run": "exported-20update-01",
+        "status": "passed",
+        "wall_seconds": 25.81164324999554,
+        "process_cpu_seconds": 13.064796,
+        "updates": 20,
+        "fresh_rollouts": 2
+      },
+      {
+        "run": "exported-20update-02",
+        "status": "passed",
+        "wall_seconds": 7.978484124992974,
+        "process_cpu_seconds": 8.535086,
+        "updates": 20,
+        "fresh_rollouts": 2
+      },
+      {
+        "run": "original-boundary-01",
+        "status": "passed",
+        "wall_seconds": 16.112545165990014,
+        "process_cpu_seconds": 2.6223729999999996,
+        "updates": 1,
+        "fresh_rollouts": 0
+      }
+    ],
+    "total_process_cpu_seconds": 24.222255,
+    "total_wall_seconds": 49.90267254097853,
+    "threads_max": 2,
+    "gpu_work": false
+  },
+  "storage": {
+    "remote_project_allocated_bytes": 143366696960,
+    "local_task_and_original_checkout_allocated_bytes": 5048082432,
+    "combined_observed_gib": 138.2220344543457,
+    "available_filesystem_bytes": 9026614067200,
+    "planned_remaining_delivery_bytes": 1073741824,
+    "scope": "Point-in-time du allocated bytes for task-owned remote project, whole local task directory and original checkout. Delivery allowance covers later wheel/archive/commit copies; unrelated directories excluded.",
+    "allowed": true,
+    "projected_project_bytes": 149488521216,
+    "projected_available_bytes": 9025540325376,
+    "projected_free_fraction": 0.18828088569140025,
+    "project_cap_bytes": 268435456000,
+    "minimum_available_bytes": 1288490189,
+    "minimum_available_to_planned_new_bytes_ratio": 1.2,
+    "headroom_scope": "remaining_planned_new_project_bytes",
+    "reasons": []
+  },
+  "accounting_rule": "Whole parent allocation elapsed resources counted once, including failed setup and idle time. Local CPU smoke process time is separate from SLURM allocation core-hours; normal engineering checks are not scheduler allocations."
+}

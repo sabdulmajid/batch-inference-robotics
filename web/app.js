@@ -1,5 +1,6 @@
 import {MAX_BUNDLE_BYTES, MAX_MEDIA_BYTES, sha256, parseBundle, reviewable, latestReview, appendReview, exportBundle, historyState, outcomeState} from './bundle.js';
 import {inspectStoredDraft, restoreStoredDraft} from './recovery.js';
+import {transitionIndexAtVideoTime} from './timeline.js';
 
 const $ = id => document.getElementById(id);
 const video = $('video');
@@ -264,10 +265,8 @@ function trajectoryAtVideoTime(time) {
   const t = episode()?.trajectory, camera = mainMedia()?.camera;
   const mapping = t?.clock_mappings?.find(x => x.camera === camera);
   if (!mapping || !(mapping.scale > 0) || !Array.isArray(t.action_times_s)) return;
-  const target = (time - mapping.offset_s) / mapping.scale;
-  let index = 0;
-  while (index + 1 < t.action_times_s.length && t.action_times_s[index + 1] <= target) index++;
-  renderTransition(index);
+  const index = transitionIndexAtVideoTime(t.action_times_s, mapping, time);
+  if (index !== null) renderTransition(index);
 }
 
 function renderOutcome() {

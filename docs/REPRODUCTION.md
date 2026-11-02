@@ -1,3 +1,5 @@
+> Version 0.3.0 adds a CPU rollout integration. See [the rollout quickstart](ROLLOUT_QUICKSTART.md) and [trainer evidence](TRAINER_INTEGRATION.md). GPU work remains paused. Historical native runs below retain their original runtime pins; resume them with their recorded release. Attachments and review exports do not rewrite those results.
+
 # Reproduce and inspect the engine
 
 These commands separate CPU verification from GPU evidence. A successful CPU

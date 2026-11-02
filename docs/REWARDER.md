@@ -28,6 +28,8 @@ The weights and model use are subject to NVIDIA's research license. Read the pin
 
 Primary references: [pinned inference guide](https://github.com/NVIDIA/Flora/blob/129a2ada74c526ee4692f3d1b111bea6ca19d5b7/rewarder/batch_utils/README.md), [pinned terminal implementation](https://github.com/NVIDIA/Flora/blob/129a2ada74c526ee4692f3d1b111bea6ca19d5b7/rewarder/batch_utils/terminal_reward.py), [pinned model files](https://huggingface.co/nvidia/Flora-Rewarder/tree/031299e46e452fc0cedb4e0975eb9fa95fc37783).
 
+Artifact digests detect changes and bind inputs. They are not digital signatures or independent proof of model execution. Treat externally supplied results as evidence from their producer, and inspect their provenance.
+
 ## Prepare a request without a GPU
 
 This API needs only the lightweight package and original local files. It hashes each file and validates the declarations. It does not download or load the model.
@@ -113,7 +115,7 @@ The pinned upstream terminal entry point was also executed with `--help`. Its pa
 
 Execution needs explicit permission to resume GPU work and increase the exhausted submission limit from 16 to at least 17. Unused GPU-hours alone do not authorize another submission.
 
-Proposed probe: one H100 80 GB, one node, one GPU, at most 30 minutes and 0.5 allocated GPU-hours. Prepare and verify assets before the allocation. Use at most three short, complete, action-bearing simulator episodes with fixed tasks and source hashes, including a known successful and unsuccessful outcome when available. Preserve all native settings. No quantization, frame reduction, CPU/disk inference offload, dense scoring, or parameter search. Final sizing and admission must use the existing ledger and actual site policy.
+Proposed probe: one H100 80 GB, one node, one GPU, four CPU cores, 128 GiB host RAM, 20 GiB job-local disk, at most 30 minutes and 0.5 allocated GPU-hours. Plan at most 65 GiB of new persistent assets, environment, and outputs, admitted against the existing 250 GiB project cap. The current verified account inventory has no H100; authorized compatible hardware access is an additional prerequisite. No new paid service is authorized. Prepare and verify assets before the allocation. Use at most three short, complete, action-bearing simulator episodes with fixed tasks and source hashes, including a known successful and unsuccessful outcome when available. Preserve all native settings. No quantization, frame reduction, CPU/disk inference offload, dense scoring, or parameter search. Final sizing and admission must use the existing ledger and actual site policy.
 
 Expected artifacts: scheduler terminal status and elapsed allocation; source/model/runtime checks; hardware and memory measurements; the native JSONL and portable results; parser/binding checks; a no-generation resume; mapped training export with real episode boundaries; and a clean CPU training-loader check. Pass means every intended episode yields a valid, correctly bound native score, no prohibited adaptation, reproducible raw records within the declared native determinism limits, unchanged resume evidence, and a valid export. An OOM, timeout, invalid parse, missing episode, identity mismatch, or excess allocation is a failed probe. It does not silently count as zero reward.
 

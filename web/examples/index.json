@@ -8,6 +8,15 @@
         "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12": "human.mp4"
       },
       "attribution": "MacroData WGO-Bench / HomER, CC-BY-NC-SA-4.0. Original media. FLORA predictions are precomputed research output, not ground truth. No robot actions or native Rewarder scores."
+    },
+    {
+      "id": "robot",
+      "title": "Robot rollout \u00b7 59 recorded actions",
+      "bundle": "robot.bir.json",
+      "media": {
+        "4092e8f0a2f0f2359ada6f7a2f5659f6e625f60091b0740361d49f6ba1030587": "robot.mp4"
+      },
+      "attribution": "robomimic Lift proficient-human dataset and robosuite, MIT. CPU-rendered recorded-state replay, not policy execution. Original environment rewards; FLORA captions and outcome scores are unavailable."
     }
   ]
 }

@@ -14,6 +14,38 @@
     "review_events": 0,
     "schema_version": "bir_bundle_summary_v1"
   },
+  "robot_bundle": {
+    "action_episodes": 1,
+    "annotation_records": 0,
+    "episodes": 1,
+    "historical_unapplied_reviews": 0,
+    "native_reward_artifacts": 0,
+    "outcome_artifacts": 0,
+    "payload_sha256": "74b41ea7da3e43606e25e49bbe8710ef4fbd7e438a09b51132a5185c5b497c8f",
+    "review_events": 0,
+    "schema_version": "bir_bundle_summary_v1"
+  },
+  "packaged_required_resources": [
+    "scripts/rl_cpu_smoke.py",
+    "scripts/prepare_rollout_example.py",
+    "configs/rl/requirements-cpu.txt",
+    "web/timeline.js",
+    "web/examples/robot.mp4",
+    "web/examples/robot.bir.json",
+    "examples/rl/lift-two-demos.bir.json",
+    "examples/rl/lift-environment.hdf5",
+    "docs/TRAINER_INTEGRATION.md",
+    "docs/ROLLOUT_QUICKSTART.md",
+    "reports/rl-cpu-smoke.json",
+    "reports/rl-data-roundtrip.json",
+    "reports/rollout-public-data.json"
+  ],
+  "packaged_robot_and_timeline_bytes_match_source": true,
+  "installed_robot_export": {
+    "transitions": 59,
+    "reward_source": "environment",
+    "boundary_mode": "source-mask"
+  },
   "trajectory_bundle": {
     "action_episodes": 2,
     "annotation_records": 0,
@@ -61,6 +93,8 @@
     "download_preserves_correction": true,
     "annotation_records": 15
   },
+  "installed_python_source_files_match_checkout": 25,
+  "artifact_scope": "Verified wheel snapshot; later documentation-only release metadata can change the distribution byte hash.",
   "package_import": "bir/__init__.py",
   "torch_installed": false,
   "real_data_roundtrip": {
@@ -85,6 +119,18 @@
     "device": "cpu",
     "optimizer_updates": 0
   },
-  "wheel_sha256": "938a1de1094498d6385f2da17700341ba484c42ec37c6eb7c06b4d01755d0b14",
-  "wheel_bytes": 24470036
+  "installed_robot_export_loader": {
+    "transitions": 59,
+    "batch_actions_shape": [
+      16,
+      1,
+      7
+    ],
+    "device": "cpu",
+    "optimizer_updates": 0
+  },
+  "wheel_built_from_sdist": true,
+  "sdist_sha256": "5d8f13a65e74923146fc8cd67a8b080e9bac7e54320162a46180d89fe24e638a",
+  "wheel_sha256": "8354012fa5fc9682eb914bba111f648eef26aaf952d44c0b422c72fa5f87da19",
+  "wheel_bytes": 25388852
 }

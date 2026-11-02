@@ -1,0 +1,85 @@
+{
+  "schema_version": "bir_public_rollout_data_verification_v1",
+  "status": "passed",
+  "source_sha256": "2067777cb8b532e9263dd09fd6448c41cc31224bb27be4a3b734010ae13eb540",
+  "public_hdf5_sha256": "3c07d0c4aed62f1b2b88ff409d992577de267fe56b2ea2bc8194fbcf6799bf96",
+  "array_checks": 46,
+  "array_values_and_dtypes_exact": true,
+  "simulator_states_exact": true,
+  "recorded_clocks_exact": true,
+  "next_clock_matches_controller_period": true,
+  "unknown_boundaries_preserved": true,
+  "source_model_xml_omitted_with_original_digest": true,
+  "bundles": {
+    "web/examples/robot.bir.json": {
+      "episodes": 1,
+      "transitions": 59,
+      "sha256": "179b119af09b5b0310a883ccdef3e89a6355dc0944dbaa1b1a032faee84febcc",
+      "native_captions": 0,
+      "native_rewarder_outputs": 0
+    },
+    "examples/rl/lift-two-demos.bir.json": {
+      "episodes": 2,
+      "transitions": 117,
+      "sha256": "60eed8816731e334865d6f3a615854443eeef086b6b084d5b8d27dad582a9f1d",
+      "native_captions": 0,
+      "native_rewarder_outputs": 0
+    }
+  },
+  "robot_video_sha256": "4092e8f0a2f0f2359ada6f7a2f5659f6e625f60091b0740361d49f6ba1030587",
+  "loader": {
+    "algorithm_profile": "robomimic IQL",
+    "robomimic_version": "0.5.0",
+    "transitions": 117,
+    "batch_actions_shape": [
+      16,
+      1,
+      7
+    ],
+    "next_object_shape": [
+      16,
+      1,
+      10
+    ],
+    "device": "cpu",
+    "optimizer_updates": 0
+  },
+  "scope": "Public data equivalence and actual training-loader read. Optimizer and fresh policy evidence are in rl-cpu-smoke.json.",
+  "video_decode": {
+    "decoded_frames": 59,
+    "fps": 20.0,
+    "dimensions": [
+      256,
+      256
+    ],
+    "frame_clock_matches_20hz": true
+  },
+  "browser_download_roundtrip": {
+    "status": "passed",
+    "download_origin": "Anonymous public browser review session",
+    "bundle_sha256": "12821cbc2a42d026de962c2a197706a9cfa15c3f69f82d4496f45a3665e70910",
+    "payload_sha256": "74b41ea7da3e43606e25e49bbe8710ef4fbd7e438a09b51132a5185c5b497c8f",
+    "immutable_payload_exact": true,
+    "review_journal_exact": true,
+    "installed_cli_version": "0.3.0",
+    "bundle_check_passed": true,
+    "reward_source": "environment",
+    "boundary_mode": "source-mask",
+    "hdf5_sha256": "ce27e18ce8f5ed30c824b74762ef471838b437c1e0884d9a651b7f5fe64a721b",
+    "source_array_checks": 23,
+    "source_array_values_and_dtypes_exact": true,
+    "recorded_clock_exact": true,
+    "unknown_boundaries_preserved": true,
+    "loader": {
+      "framework": "robomimic 0.5.0 SequenceDataset",
+      "transitions": 59,
+      "action_batch_shape": [
+        16,
+        1,
+        7
+      ],
+      "device": "cpu",
+      "optimizer_updates": 0
+    }
+  }
+}

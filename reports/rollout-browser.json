@@ -1,6 +1,6 @@
 {
   "schema_version": "bir_browser_workflow_check_v1",
-  "status": "local_workflow_verified_public_deployment_pending",
+  "status": "local_and_anonymous_public_workflow_verified",
   "example": "homer_41 original media and 15 precomputed FLORA captions",
   "checks": {
     "video_playback": "1920 pixel source width; readyState4; currentTime advanced after Play selected interval",
@@ -11,8 +11,32 @@
     "local_media": "explicit selection; source hash verified; video currentSrc is a Blob URL",
     "own_data_transfer": "no upload route; app source fetches only trusted same-origin public examples with credentials omitted",
     "mobile": "390x844 viewport; body scrollWidth=clientWidth=375 after source attribution wrap fix",
-    "draft_recovery": "unit tests cover bundle switches and competing histories during asynchronous validation"
+    "draft_recovery": "unit tests cover bundle switches and competing histories during asynchronous validation",
+    "anonymous_download_cli": "15 generated records and one valid correction event"
   },
-  "limits": ["Native Rewarder was not run", "Robot example validation and deployed anonymous URL remain separate delivery checks"],
-  "new_model_calls": 0
+  "limits": [
+    "Native Rewarder was not run",
+    "Robot example verification is recorded separately",
+    "Command-line Python requests receive Cloudflare bot-filter403; ordinary anonymous browser access passed"
+  ],
+  "new_model_calls": 0,
+  "public_url": "https://flora-rollout-review.exact-leaf-7339.chatgpt.site",
+  "public_access": "clean Chrome Incognito window; no ChatGPT login; real playback/save/download",
+  "robot": {
+    "source": "real robomimic Lift demo_0",
+    "public_anonymous_playback": true,
+    "frames": 59,
+    "duration_s": 2.95,
+    "dimensions": [
+      256,
+      256
+    ],
+    "source_checksum_verified": true,
+    "actions_follow_playback": true,
+    "last_frame_selection": "59/59 at recorded2.90s; 0.1ms display tolerance prevents browser seek rounding selecting prior action",
+    "actual_download": "public robot bundle saved from Incognito; CLI/loader result in rollout-public-data.json",
+    "native_captions": "unavailable",
+    "native_rewarder": "unavailable"
+  },
+  "frontend_unit_tests": 31
 }

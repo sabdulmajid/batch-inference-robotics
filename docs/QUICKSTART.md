@@ -1,5 +1,9 @@
 # Annotate, review, and export video labels
 
+For the public browser demo, trajectory bundles, and CPU RL integration, start
+with the [rollout quickstart](ROLLOUT_QUICKSTART.md). GPU work in this project is
+paused; the native commands below document the existing validated setup.
+
 Use this tool to turn short manipulation videos into timestamped FLORA captions.
 Check the video and correct labels before using them in research. A completed
 model response is not proof that its description is correct.
@@ -11,8 +15,8 @@ currently supports human single-view videos.
 ## Try real precomputed output without downloading models
 
 Run these commands from an editable checkout. Python 3.11 or later is enough
-for this demonstration. Examples and model-lock files live in the checkout;
-they are not bundled into a standalone wheel.
+for this demonstration. Version 0.3.0 also packages examples and model locks in the wheel;
+`bir resources --output-dir bir-resources` extracts them.
 
 ```bash
 git clone https://github.com/sabdulmajid/batch-inference-robotics.git
@@ -39,7 +43,8 @@ The output directory must be new.
 The example comes from [MacroData's pinned WGO-Bench release](https://huggingface.co/datasets/macrodata/WGO-Bench/blob/9cfb7bb98d60a58319f4b3d7b41374eedfb7980c/README.md).
 Its dataset card lists [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 The published example contains generated text, source hashes, and attribution.
-This repository does not distribute the video. FLORA retains its
+The version 0.3.0 browser example redistributes the unchanged video with
+its [source attribution and license](../web/examples/LICENSES.md). FLORA retains its
 [NVIDIA research and evaluation restriction](../LICENSE-NVIDIA).
 
 In the review page, choose an interval and press **Play interval**. The player

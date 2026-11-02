@@ -371,13 +371,11 @@ def run_terminal(request, output_dir, *, python=None, flora_source=None, model_d
             return prior
         if state["status"] in {"failed", "interrupted"} and not retry:
             return load_result(result_path)
+        if state["status"] in {"running", "interrupted"} and state.get("execution", {}).get("kind") == "native":
+            raise RuntimeError("Interrupted native attempt requires allocation reconciliation before retry in a fresh output directory; a PID alone cannot prove cross-host ownership")
         if state["status"] == "running":
-            if state.get("execution",{}).get("kind")=="native":
-                raise RuntimeError("Interrupted native attempt requires allocation reconciliation before retry in a fresh output directory; a PID alone cannot prove cross-host ownership")
             old = directory / f"attempt-{state['attempt']:04d}"
             process_receipt = old / "process.private.json"
-            if not process_receipt.exists() and state.get("execution",{}).get("kind")=="native":
-                raise RuntimeError("Interrupted native attempt has no process receipt; reconcile its allocation before retry in a fresh output directory")
             if process_receipt.exists():
                 pid = json.loads(process_receipt.read_text())["pid"]
                 try:
