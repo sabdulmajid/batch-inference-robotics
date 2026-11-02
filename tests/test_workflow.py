@@ -13,7 +13,7 @@ from bir.cli import build_parser
 from bir.manifest import canonical_json, load_manifest
 from bir.store import RunStore
 from bir.workflow import (annotate, digest, export_jsonl, generated_records, prepare_inputs,
-                          records, save_review, status)
+                          records, save_review, status, orphaned_reviews, read_reviews)
 
 
 class WorkflowTests(unittest.TestCase):
@@ -28,7 +28,7 @@ class WorkflowTests(unittest.TestCase):
         self.run = self.root / 'run'
         self.job = load_manifest(self.manifest, contract={'model': 'fixture'})[0]
 
-    def seed(self, fail=False):
+    def seed(self, fail=False, failure_kind='deterministic'):
         with closing(RunStore(self.run / 'run.sqlite')) as store:
             with store.exclusive():
                 store.register(self.job)
@@ -39,7 +39,7 @@ class WorkflowTests(unittest.TestCase):
                 store.complete(self.job.request_id, 'segment', number, segment, 0.1)
                 number = store.begin(self.job.request_id, 'caption')
                 if fail:
-                    store.fail(self.job.request_id, 'caption', number, RuntimeError('CUDA allocation failed'), kind='deterministic', elapsed_s=0.1)
+                    store.fail(self.job.request_id, 'caption', number, RuntimeError('CUDA allocation failed'), kind=failure_kind, elapsed_s=0.1)
                 else:
                     caption = dict(input_sha256=dict(self.job.source_sha256), profile='Human',
                                    request_id=self.job.request_id, episode_id='one',
@@ -109,6 +109,79 @@ class WorkflowTests(unittest.TestCase):
         summary = export_jsonl(self.run, self.root / 'failed.jsonl')
         self.assertEqual(summary['failed_or_pending_records'], 1)
         self.assertEqual(summary['complete_intervals'], 0)
+
+    def test_new_reviews_reject_failed_and_pending_caption_records(self):
+        self.seed(fail=True)
+        failed = records(self.run)[0]
+        self.assertEqual(failed['inference_status'], 'failed')
+        with self.assertRaisesRegex(ValueError, 'complete generated caption'):
+            save_review(self.run, record_id=failed['record_id'], reviewed_caption='Guess before inference.',
+                        reviewer='researcher', expected_revision=0)
+        with sqlite3.connect(self.run / 'run.sqlite') as database:
+            database.execute("DELETE FROM attempts WHERE stage='caption'")
+        pending = records(self.run)[0]
+        self.assertEqual(pending['inference_status'], 'caption_pending')
+        with self.assertRaisesRegex(ValueError, 'complete generated caption'):
+            save_review(self.run, record_id=pending['record_id'], reviewed_caption='Another guess.',
+                        reviewer='researcher', expected_revision=0)
+        self.assertFalse((self.run / 'reviews.jsonl').exists())
+
+    def test_historical_failed_review_survives_resume_without_reassignment_or_export_block(self):
+        self.seed(fail=True, failure_kind='transient')
+        old_record = generated_records(self.run)[0]
+        # The earlier release allowed this edit. Write its valid historical journal
+        # directly because the current public save path correctly rejects it.
+        historical = dict(schema_version='bir_review_v1', record_id=old_record['record_id'], revision=1,
+                          previous_entry_sha256=None, generated_record_sha256=old_record['record_id'],
+                          reviewer='historical-reviewer', reviewed_utc='2026-11-01T00:00:00+00:00',
+                          reviewed_caption='Historical edit made before caption recovery.',
+                          action='caption_correction')
+        historical['entry_sha256'] = digest(historical)
+        journal = self.run / 'reviews.jsonl'
+        journal.write_text(canonical_json(historical) + '\n')
+        history_before = journal.read_bytes()
+        self.assertEqual(read_reviews(self.run), [historical])
+
+        with closing(RunStore(self.run / 'run.sqlite')) as store:
+            with store.exclusive():
+                number = store.begin(self.job.request_id, 'caption')
+                self.assertEqual(number, 2)
+                caption = dict(input_sha256=dict(self.job.source_sha256), profile='Human',
+                               request_id=self.job.request_id, episode_id='one',
+                               segments=[dict(start_s=0.125, end_s=1.875, caption='Recovered generated caption.',
+                                              status='complete')])
+                store.complete(self.job.request_id, 'caption', number, caption, 0.1)
+                store.export(self.job.request_id, self.run / 'annotations')
+
+        recovered = records(self.run)[0]
+        self.assertNotEqual(recovered['record_id'], old_record['record_id'])
+        self.assertEqual(recovered['generated_caption'], 'Recovered generated caption.')
+        self.assertEqual(recovered['effective_caption'], recovered['generated_caption'])
+        self.assertIsNone(recovered['review'])
+        self.assertIsNone(recovered['reviewed_caption'])
+        self.assertEqual(recovered['review_revision'], 0)
+        orphan = orphaned_reviews(self.run)
+        self.assertEqual(len(orphan), 1)
+        self.assertEqual(orphan[0]['record_id'], old_record['record_id'])
+        self.assertEqual(orphan[0]['reviewed_caption'], historical['reviewed_caption'])
+        self.assertEqual(orphan[0]['applicability'], 'historical_record_unavailable')
+        self.assertEqual(journal.read_bytes(), history_before)
+
+        destination = self.root / 'recovered-labels.jsonl'
+        summary = export_jsonl(self.run, destination)
+        self.assertEqual(summary['complete_intervals'], 1)
+        self.assertEqual(summary['reviewed_records'], 0)
+        self.assertEqual(json.loads(destination.read_text())['effective_caption'], 'Recovered generated caption.')
+        self.assertEqual(journal.read_bytes(), history_before)
+
+        # A later correction attaches only to the new complete record. The old
+        # event remains the first entry of the same hash-chained journal.
+        saved = save_review(self.run, record_id=recovered['record_id'], reviewed_caption='New verified correction.',
+                            reviewer='current-reviewer', expected_revision=0)
+        self.assertEqual(saved['revision'], 2)
+        self.assertTrue(journal.read_bytes().startswith(history_before))
+        self.assertEqual(records(self.run)[0]['effective_caption'], 'New verified correction.')
+        self.assertEqual(orphaned_reviews(self.run)[0]['record_id'], old_record['record_id'])
 
     def test_result_checksum_and_source_binding_are_checked(self):
         self.seed()

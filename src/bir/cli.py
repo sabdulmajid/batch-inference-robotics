@@ -15,6 +15,7 @@ import tempfile
 import time
 
 from . import __version__
+from .assets import asset_path
 from .engine import Engine
 from .manifest import canonical_json, file_sha256, load_manifest
 from .native import MODEL_REVISIONS, UPSTREAM_COMMIT, NativeBackend, verify_source
@@ -63,7 +64,7 @@ def _model_lock(path):
     return value
 
 
-def build_execution_contract(*, model_lock=Path("configs/native-models.json"),
+def build_execution_contract(*, model_lock=asset_path("configs/native-models.json"),
                              captioner_headroom_gib=4.0, condition="optimized", batch_size=1):
     # Include adapter changes even in an uncommitted checkout. Paths and device
     # locations are not part of output identity. Placement headroom is explicit.
@@ -84,7 +85,7 @@ def _native_options(parser, *, manifest=True):
     parser.add_argument("--source", type=Path, required=True, help="Pinned NVIDIA FLORA checkout")
     if manifest:
         parser.add_argument("--manifest", type=Path, required=True, help="Native video JSONL manifest")
-    parser.add_argument("--model-lock", type=Path, default=Path("configs/native-models.json"))
+    parser.add_argument("--model-lock", type=Path, default=asset_path("configs/native-models.json"))
     parser.add_argument("--captioner-headroom-gib", type=float, default=4.0)
     parser.add_argument("--batch-size", type=int, default=1)
 
@@ -122,19 +123,21 @@ def build_parser():
     export.add_argument("--output", type=Path, required=True)
     demo = commands.add_parser("demo", help="Install explicitly precomputed public-data labels; no model download")
     demo.add_argument("--output-dir", type=Path, required=True)
-    demo.add_argument("--example", type=Path, default=Path(__file__).resolve().parents[2] / "examples/precomputed-homer41.json")
+    demo.add_argument("--example", type=Path, default=asset_path("examples/precomputed-homer41.json"))
     demo_source = demo.add_mutually_exclusive_group(required=True)
     demo_source.add_argument("--video", type=Path, help="Exact checksum-matched original public demo video")
     demo_source.add_argument("--parquet", type=Path, help="Pinned downloaded public WGO dataset")
     storage = commands.add_parser("storage-check", help="Check measured project storage against the resource policy")
-    storage.add_argument("--policy", type=Path, default=Path("configs/resource_policy.yaml"))
+    storage.add_argument("--policy", type=Path, default=asset_path("configs/resource_policy.yaml"))
     storage.add_argument("--project-path", type=Path, required=True)
     storage.add_argument("--planned-gib", type=float, required=True,
                          help="Full remaining planned new footprint, including pending writes")
     ledger = commands.add_parser("ledger-status", help="Read the private resource ledger")
-    ledger.add_argument("--policy", type=Path, default=Path("configs/resource_policy.yaml"))
+    ledger.add_argument("--policy", type=Path, default=asset_path("configs/resource_policy.yaml"))
     ledger.add_argument("--ledger", type=Path, required=True)
     ledger.add_argument("--coordinator", required=True)
+    from .rollout_cli import add_commands
+    add_commands(commands)
     return parser
 
 
@@ -282,7 +285,9 @@ def main(argv=None):
             result = ResourceLedger(args.ledger, _policy(args.policy), args.coordinator).snapshot()
             code = 0
         else:
-            raise ValueError("Unknown command")
+            from .rollout_cli import execute
+            result = execute(args)
+            code = 1 if args.command=="reward-score" and result.get("status")!="complete" else 0
         print(canonical_json(result))
         return code
     except Exception as exc:

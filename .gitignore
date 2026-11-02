@@ -54,3 +54,9 @@ node_modules/
 # Public summaries and synthetic fixtures belong in explicitly reviewed paths
 # such as reports/ and tests/fixtures/, not the ignored raw directories.
 
+
+# Reviewed public research examples only (never model weights or private media).
+!web/examples/human.mp4
+!web/examples/robot.mp4
+!examples/rl/lift-iql-smoke/iql-checkpoint.pth
+!examples/rl/lift-iql-smoke/iql-resumed.pth

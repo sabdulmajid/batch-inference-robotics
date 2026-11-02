@@ -1,0 +1,32 @@
+{
+  "schema_version": "bir_rewarder_config_v1",
+  "profile": "terminal_native_h100_v1",
+  "native_validation": "awaiting_validation",
+  "source_commit": "129a2ada74c526ee4692f3d1b111bea6ca19d5b7",
+  "model_repo": "nvidia/Flora-Rewarder",
+  "model_revision": "031299e46e452fc0cedb4e0975eb9fa95fc37783",
+  "model_checksums_sha256": "b20a073e6d792365248aeb29f3a1b339a434ee1309ef26a5cd2df683941ebe56",
+  "runtime": {
+    "python": "3.12",
+    "vllm": "0.24.0",
+    "transformers": "5.8.1",
+    "qwen-vl-utils": "0.0.14",
+    "decord": "0.6.0"
+  },
+  "native": {
+    "tensor_parallel_size": 1,
+    "gpu_memory_utilization": 0.88,
+    "max_num_seqs": 8,
+    "max_model_len": 16384,
+    "seed": 0,
+    "with_rationale": false,
+    "dtype": "bfloat16"
+  },
+  "input": {
+    "mode": "terminal",
+    "whole_episode": true,
+    "sampling": "upstream_uniform_64_10fps",
+    "camera_clock": "synchronized_start",
+    "preprocessing": "upstream_unchanged"
+  }
+}

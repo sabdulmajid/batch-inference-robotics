@@ -1,0 +1,185 @@
+{
+  "schema_version": "bir_iql_smoke_result_v1",
+  "status": "passed",
+  "device": "cpu",
+  "algorithm": "robomimic.IQL",
+  "dataset_sha256": "b1b31ace1a6fec3e7924ee2cd7db935fbf2c880fe429d2c979c3e685eb233cf4",
+  "dataset_membership": [
+    "demo_0",
+    "demo_1"
+  ],
+  "transitions": 117,
+  "seed": 7,
+  "optimizer_updates": 20,
+  "resumed_optimizer_updates": 1,
+  "network_parameters_changed": {
+    "actor": true,
+    "critic": true,
+    "vf": true
+  },
+  "checkpoint_policy_action_exact": true,
+  "checkpoint_optimizer_state_exact": true,
+  "resumed_network_changed": true,
+  "checkpoint_sha256": "27dc2fb87fe05b32b2a2dc791529c4754f9cae227988fed8a598f6110afd401d",
+  "losses": [
+    {
+      "actor/loss": 6.633350849151611,
+      "critic/critic1_loss": 0.10981684923171997,
+      "vf/v_loss": 0.0048857019282877445
+    },
+    {
+      "actor/loss": 5.63758659362793,
+      "critic/critic1_loss": 0.01173862349241972,
+      "vf/v_loss": 0.005334177985787392
+    },
+    {
+      "actor/loss": 5.144806385040283,
+      "critic/critic1_loss": 0.008893988095223904,
+      "vf/v_loss": 0.004379706457257271
+    },
+    {
+      "actor/loss": 5.706757545471191,
+      "critic/critic1_loss": 0.1598912924528122,
+      "vf/v_loss": 0.005391886457800865
+    },
+    {
+      "actor/loss": 5.410186290740967,
+      "critic/critic1_loss": 0.007997951470315456,
+      "vf/v_loss": 0.0039468673057854176
+    },
+    {
+      "actor/loss": 4.835301876068115,
+      "critic/critic1_loss": 0.008398197591304779,
+      "vf/v_loss": 0.0041231499053537846
+    },
+    {
+      "actor/loss": 6.027851581573486,
+      "critic/critic1_loss": 0.10774077475070953,
+      "vf/v_loss": 0.0044031934812664986
+    },
+    {
+      "actor/loss": 8.217196464538574,
+      "critic/critic1_loss": 0.4885891377925873,
+      "vf/v_loss": 0.0049515473656356335
+    },
+    {
+      "actor/loss": 5.579831123352051,
+      "critic/critic1_loss": 0.004023625981062651,
+      "vf/v_loss": 0.0022448385134339333
+    },
+    {
+      "actor/loss": 5.574878215789795,
+      "critic/critic1_loss": 0.0076425950974226,
+      "vf/v_loss": 0.0034062557388097048
+    },
+    {
+      "actor/loss": 5.66560697555542,
+      "critic/critic1_loss": 0.05669603869318962,
+      "vf/v_loss": 0.0032341594342142344
+    },
+    {
+      "actor/loss": 4.98460578918457,
+      "critic/critic1_loss": 0.0558244027197361,
+      "vf/v_loss": 0.00274333031848073
+    },
+    {
+      "actor/loss": 6.148561477661133,
+      "critic/critic1_loss": 0.20124755799770355,
+      "vf/v_loss": 0.0026363299693912268
+    },
+    {
+      "actor/loss": 4.9852070808410645,
+      "critic/critic1_loss": 0.053144004195928574,
+      "vf/v_loss": 0.002295589307323098
+    },
+    {
+      "actor/loss": 5.857316017150879,
+      "critic/critic1_loss": 0.104000985622406,
+      "vf/v_loss": 0.002339219208806753
+    },
+    {
+      "actor/loss": 5.72114372253418,
+      "critic/critic1_loss": 0.16144800186157227,
+      "vf/v_loss": 0.001900778734125197
+    },
+    {
+      "actor/loss": 5.158119201660156,
+      "critic/critic1_loss": 0.054674483835697174,
+      "vf/v_loss": 0.002346829976886511
+    },
+    {
+      "actor/loss": 5.520323753356934,
+      "critic/critic1_loss": 0.0029389848932623863,
+      "vf/v_loss": 0.001213424257002771
+    },
+    {
+      "actor/loss": 5.669165134429932,
+      "critic/critic1_loss": 0.100863017141819,
+      "vf/v_loss": 0.0015304149128496647
+    },
+    {
+      "actor/loss": 5.507002830505371,
+      "critic/critic1_loss": 0.15013881027698517,
+      "vf/v_loss": 0.0016326007898896933
+    }
+  ],
+  "resumed_losses": {
+    "actor/loss": 4.67827844619751,
+    "critic/critic1_loss": 0.0017513558268547058,
+    "vf/v_loss": 0.0009034311515279114
+  },
+  "evaluation": [
+    {
+      "seed": 101,
+      "steps": 400,
+      "task_success": false,
+      "environment_reward_sum": 0.0,
+      "boundary": "evaluation_time_limit",
+      "reset": "fresh_simulator_reset",
+      "uses_recorded_states": false
+    },
+    {
+      "seed": 202,
+      "steps": 400,
+      "task_success": false,
+      "environment_reward_sum": 0.0,
+      "boundary": "evaluation_time_limit",
+      "reset": "fresh_simulator_reset",
+      "uses_recorded_states": false
+    }
+  ],
+  "success_count": 0,
+  "evaluation_count": 2,
+  "evaluation_horizon": 400,
+  "observation_keys": [
+    "object",
+    "robot0_eef_pos",
+    "robot0_eef_quat",
+    "robot0_gripper_qpos"
+  ],
+  "uses_retrospective_policy_observations": false,
+  "torch_threads": 2,
+  "torch_interop_threads": 1,
+  "packages": {
+    "robomimic": "0.5.0",
+    "robosuite": "1.5.1",
+    "torch": "2.5.1",
+    "torchvision": "0.20.1",
+    "mujoco": "3.2.7",
+    "numpy": "1.26.4",
+    "h5py": "3.12.1"
+  },
+  "intended_source_revisions": {
+    "robomimic": "d309eaecc18acf4152a830a895a6984b8ac71b05",
+    "robosuite": "a071383d53568ab798eb315c0e95357911be922d"
+  },
+  "verified_robomimic_source_sha256": {
+    "algo/iql.py": "c0d131eb328fd88ae7d86f68bf005c8788020244e6a0b2568eee424b2a680045",
+    "algo/algo.py": "a94ac3f6cc3c4242fcc0d15979f2a9fa38a7cf90be9a69b1a085a0117a2b013c",
+    "utils/dataset.py": "603bde0f2b15b7bf7eac0bed128df984fae38682572e7c907dbafc935b7a62f5",
+    "envs/env_robosuite.py": "efa1b2e47861de966784192c2c7216943c74874588ea720d8e1e89e6597cf8ff"
+  },
+  "evidence_scope": "Optimizer, loader, checkpoint and fresh policy execution smoke; not policy improvement.",
+  "wall_seconds": 7.978484124992974,
+  "process_cpu_seconds": 8.535086
+}

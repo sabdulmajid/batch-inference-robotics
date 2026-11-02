@@ -1,0 +1,9 @@
+# Python 3.11. Isolate this environment from the FLORA model environment.
+numpy==1.26.4
+h5py==3.12.1
+torch==2.5.1
+torchvision==0.20.1
+mujoco==3.2.7
+mink==0.0.5
+robomimic @ https://github.com/ARISE-Initiative/robomimic/archive/d309eaecc18acf4152a830a895a6984b8ac71b05.tar.gz
+robosuite @ https://github.com/ARISE-Initiative/robosuite/archive/a071383d53568ab798eb315c0e95357911be922d.tar.gz

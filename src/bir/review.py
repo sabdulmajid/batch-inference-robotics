@@ -10,7 +10,7 @@ import secrets
 import webbrowser
 
 from .manifest import canonical_json, load_manifest
-from .workflow import generated_records, records, save_review
+from .workflow import generated_records, records, save_review, orphaned_reviews
 
 
 PAGE = r'''<!doctype html>
@@ -38,6 +38,7 @@ code{font-size:13px;overflow-wrap:anywhere}#provenance{font-size:13px;overflow-w
 <div class="row"><button class="primary" id="save">Save correction</button><button id="restore">Restore generated label</button><a href="export">Download JSONL</a></div>
 <p class="muted">Export includes original text, corrections, source hashes, timestamps, and failures.</p>
 <details><summary>Source and review provenance</summary><pre id="provenance"></pre></details>
+<details id="historical" hidden><summary>Historical edits not applied to current records</summary><pre id="history"></pre></details>
 </section></main><script>
 let rows=[],selected=0,playingInterval=false;
 const $=id=>document.getElementById(id), base=location.pathname;
@@ -49,7 +50,7 @@ function show(index){if(!rows.length)return;selected=Math.max(0,Math.min(rows.le
  $('notice').textContent=row.failure?(row.failure.error+'\n'+row.failure.action):'Check source video. Model agreement does not prove label accuracy.';
  $('provenance').textContent=JSON.stringify({source_sha256:row.source_sha256,request_id:row.request_id,record_id:row.record_id,inference_status:row.inference_status,generation:row.generation,review:row.review},null,2);
  const source=base+'video/'+row.episode_id_key; if($('video').getAttribute('src')!==source)$('video').src=source;
- playingInterval=false;$('video').pause();$('play').disabled=row.start_s===null;$('save').disabled=row.start_s===null;$('restore').disabled=!row.review;
+ playingInterval=false;$('video').pause();$('play').disabled=row.start_s===null;$('save').disabled=row.inference_status!=='complete'||!row.generated_caption;$('restore').disabled=!row.review||$('save').disabled;
  $('previous').disabled=selected===0;$('next').disabled=selected===rows.length-1;
 }
 function play(){const row=rows[selected];if(!row||row.start_s===null)return;const video=$('video');
@@ -61,6 +62,7 @@ $('play').onclick=play;$('previous').onclick=()=>show(selected-1);$('next').oncl
 async function save(restore){const row=rows[selected];try{await request('review',{method:'POST',headers:{'Content-Type':'application/json','X-BIR-Review':base.split('/')[1]},body:JSON.stringify({record_id:row.record_id,reviewed_caption:restore?null:$('reviewed').value,reviewer:$('reviewer').value,expected_revision:row.review_revision})});await load(selected);$('notice').textContent='Saved. Generated text and inference status remain unchanged.'}catch(e){$('notice').textContent=e.message}}
 $('save').onclick=()=>save(false);$('restore').onclick=()=>save(true);
 async function load(index=0){try{const data=await request('data');rows=data.records;$('banner').textContent=(data.precomputed?'PRECOMPUTED DEMONSTRATION — no model ran here. ':'Saved inference results — ')+rows.length+' records. '+data.failed_or_pending+' failed or pending.';
+ $('historical').hidden=!data.orphaned_reviews?.length;$('history').textContent=JSON.stringify(data.orphaned_reviews||[],null,2);
  $('items').replaceChildren();rows.forEach((row,i)=>{let button=document.createElement('button');button.className='item';button.textContent=row.episode_id+' · '+(row.start_s===null?row.inference_status:row.start_s.toFixed(2)+'–'+row.end_s.toFixed(2)+' s')+(row.reviewed_caption!==null?' · reviewed':'');button.onclick=()=>show(i);$('items').append(button)});show(index)
 }catch(e){$('banner').textContent=e.message}}
 load();</script></html>'''
@@ -98,6 +100,7 @@ class ReviewServer(ThreadingHTTPServer):
     def view_data(self):
         values = records(self.directory)
         return dict(records=[dict(row, episode_id_key=row['source_sha256']['main']) for row in values],
+                    orphaned_reviews=orphaned_reviews(self.directory),
                     precomputed=any(row['generation']['precomputed'] for row in values),
                     failed_or_pending=sum(row['inference_status'] != 'complete' for row in values))
 

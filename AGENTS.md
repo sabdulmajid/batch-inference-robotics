@@ -2,7 +2,15 @@
 
 ## Mission and authority
 
-Active phase: docs/PHASE2_PROMPT.md. The user requests substantial throughput improvements and a practical researcher workflow, using the existing native release as the baseline. Follow that brief for current priorities and completion; docs/PROJECT_PLAN.md and docs/ORCHESTRATOR_PROMPT.md retain phase-one context. Keep applicable native contracts, project-wide resource caps, and access restrictions. The old adaptive phase's stopping condition is historical, not the objective of this phase. Further private-archive auditing is not requested.
+Active phase: docs/ROLLOUT_PLAN.md. Extend the existing annotation engine with
+versioned robot trajectory attachments, an independent terminal Rewarder worker,
+one robomimic IQL export, a CPU integration example, and an anonymous static
+browser review demo. Preserve native annotation behavior and historical results.
+The current launch brief defines the scope. GPU inference, training, profiling,
+and GPU scheduler submissions are paused on all machines. The sixteen-submission
+cap is exhausted. Do not treat unused GPU-hours or older authorizations as
+permission to run GPU work. CPU engineering and bounded validation remain
+authorized within the existing resource policy.
 
 Work autonomously on routine implementation, dependency setup, bounded experiments, debugging, review, commits, and pushes within the user's launch authorization and configs/resource_policy.yaml. Respect actual account, filesystem, scheduler, and host-tool restrictions.
 

@@ -1,0 +1,14 @@
+{
+  "schema_version": "bir_iql_smoke_v1",
+  "purpose": "CPU integration test, not a policy learning result",
+  "algorithm": "iql",
+  "seed": 7,
+  "batch_size": 16,
+  "layer_dims": [64, 64],
+  "observation_keys": ["object", "robot0_eef_pos", "robot0_eef_quat", "robot0_gripper_qpos"],
+  "steps": 20,
+  "evaluation_seeds": [101, 202],
+  "evaluation_horizon": 400,
+  "threads": 2,
+  "max_wall_seconds": 600
+}

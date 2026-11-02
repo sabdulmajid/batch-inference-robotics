@@ -281,8 +281,6 @@ def read_reviews(directory):
 def records(directory):
     base = generated_records(directory)
     edits = {row['record_id']: row for row in read_reviews(directory)}
-    if set(edits) - {row['record_id'] for row in base}:
-        raise ValueError('A review no longer matches its generated source. Use the original run for this journal.')
     result = []
     for row in base:
         review = edits.get(row['record_id'])
@@ -292,6 +290,14 @@ def records(directory):
     return result
 
 
+def orphaned_reviews(directory):
+    """Keep historical edits visible without applying them to a new prediction."""
+    current = {row['record_id'] for row in generated_records(directory)}
+    return [dict(entry, applicability='historical_record_unavailable',
+                 reason='The generated record changed or is no longer present. This edit is retained but is not applied.')
+            for entry in read_reviews(directory) if entry['record_id'] not in current]
+
+
 def save_review(directory, *, record_id, reviewed_caption, reviewer, expected_revision):
     if not isinstance(reviewer, str) or not 1 <= len(reviewer.strip()) <= 120:
         raise ValueError('Enter a reviewer name or research identifier (1–120 characters).')
@@ -299,8 +305,9 @@ def save_review(directory, *, record_id, reviewed_caption, reviewer, expected_re
         raise ValueError('Enter a nonempty reviewed caption, or use null to restore the generated label.')
     with workflow_lock(directory, '.review.lock'):
         row = next((x for x in records(directory) if x['record_id'] == record_id), None)
-        if row is None or row['start_s'] is None:
-            raise ValueError('This record has no supported interval to review.')
+        if (row is None or row['start_s'] is None or row['inference_status'] != 'complete'
+                or not isinstance(row['generated_caption'], str) or not row['generated_caption'].strip()):
+            raise ValueError('Only a complete generated caption can be corrected. Pending or failed records remain unavailable.')
         if type(expected_revision) is not int or expected_revision != row['review_revision']:
             raise ValueError('This label was edited in another view. Reload before saving.')
         entries = read_reviews(directory)
