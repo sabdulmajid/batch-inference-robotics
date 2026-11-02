@@ -1,0 +1,18 @@
+{
+  "schema_version": "bir_browser_workflow_check_v1",
+  "status": "local_workflow_verified_public_deployment_pending",
+  "example": "homer_41 original media and 15 precomputed FLORA captions",
+  "checks": {
+    "video_playback": "1920 pixel source width; readyState4; currentTime advanced after Play selected interval",
+    "correction": "separate generated caption and reviewed text",
+    "actual_download": "browser saved bir_rollout_bundle_v1 with one review event",
+    "download_cli_check": "15 generated records; one valid review event; no reward artifacts",
+    "browser_reimport": "normal file picker; imported correction retained",
+    "local_media": "explicit selection; source hash verified; video currentSrc is a Blob URL",
+    "own_data_transfer": "no upload route; app source fetches only trusted same-origin public examples with credentials omitted",
+    "mobile": "390x844 viewport; body scrollWidth=clientWidth=375 after source attribution wrap fix",
+    "draft_recovery": "unit tests cover bundle switches and competing histories during asynchronous validation"
+  },
+  "limits": ["Native Rewarder was not run", "Robot example validation and deployed anonymous URL remain separate delivery checks"],
+  "new_model_calls": 0
+}

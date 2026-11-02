@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; media-src 'self' blob:; img-src 'self' blob: data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Inspect recorded rollouts, action captions, trajectory data and outcome evidence. Review local files without uploading them.">
+  <title>FLORA · Rollout review</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip" href="#workspace">Skip to review</a>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="FLORA rollout review home"><span class="brand-mark" aria-hidden="true">F</span><span>FLORA <span class="brand-detail">/ Rollout review</span></span></a>
+    <a class="text-link" href="https://github.com/sabdulmajid/batch-inference-robotics" target="_blank" rel="noopener noreferrer">Code &amp; setup <span aria-hidden="true">↗</span></a>
+  </header>
+  <div class="page">
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow">VIDEO → REVIEW → TRAINING DATA</p><h1 id="page-title">See what a rollout contains.</h1><p class="intro-copy">Inspect action captions against video. Keep recorded actions, outcome evidence, and your corrections distinct.</p></div>
+      <div class="privacy-note"><span class="privacy-dot" aria-hidden="true"></span><div><strong>Your files stay in this browser.</strong><p>No upload, account, or inference service. Download a bundle to keep your work.</p></div></div>
+    </section>
+
+    <section class="toolbar" aria-label="Run controls">
+      <div class="example-control"><label for="example-picker">Public example</label><select id="example-picker" disabled><option>Loading examples…</option></select><button id="load-example" class="secondary" disabled>Open example</button></div>
+      <div class="file-controls"><label class="button secondary" for="bundle-file">Import bundle<input id="bundle-file" type="file" accept=".json,application/json"></label><label class="button secondary" for="media-file">Select local media<input id="media-file" type="file" accept="video/*" multiple></label><button id="download-bundle" class="primary" disabled>Download bundle <span aria-hidden="true">↓</span></button></div>
+    </section>
+    <div id="global-notice" class="notice" role="status" aria-live="polite">Opening the public example…</div>
+    <section id="recovery" class="recovery hidden" aria-labelledby="recovery-title"><div><strong id="recovery-title">A local draft is available</strong><p id="recovery-copy"></p></div><div class="row"><button id="restore-draft" class="primary">Restore local draft</button><button id="keep-imported" class="secondary">Keep imported history</button></div></section>
+
+    <main id="workspace" tabindex="-1" class="workspace" aria-busy="true">
+      <div class="primary-column">
+        <section class="video-card card" aria-labelledby="episode-title">
+          <div class="card-header"><div><p class="eyebrow" id="episode-source">RECORDED EPISODE</p><h2 id="episode-title">No episode selected</h2><p id="task-description" class="small muted"></p></div><div class="episode-select"><label for="episode-picker">Episode</label><select id="episode-picker" disabled><option>—</option></select></div></div>
+          <div class="video-stage"><video id="video" controls playsinline preload="metadata" aria-label="Recorded rollout video"></video><div id="media-empty" class="media-empty"><span class="media-symbol" aria-hidden="true">▷</span><strong>Select a source video</strong><p>The bundle keeps source identity. Add the matching local media file to play it.</p></div></div>
+          <div class="video-meta"><span id="media-state">Media unavailable</span><span id="video-time">0.00 s</span></div>
+          <div class="timeline-wrap"><div id="timeline" class="timeline" aria-label="Caption interval timeline"></div><div class="timeline-labels"><span>0 s</span><span id="duration-label">—</span></div></div>
+          <div class="player-actions"><button id="play-interval" class="secondary" disabled>Play selected interval</button><button id="previous-interval" class="icon-button" aria-label="Previous interval" disabled>←</button><button id="next-interval" class="icon-button" aria-label="Next interval" disabled>→</button><span id="interval-count" class="muted">No intervals</span></div>
+        </section>
+
+        <section class="card intervals-card" aria-labelledby="intervals-title"><div class="card-header"><div><h2 id="intervals-title">Action intervals</h2><p class="muted">Generated text stays unchanged. Corrections are separate records.</p></div><span id="annotation-badge" class="badge">Unavailable</span></div><div id="interval-list" class="interval-list"><p class="empty-copy">Open a run bundle to inspect available annotations.</p></div></section>
+
+        <section class="card trajectory-card" aria-labelledby="trajectory-title"><div class="card-header"><div><h2 id="trajectory-title">Recorded trajectory</h2><p id="trajectory-summary" class="muted">Action data is separate from video annotations.</p></div><span id="trajectory-badge" class="badge">Unavailable</span></div><div id="trajectory-empty" class="empty-copy">Video alone does not contain robot actions. Training export needs an aligned action-bearing trajectory.</div><div id="trajectory-data" class="hidden"><dl class="fact-grid"><div><dt>Transition</dt><dd id="transition-index">—</dd></div><div><dt>Trajectory time</dt><dd id="transition-time">—</dd></div><div><dt>Environment reward</dt><dd id="transition-reward">—</dd></div><div><dt>Boundary</dt><dd id="transition-boundary">—</dd></div></dl><label for="transition-slider">Inspect transition</label><input id="transition-slider" type="range" min="0" max="0" value="0"><div id="action-values" class="action-values"></div><details><summary>Observation, controller, and clock details</summary><pre id="trajectory-details"></pre></details></div></section>
+      </div>
+
+      <aside class="review-column" aria-label="Review and evidence">
+        <section class="card review-card" aria-labelledby="review-title"><div class="card-header"><div><p class="eyebrow">SELECTED INTERVAL</p><h2 id="review-title">Review a caption</h2></div><span id="record-state" class="badge">Unavailable</span></div><p id="selected-time" class="selected-time">Select an interval to begin.</p><label>Generated caption</label><div id="generated-caption" class="generated-caption">No generated caption is available.</div><p id="record-warning" class="small muted"></p><label for="reviewed-caption">Your correction</label><textarea id="reviewed-caption" rows="4" disabled placeholder="Check the video before changing the label."></textarea><label for="reviewer">Reviewer identifier</label><input id="reviewer" maxlength="120" autocomplete="off" placeholder="Name or research identifier" disabled><div class="review-actions"><button id="save-correction" class="primary" disabled>Save correction</button><button id="restore-generated" class="text-button" disabled>Restore generated label</button></div><p id="save-state" class="save-state" role="status">No changes.</p><details><summary>Record provenance</summary><pre id="record-provenance"></pre></details></section>
+
+        <section class="card outcome-card" aria-labelledby="outcome-title"><div class="card-header"><h2 id="outcome-title">Outcome evidence</h2><span id="outcome-badge" class="badge">Unavailable</span></div><p id="outcome-copy">No native FLORA Rewarder result is attached. Missing scores are not zero.</p><dl id="outcome-values" class="fact-grid hidden"></dl><details id="outcome-details-wrap" class="hidden"><summary>Raw score and provenance</summary><pre id="outcome-details"></pre></details></section>
+
+        <section class="card history-card" aria-labelledby="history-title"><div class="card-header"><h2 id="history-title">Review history</h2><span id="history-count" class="count">0</span></div><p class="small muted">Edits bind to exact generated records. Inapplicable edits stay visible and are never moved to another caption.</p><div id="review-history" class="review-history"><p class="empty-copy">No saved corrections.</p></div></section>
+
+        <section class="next-card"><h2>Continue in your training stack</h2><p id="training-state">Training export requires recorded transitions and an explicit reward source.</p><a class="text-link" href="https://github.com/sabdulmajid/batch-inference-robotics#readme" target="_blank" rel="noopener noreferrer">Runner &amp; CPU training quickstart ↗</a><p class="small">This page does not run models or train a policy. Native model execution needs the documented environment and hardware.</p></section>
+      </aside>
+    </main>
+    <footer><div><strong>Research tool, not ground truth.</strong> Check visual descriptions before using them as supervision.</div><p id="attribution">Public examples retain their source attribution. Own-file review stays local.</p><a href="https://github.com/sabdulmajid/batch-inference-robotics/blob/main/docs/PHASE2_RESULTS.md" target="_blank" rel="noopener noreferrer">Historical annotation measurements</a></footer>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

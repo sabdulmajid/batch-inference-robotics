@@ -15,3 +15,26 @@ jobs:
           git clone https://github.com/NVIDIA/Flora.git third_party/Flora
           git -C third_party/Flora checkout --detach 129a2ada74c526ee4692f3d1b111bea6ca19d5b7
       - run: pytest -q
+  web-and-wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test web/tests/*.test.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip wheel . --no-deps -w /tmp/bir-dist
+          python -m venv /tmp/bir-installed
+          /tmp/bir-installed/bin/pip install /tmp/bir-dist/*.whl
+          cd /tmp
+          /tmp/bir-installed/bin/bir --version
+          /tmp/bir-installed/bin/bir resources --output-dir /tmp/bir-resources
+          /tmp/bir-installed/bin/bir bundle-check --bundle /tmp/bir-resources/web/examples/human.bir.json
+          test -f /tmp/bir-resources/scripts/rl_cpu_smoke.py
+          test -f /tmp/bir-resources/configs/native-models.json
+          test -f /tmp/bir-resources/docs/TRAINER_INTEGRATION.md
+          test -f /tmp/bir-resources/reports/rl-cpu-smoke.json

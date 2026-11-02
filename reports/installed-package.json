@@ -1,0 +1,90 @@
+{
+  "schema_version": "bir_installed_package_review_v1",
+  "working_directory_outside_checkout": true,
+  "version": "0.3.0",
+  "resource_extraction": "ready",
+  "human_bundle": {
+    "action_episodes": 0,
+    "annotation_records": 15,
+    "episodes": 1,
+    "historical_unapplied_reviews": 0,
+    "native_reward_artifacts": 0,
+    "outcome_artifacts": 0,
+    "payload_sha256": "9ac144730a1ff30d433704cd116648bbf657836234c15052e4cf7a07d6b2a5c4",
+    "review_events": 0,
+    "schema_version": "bir_bundle_summary_v1"
+  },
+  "trajectory_bundle": {
+    "action_episodes": 2,
+    "annotation_records": 0,
+    "episodes": 2,
+    "historical_unapplied_reviews": 0,
+    "native_reward_artifacts": 0,
+    "outcome_artifacts": 0,
+    "payload_sha256": "36695ce93379f8320c597cd0fa4407d0d72753812be94261906d89ee92ed94bb",
+    "review_events": 0,
+    "schema_version": "bir_bundle_summary_v1"
+  },
+  "training_export": {
+    "bootstrap_rule": "reward + discount * (1-dones) * V(next_obs)",
+    "boundary_mode": "source-mask",
+    "bundle_payload_sha256": "36695ce93379f8320c597cd0fa4407d0d72753812be94261906d89ee92ed94bb",
+    "exclusions": [],
+    "export_id": "308d30f666c32d02c3db0109b6a7e8887dc746681abdf469f0d1441ce56ba2c9",
+    "included": [
+      {
+        "episode_id": "demo_0",
+        "trajectory_id": "ef48c99d1e02059f7b5e4e6a7956817f945c55845dae46049f896ff5f06b3044"
+      },
+      {
+        "episode_id": "demo_1",
+        "trajectory_id": "548792728700fa32d607216dd479dea615005a55ab69804b2b180ff90ad7e412"
+      }
+    ],
+    "observations_exclude_retrospective_labels": true,
+    "review_journal_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "reward_mapping": "original_environment_rewards_v1",
+    "reward_source": "environment",
+    "schema_version": "bir_training_export_v1",
+    "sha256": "5b10c555ee3059e3a14ac8f57e1d3450332e835b418d9cdc1a89a6001a99127f",
+    "trainer": "robomimic IQL",
+    "transitions": 117,
+    "truncation_rule": "True time-limit truncation bootstraps; source-mask mode preserves the explicitly selected original dataset mask."
+  },
+  "demo": "precomputed_demo_ready",
+  "status_command_ok": true,
+  "local_review": {
+    "page_loaded": true,
+    "video_range_bytes_exact": true,
+    "correction_saved": true,
+    "generated_caption_unchanged": true,
+    "download_preserves_correction": true,
+    "annotation_records": 15
+  },
+  "package_import": "bir/__init__.py",
+  "torch_installed": false,
+  "real_data_roundtrip": {
+    "array_checks": 46,
+    "all_values_and_dtypes_exact": true,
+    "recorded_clocks_exact": true,
+    "camera_info_preserved": true
+  },
+  "robomimic_loader": {
+    "version": "0.5.0",
+    "transitions": 117,
+    "batch_actions_shape": [
+      16,
+      1,
+      7
+    ],
+    "next_object_shape": [
+      16,
+      1,
+      10
+    ],
+    "device": "cpu",
+    "optimizer_updates": 0
+  },
+  "wheel_sha256": "938a1de1094498d6385f2da17700341ba484c42ec37c6eb7c06b4d01755d0b14",
+  "wheel_bytes": 24470036
+}

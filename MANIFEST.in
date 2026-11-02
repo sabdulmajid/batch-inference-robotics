@@ -4,3 +4,7 @@ include examples/precomputed-homer41.json
 recursive-include examples/rl/lift-iql-smoke *.json *.md *.pth
 include scripts/rl_cpu_smoke.py scripts/prepare_rollout_example.py
 recursive-include web *.html *.js *.css *.md *.json *.mp4
+
+recursive-include docs *.md *.jpg
+recursive-include reports *.json
+include LICENSE* README.md

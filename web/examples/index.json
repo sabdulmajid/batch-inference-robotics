@@ -1,0 +1,13 @@
+{
+  "examples": [
+    {
+      "id": "human",
+      "title": "Human actions \u00b7 15 precomputed captions",
+      "bundle": "human.bir.json",
+      "media": {
+        "fc0bdaec32cad95207235fb1c69884d2ed2923bf550e74e18317acecb62d5f12": "human.mp4"
+      },
+      "attribution": "MacroData WGO-Bench / HomER, CC-BY-NC-SA-4.0. Original media. FLORA predictions are precomputed research output, not ground truth. No robot actions or native Rewarder scores."
+    }
+  ]
+}

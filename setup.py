@@ -7,7 +7,8 @@ from setuptools.command.build_py import build_py
 PATTERNS = ['configs/*.json','configs/*.yaml','configs/*.txt','configs/rl/*',
             'examples/precomputed-homer41.json','examples/rl/lift-iql-smoke/*',
             'scripts/rl_cpu_smoke.py','scripts/prepare_rollout_example.py',
-            'web/*.html','web/*.js','web/*.css','web/*.md','web/examples/*']
+            'web/*.html','web/*.js','web/*.css','web/*.md','web/examples/*',
+                  'docs/*.md','docs/images/*','reports/*.json','LICENSE*','README.md']
 
 class BuildResources(build_py):
     def run(self):
